@@ -27,17 +27,12 @@ public class ProbeMain {
 
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(properties);
-        logger.info(getTime() + " : " + "HDFS is reachable !");
+        logger.info("HDFS is reachable :: " + isReachable);
     }
 
     private static void printProperties(Map<String, String> properties, Logger logger) {
         for (String key: properties.keySet()) {
-            logger.info(getTime() + " : " + key + " --> " + properties.get(key));
+            logger.info(key + " --> " + properties.get(key));
         }
-    }
-
-    private static LocalDateTime getTime(){
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        return LocalDateTime.now();
     }
 }
