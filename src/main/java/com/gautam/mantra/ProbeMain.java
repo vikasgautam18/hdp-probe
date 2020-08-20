@@ -19,13 +19,21 @@ public class ProbeMain {
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
 
-        Map<String, String> obj = yaml.load(inputStream);
+        Map<String, String> properties = yaml.load(inputStream);
 
         Logger logger = LoggerFactory.getLogger(ProbeMain.class.getName());
 
+        printProperties(properties, logger);
+
         ProbeHDFS hdfs = new ProbeHDFS();
-        Boolean isReachable = hdfs.isReachable(obj);
-        logger.info(getTime() + "HDFS is reachable !");
+        Boolean isReachable = hdfs.isReachable(properties);
+        logger.info(getTime() + " : " + "HDFS is reachable !");
+    }
+
+    private static void printProperties(Map<String, String> properties, Logger logger) {
+        for (String key: properties.keySet()) {
+            logger.info(getTime() + " : " + key + " --> " + properties.get(key));
+        }
     }
 
     private static LocalDateTime getTime(){

@@ -1,6 +1,8 @@
 package com.gautam.mantra.commons;
 
+import java.util.Map;
+
 public interface ProbeService {
 
-    public Boolean isReachable();
+    Boolean isReachable(Map<String, String> properties);
 }
