@@ -1,14 +1,15 @@
 package com.gautam.mantra;
 
 import com.gautam.mantra.hdfs.ProbeHDFS;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 public class ProbeMain {
     public static Yaml yaml = new Yaml();
@@ -20,14 +21,11 @@ public class ProbeMain {
 
         Map<String, String> obj = yaml.load(inputStream);
 
-        if(!obj.getOrDefault("debugFlag", "False").equals("True"))
-            Logger.getLogger("org").setLevel(Level.OFF);
-
+        Logger logger = LoggerFactory.getLogger(ProbeMain.class.getName());
 
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(obj);
-        Logger.getLogger(com.gautam.mantra.ProbeMain.class.getName()).info(getTime() + "HDFS is reachable !");
-        System.out.println("HDFS is reachable: " + isReachable);
+        logger.info(getTime() + "HDFS is reachable !");
     }
 
     private static LocalDateTime getTime(){
