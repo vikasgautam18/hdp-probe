@@ -16,8 +16,7 @@ public class ProbeMain {
         InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
 
         Map<String, Object> obj = yaml.load(inputStream);
-        System.out.println("hdfsPath -> "+ obj.get("hdfsPath").toString());
-        System.out.println("coreSite -> "+ obj.get("coreSite").toString());
+
 
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(obj);

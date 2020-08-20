@@ -11,10 +11,16 @@ import java.util.Map;
 public class ProbeHDFS implements ProbeFileSystem {
 
     public Boolean isReachable(Map<String, Object> props) {
+
+        System.out.println("hdfsPath -> "+ props.get("hdfsPath").toString());
+        System.out.println("coreSite -> "+ props.get("coreSite").toString());
+        System.out.println("hdfsSite -> "+ props.get("hdfsSite").toString());
+
         Configuration conf= new Configuration();
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
         conf.addResource(props.get("coreSite").toString());
+        conf.addResource(props.get("hdfsSite").toString());
 
         System.out.println(conf.getRaw("fs.default.name"));
 
