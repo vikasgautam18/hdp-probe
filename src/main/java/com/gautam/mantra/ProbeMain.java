@@ -20,7 +20,7 @@ public class ProbeMain {
 
         Map<String, String> obj = yaml.load(inputStream);
 
-        if(!Boolean.getBoolean(obj.getOrDefault("debugFlag", "false"))){
+        if(!Boolean.valueOf(obj.getOrDefault("debugFlag", "false"))){
             Logger.getLogger("org").setLevel(Level.OFF);
         }
 
