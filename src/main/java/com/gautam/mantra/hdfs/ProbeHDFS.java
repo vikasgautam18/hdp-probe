@@ -6,6 +6,7 @@ import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 public class ProbeHDFS implements ProbeFileSystem {
@@ -17,15 +18,16 @@ public class ProbeHDFS implements ProbeFileSystem {
         System.out.println("hdfsSite -> "+ props.get("hdfsSite").toString());
 
         Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath").toString());
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-        conf.addResource(props.get("coreSite").toString());
-        conf.addResource(props.get("hdfsSite").toString());
+        //conf.addResource(props.get("coreSite").toString());
+        //conf.addResource(props.get("hdfsSite").toString());
 
         System.out.println(conf.getRaw("fs.default.name"));
 
         try {
-            FileSystem fs = FileSystem.get(conf);
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath").toString()), conf);
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
             e.printStackTrace();
