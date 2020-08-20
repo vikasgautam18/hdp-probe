@@ -19,8 +19,9 @@ public class ProbeMain {
         InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
 
         Map<String, String> obj = yaml.load(inputStream);
-        //TODO: read debug flag
-        Logger.getLogger("org").setLevel(Level.OFF);
+
+        if(!obj.getOrDefault("debugFlag", "False").equals("True"))
+            Logger.getLogger("org").setLevel(Level.OFF);
 
 
         ProbeHDFS hdfs = new ProbeHDFS();
