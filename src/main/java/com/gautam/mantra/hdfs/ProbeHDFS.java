@@ -3,6 +3,7 @@ package com.gautam.mantra.hdfs;
 import com.gautam.mantra.commons.ProbeFileSystem;
 import com.gautam.mantra.commons.ProbeService;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.slf4j.Logger;
@@ -80,6 +81,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         try{
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
             fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("testHDFSPath")));
+
+            FSDataOutputStream outputStream = fs.create(new Path("/user/vikgautammbb/smoke-test/smoke-test123.txt"));
+            outputStream.writeUTF("this is another test");
+            outputStream.close();
 
             return (fs.exists(new Path(props.get("testHDFSPath"))));
 
