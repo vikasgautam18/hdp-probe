@@ -33,8 +33,16 @@ public class ProbeMain {
             logger.info("HDFS is reachable");
 
             Boolean isCreateFolderWorking = hdfs.createFolder(properties);
-            if(isCreateFolderWorking)
+            if(isCreateFolderWorking){
                 logger.info("HDFS test folder successfully created !");
+
+                Boolean isCreateFileWorking = hdfs.createFile(properties);
+                if(isCreateFileWorking)
+                    logger.info("HDFS test file successfully created !");
+                else
+                    logger.error("HDFS test file cannot be created. exiting ...");
+            }
+
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
         }
