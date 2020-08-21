@@ -42,7 +42,6 @@ public class ProbeMain {
                 else
                     logger.error("HDFS test file cannot be created. exiting ...");
             }
-
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
         }
