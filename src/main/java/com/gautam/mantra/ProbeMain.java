@@ -56,6 +56,21 @@ public class ProbeMain {
                     System.exit(1);
                 }
 
+                //is file read possible
+                if(hdfs.readFile(properties))
+                    logger.info("HDFS read file successful !");
+                else {
+                    logger.error("HDFS read file failed exiting ...");
+                    System.exit(1);
+                }
+
+                //is file deletion possible
+                if(hdfs.deleteFile(properties))
+                    logger.info("HDFS delete file successful !");
+                else {
+                    logger.error("HDFS delete file failed exiting ...");
+                    System.exit(1);
+                }
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");

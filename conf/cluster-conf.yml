@@ -7,3 +7,4 @@ testHDFSFolder: smoke-test
 testHDFSLocalFile: /data/hdp-probe/conf/smoke-test.txt
 testHDFSCopyPath: /user/vikgautammbb/smoke-test/smoke-test-copy.txt
 testHDFSCreatePath: /user/vikgautammbb/smoke-test/smoke-test-create.txt
+testText: "this is another test file
