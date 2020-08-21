@@ -63,7 +63,6 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
             }
 
             fs.create(new Path (props.get("testHDFSFolder")));
-
             return (fs.exists(new Path (props.get("testHDFSFolder"))));
         } catch (IOException e) {
             e.printStackTrace();
@@ -73,7 +72,22 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     @Override
     public Boolean createFile(Map<String, String> props) {
-        return null;
+
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+            fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("testHDFSPath")));
+
+            return (fs.exists(new Path(props.get("testHDFSPath"))));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -98,17 +112,9 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
             if(!fs.exists(new Path (props.get("testHDFSFolder")))){
                 logger.error("Test folder does not exist already, creating one... ");
-
-                if(createFolder(props)){
-                    logger.info("created test folder..");
-                }
-                else {
-                    logger.error("folder creation failed, exiting... ");
-                    return false;
-                }
             }
-
-            fs.delete(new Path (props.get("testHDFSFolder")), true);
+            else
+                fs.delete(new Path (props.get("testHDFSFolder")), true);
 
             return (!fs.exists(new Path (props.get("testHDFSFolder"))));
         } catch (IOException e) {
@@ -120,5 +126,21 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
     @Override
     public Boolean updatePermissions(Map<String, String> props) {
         return null;
+    }
+
+    @Override
+    public void cleanup(Map<String, String> props) {
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try {
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+            fs.delete(new Path (props.get("testHDFSFolder")), true);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

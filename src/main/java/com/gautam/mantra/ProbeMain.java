@@ -27,19 +27,16 @@ public class ProbeMain {
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(properties);
 
-        if(!isReachable){
+        if(!isReachable)
             logger.error("HDFS not reachable, skipping other HDFS Tests");
-        }
         else {
             logger.info("HDFS is reachable");
 
             Boolean isCreateFolderWorking = hdfs.createFolder(properties);
-            if(isCreateFolderWorking){
+            if(isCreateFolderWorking)
                 logger.info("HDFS test folder successfully created !");
-            }
-            else {
+            else
                 logger.error("HDFS test folder cannot be created. exiting ...");
-            }
         }
     }
 

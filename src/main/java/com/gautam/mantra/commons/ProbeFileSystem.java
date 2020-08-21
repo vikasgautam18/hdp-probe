@@ -10,5 +10,6 @@ public interface ProbeFileSystem {
     Boolean deleteFile(Map<String, String> props);
     Boolean deleteFolder(Map<String, String> props);
     Boolean updatePermissions(Map<String, String> props);
+    void cleanup(Map<String, String> props);
 
 }
