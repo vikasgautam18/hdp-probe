@@ -2,3 +2,6 @@ hdfsPath: hdfs://localhost:8020
 coreSite: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSite: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 debugFlag: "True"
+
+testHDFSFolder: smoke-test
+testHDFSFile: smoke-test.txt
