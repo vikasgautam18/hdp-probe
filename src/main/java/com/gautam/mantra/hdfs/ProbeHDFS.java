@@ -80,7 +80,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         try{
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
-            fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("testHDFSPath")));
+            fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("hdfsPath") + "/"+ props.get("testHDFSPath")));
 
             return (fs.exists(new Path(props.get("testHDFSPath"))));
 
