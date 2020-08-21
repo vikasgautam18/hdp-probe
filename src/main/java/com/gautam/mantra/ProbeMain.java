@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -27,20 +28,34 @@ public class ProbeMain {
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(properties);
 
+        // is HDFS reachable
         if(!isReachable)
             logger.error("HDFS not reachable, skipping other HDFS Tests");
         else {
             logger.info("HDFS is reachable");
 
             Boolean isCreateFolderWorking = hdfs.createFolder(properties);
+            // is folder creation possible
             if(isCreateFolderWorking){
                 logger.info("HDFS test folder successfully created !");
 
+                //is file creation possible
                 Boolean isCreateFileWorking = hdfs.createFile(properties);
                 if(isCreateFileWorking)
                     logger.info("HDFS test file successfully created !");
-                else
+                else {
                     logger.error("HDFS test file cannot be created. exiting ...");
+                    System.exit(1);
+                }
+
+                //is file copying possible
+                if(hdfs.copyFileFromLocalFS(properties))
+                    logger.info("HDFS copyFromLocal successful !");
+                else {
+                    logger.error("HDFS copy frol local failed exiting ...");
+                    System.exit(1);
+                }
+
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");

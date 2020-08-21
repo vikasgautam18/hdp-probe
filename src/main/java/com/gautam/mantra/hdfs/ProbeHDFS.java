@@ -80,13 +80,31 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         try{
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
-            fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("testHDFSPath")));
 
-            FSDataOutputStream outputStream = fs.create(new Path("/user/vikgautammbb/smoke-test/smoke-test123.txt"));
+            FSDataOutputStream outputStream = fs.create(new Path(props.get("testHDFSCreatePath")));
             outputStream.writeUTF("this is another test");
             outputStream.close();
 
-            return (fs.exists(new Path(props.get("testHDFSPath"))));
+            return (fs.exists(new Path(props.get("testHDFSCreatePath"))));
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public Boolean copyFileFromLocalFS(Map<String, String> props){
+
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+            fs.copyFromLocalFile(new Path(props.get("testHDFSLocalFile")), new Path(props.get("testHDFSCopyPath")));
+
+            return (fs.exists(new Path(props.get("testHDFSCopyPath"))));
 
         } catch (IOException e) {
             e.printStackTrace();
