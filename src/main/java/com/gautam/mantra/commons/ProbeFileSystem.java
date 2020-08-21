@@ -1,11 +1,15 @@
 package com.gautam.mantra.commons;
 
+import java.util.Map;
+
 public interface ProbeFileSystem {
 
-    Boolean createFolder(String folderName);
-    Boolean createFile(String fileName);
-    Boolean readFile(String fileName);
-    Boolean deleteFile(String fileName);
-    Boolean updatePermissions(String fileName);
+    Boolean createFolder(Map<String, String> props);
+    Boolean createFile(Map<String, String> props);
+    Boolean readFile(Map<String, String> props);
+    Boolean deleteFile(Map<String, String> props);
+    Boolean deleteFolder(Map<String, String> props);
+    Boolean updatePermissions(Map<String, String> props);
+    void cleanup(Map<String, String> props);
 
 }
