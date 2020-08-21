@@ -88,7 +88,33 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     @Override
     public Boolean deleteFolder(Map<String, String> props) {
-        return null;
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try {
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+
+            if(!fs.exists(new Path (props.get("testHDFSFolder")))){
+                logger.error("Test folder does not exist already, creating one... ");
+
+                if(createFolder(props)){
+                    logger.info("created test folder..");
+                }
+                else {
+                    logger.error("folder creation failed, exiting... ");
+                    return false;
+                }
+            }
+
+            fs.delete(new Path (props.get("testHDFSFolder")), true);
+
+            return (!fs.exists(new Path (props.get("testHDFSFolder"))));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
