@@ -154,7 +154,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
             else
                 fs.delete(new Path (props.get("testHDFSCopyPath")), false);
 
-            return (!fs.exists(new Path (props.get("testHDFSFolder"))));
+            return (!fs.exists(new Path (props.get("testHDFSCopyPath"))));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
