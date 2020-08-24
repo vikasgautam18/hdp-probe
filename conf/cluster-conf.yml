@@ -3,7 +3,7 @@ coreSite: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSite: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 debugFlag: "True"
 
-testHDFSFolder: smoke-test
+testHDFSFolder: /user/vikgautammbb/smoke-test
 testHDFSLocalFile: /data/hdp-probe/conf/smoke-test.txt
 testHDFSCopyPath: /user/vikgautammbb/smoke-test/smoke-test-copy.txt
 testHDFSCreatePath: /user/vikgautammbb/smoke-test/smoke-test-create.txt
