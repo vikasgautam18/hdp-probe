@@ -6,6 +6,7 @@ public class Utilities {
 
     public boolean serverListening(String host, int port)
     {
+        System.out.println("inside serverListening");
         Socket s = null;
         try
         {
