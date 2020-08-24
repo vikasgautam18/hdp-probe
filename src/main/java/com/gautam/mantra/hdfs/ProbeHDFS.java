@@ -236,7 +236,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
-    public boolean serverListening(String host, int port)
+    public Boolean serverListening(String host, int port)
     {
         System.out.println("inside serverListening");
         Socket s = null;
