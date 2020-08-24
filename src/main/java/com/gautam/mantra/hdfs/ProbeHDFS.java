@@ -13,6 +13,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.URI;
 import java.util.Map;
@@ -38,9 +40,8 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
             String hostName = props.get("hostname");
             Integer portNumber = Integer.getInteger(props.get("hdfsHttpPort"));
 
-            Socket socket = new Socket(hostName, portNumber);
-            logger.info("port was reachable --> " + hostName + ":" + portNumber);
-            socket.close();
+            logger.info("port was reachable --> " + !isPortAvailable(portNumber));
+
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
             e.printStackTrace();
@@ -237,6 +238,13 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    public static boolean isPortAvailable(int port) {
+        try (ServerSocket ignored = new ServerSocket(port); DatagramSocket ignored1 = new DatagramSocket(port)) {
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
     public Boolean serverListening(String host, int port)
     {
         System.out.println("inside serverListening");
