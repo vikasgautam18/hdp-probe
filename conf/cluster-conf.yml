@@ -4,8 +4,8 @@ hdfsSite: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 debugFlag: "True"
 
 hostname: localhost
-hdfsHttpPort: 50070
-journalNodePort: 8480
+hdfsHttpPort: "50070"
+journalNodePort: "8480"
 testHDFSFolder: /user/vikgautammbb/smoke-test
 testHDFSLocalFile: /data/hdp-probe/conf/smoke-test.txt
 testHDFSCopyPath: /user/vikgautammbb/smoke-test/smoke-test-copy.txt
