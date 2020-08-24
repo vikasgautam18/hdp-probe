@@ -36,9 +36,8 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
             String hostName = props.get("hostname");
             Integer portNumber = Integer.getInteger(props.get("hdfsHttpPort"));
-            boolean res = utilities.serverListening(hostName, portNumber);
 
-            logger.info("port was reachable:: " + res);
+            logger.info("port was reachable:: " + utilities.serverListening(hostName, portNumber));
 
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
