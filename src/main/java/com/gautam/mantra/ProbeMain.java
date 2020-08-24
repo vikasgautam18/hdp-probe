@@ -1,11 +1,11 @@
 package com.gautam.mantra;
 
+import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -19,10 +19,11 @@ public class ProbeMain {
         // Load Cluster properties and configurations
         ClassLoader loader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
+        Utilities utilities = new Utilities();
 
         Map<String, String> properties = yaml.load(inputStream);
         // print all loaded properties to console
-        printProperties(properties);
+        utilities.printProperties(properties);
 
         // begin probe - HDFS first
         ProbeHDFS hdfs = new ProbeHDFS();
@@ -88,17 +89,5 @@ public class ProbeMain {
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
         }
-    }
-
-    /**
-     *
-     * @param properties cluster properties loaded from config file
-     */
-    private static void printProperties(Map<String, String> properties) {
-        logger.info("Begin printing properties ===========");
-        for (String key: properties.keySet()) {
-            logger.info(key + " --> " + properties.get(key));
-        }
-        logger.info("End printing properties ===========");
     }
 }
