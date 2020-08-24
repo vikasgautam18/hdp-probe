@@ -7,6 +7,7 @@ import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -186,7 +187,25 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     @Override
     public Boolean updatePermissions(Map<String, String> props) {
-        return null;
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", props.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try {
+            FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+
+            logger.info("current permission --> " + fs.getAclStatus(new Path("")).getPermission().toShort());
+
+            fs.setPermission(new Path(props.get("testHDFSCreatePath")), new FsPermission((short) 0744));
+
+            logger.info("modified permission --> " + fs.getAclStatus(new Path("")).getPermission().toShort());
+
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     @Override
@@ -198,7 +217,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         try {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
-            fs.delete(new Path (props.get("testHDFSFolder")), true);
+
+            if(fs.exists(new Path (props.get("testHDFSFolder")))){
+                fs.delete(new Path (props.get("testHDFSFolder")), true);
+            }
 
         } catch (IOException e) {
             e.printStackTrace();

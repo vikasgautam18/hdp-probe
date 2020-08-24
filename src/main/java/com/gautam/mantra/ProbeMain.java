@@ -64,6 +64,8 @@ public class ProbeMain {
                     System.exit(1);
                 }
 
+                hdfs.updatePermissions(properties);
+
                 //is file deletion possible
                 if(hdfs.deleteFile(properties))
                     logger.info("HDFS delete file successful !");
@@ -71,6 +73,12 @@ public class ProbeMain {
                     logger.error("HDFS delete file failed exiting ...");
                     System.exit(1);
                 }
+
+                // clean up
+                logger.info("tests complete.. clean up in progress .. !");
+                hdfs.cleanup(properties);
+
+                logger.info("clean-up complete.. ");
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
