@@ -1,31 +1,16 @@
 package com.gautam.mantra.commons;
 
-import java.net.Socket;
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.ServerSocket;
 
 public class Utilities {
 
-    public boolean serverListening(String host, int port)
-    {
-        System.out.println("inside serverListening");
-        Socket s = null;
-        try
-        {
-            s = new Socket(host, port);
+    public static boolean isPortAvailable(int port) {
+        try (ServerSocket ignored = new ServerSocket(port); DatagramSocket ignored1 = new DatagramSocket(port)) {
             return true;
-        }
-        catch (Exception e)
-        {
+        } catch (IOException e) {
             return false;
-        }
-        finally
-        {
-            if(s != null)
-                try {
-                    s.close();
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
         }
     }
 }

@@ -2,7 +2,6 @@ package com.gautam.mantra.hdfs;
 
 import com.gautam.mantra.commons.ProbeFileSystem;
 import com.gautam.mantra.commons.ProbeService;
-import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -13,9 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.ServerSocket;
-import java.net.Socket;
 import java.net.URI;
 import java.util.Map;
 
@@ -35,12 +31,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
         try {
-            //Utilities utilities = new Utilities();
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
-            String hostName = props.get("hostname");
-            Integer portNumber = Integer.getInteger(props.get("hdfsHttpPort"));
-
-            logger.info("port was reachable --> " + !isPortAvailable(portNumber));
 
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
@@ -235,38 +226,6 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         } catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    public static boolean isPortAvailable(int port) {
-        try (ServerSocket ignored = new ServerSocket(port); DatagramSocket ignored1 = new DatagramSocket(port)) {
-            return true;
-        } catch (IOException e) {
-            return false;
-        }
-    }
-    public Boolean serverListening(String host, int port)
-    {
-        System.out.println("inside serverListening");
-        Socket s = null;
-        try
-        {
-            s = new Socket(host, port);
-            return true;
-        }
-        catch (Exception e)
-        {
-            return false;
-        }
-        finally
-        {
-            if(s != null)
-                try {
-                    s.close();
-                }
-                catch(Exception e){
-                    e.printStackTrace();
-                }
         }
     }
 }
