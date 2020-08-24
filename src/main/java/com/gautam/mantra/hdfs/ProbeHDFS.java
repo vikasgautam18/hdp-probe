@@ -196,8 +196,8 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
 
             logger.info("current permission --> " + fs.getAclStatus(new Path(props.get("testHDFSCreatePath")))
-                    .getPermission().toOctal());
-            fs.setPermission(new Path(props.get("testHDFSCreatePath")), new FsPermission("rwxr--r--"));
+                    .getPermission().toString());
+            fs.setPermission(new Path(props.get("testHDFSCreatePath")), new FsPermission("0744"));
             logger.info("modified permission --> " + fs.getAclStatus(new Path(props.get("testHDFSCreatePath")))
                     .getPermission().toString());
 
