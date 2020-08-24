@@ -3,7 +3,6 @@ package com.gautam.mantra.hdfs;
 import com.gautam.mantra.commons.ProbeFileSystem;
 import com.gautam.mantra.commons.ProbeService;
 import com.gautam.mantra.commons.Utilities;
-import javafx.beans.binding.IntegerBinding;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
