@@ -32,6 +32,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         try {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
             e.printStackTrace();
