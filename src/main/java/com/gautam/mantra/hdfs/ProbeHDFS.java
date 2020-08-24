@@ -13,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.net.Socket;
 import java.net.URI;
 import java.util.Map;
 
@@ -32,12 +33,12 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
         try {
-            Utilities utilities = new Utilities();
+            //Utilities utilities = new Utilities();
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
             String hostName = props.get("hostname");
             Integer portNumber = Integer.getInteger(props.get("hdfsHttpPort"));
 
-            logger.info("port was reachable:: " + utilities.serverListening(hostName, portNumber));
+            logger.info("port was reachable:: " + serverListening(hostName, portNumber));
 
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
@@ -232,6 +233,31 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         } catch (IOException e) {
             e.printStackTrace();
+        }
+    }
+
+    public boolean serverListening(String host, int port)
+    {
+        System.out.println("inside serverListening");
+        Socket s = null;
+        try
+        {
+            s = new Socket(host, port);
+            return true;
+        }
+        catch (Exception e)
+        {
+            return false;
+        }
+        finally
+        {
+            if(s != null)
+                try {
+                    s.close();
+                }
+                catch(Exception e){
+                    e.printStackTrace();
+                }
         }
     }
 }
