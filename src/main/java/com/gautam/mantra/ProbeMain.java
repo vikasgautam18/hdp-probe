@@ -64,6 +64,14 @@ public class ProbeMain {
                     System.exit(1);
                 }
 
+                // is file permission update possible
+                if(hdfs.updatePermissions(properties)){
+                    logger.info("HDFS file permission updates successful !");
+                } else {
+                    logger.error("HDFS ile permission updates failed exiting ...");
+                    System.exit(1);
+                }
+
                 //is file deletion possible
                 if(hdfs.deleteFile(properties))
                     logger.info("HDFS delete file successful !");
@@ -71,6 +79,11 @@ public class ProbeMain {
                     logger.error("HDFS delete file failed exiting ...");
                     System.exit(1);
                 }
+
+                // clean up
+                logger.info("tests complete.. clean up in progress .. !");
+                hdfs.cleanup(properties);
+                logger.info("clean-up complete.. ");
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
@@ -82,8 +95,10 @@ public class ProbeMain {
      * @param properties cluster properties loaded from config file
      */
     private static void printProperties(Map<String, String> properties) {
+        logger.info("Begin printing properties ===========");
         for (String key: properties.keySet()) {
             logger.info(key + " --> " + properties.get(key));
         }
+        logger.info("End printing properties ===========");
     }
 }
