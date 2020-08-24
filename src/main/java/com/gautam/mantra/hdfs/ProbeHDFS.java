@@ -19,7 +19,6 @@ import java.util.Map;
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     public static Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
-    Utilities utilities = new Utilities();
 
     /**
      * This method verifies if HDFS is reachable
@@ -33,6 +32,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
 
         try {
+            Utilities utilities = new Utilities();
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
             boolean res = utilities.serverListening(props.get("hostname"), Integer.getInteger(props.get("hdfsHttpPort")));
 
