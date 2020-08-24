@@ -2,6 +2,8 @@ package com.gautam.mantra.hdfs;
 
 import com.gautam.mantra.commons.ProbeFileSystem;
 import com.gautam.mantra.commons.ProbeService;
+import com.gautam.mantra.commons.Utilities;
+import javafx.beans.binding.IntegerBinding;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FSDataOutputStream;
@@ -18,6 +20,7 @@ import java.util.Map;
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     public static Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
+    Utilities utilities = new Utilities();
 
     /**
      * This method verifies if HDFS is reachable
@@ -32,6 +35,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
         try {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
+            boolean res = utilities.serverListening(props.get("hostname"), Integer.getInteger(props.get("hdfsHttpPort")));
+
+            logger.info("port was reachable:: " + res);
+
             return fs.exists(new Path("/user"));
         } catch (IOException e) {
             e.printStackTrace();
