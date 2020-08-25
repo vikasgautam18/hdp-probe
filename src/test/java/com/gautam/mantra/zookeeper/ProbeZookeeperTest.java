@@ -48,9 +48,11 @@ class ProbeZookeeperTest {
     @AfterAll
     static void tearDown() {
         try {
+            if(probeZookeeper.existsZNode(properties.get("zkPath")))
+                probeZookeeper.deleteZNodeData(properties.get("zkPath"));
             probeZookeeper.closeConnection();
             hbt.shutdownMiniZKCluster();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException | KeeperException e) {
             e.printStackTrace();
         }
     }
@@ -72,7 +74,8 @@ class ProbeZookeeperTest {
     @Test
     void testGetZNodeData(){
         try {
-            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            if(!probeZookeeper.existsZNode(properties.get("zkPath")))
+                probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
             assert probeZookeeper.getZNodeData(properties.get("zkPath"), true);
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
@@ -82,7 +85,8 @@ class ProbeZookeeperTest {
     @Test
     void testUpdateZNodeData() {
         try {
-            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            if(!probeZookeeper.existsZNode(properties.get("zkPath")))
+                probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
             assert probeZookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkDataUpdated").getBytes());
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
@@ -92,7 +96,8 @@ class ProbeZookeeperTest {
     @Test
     void testDeleteZNodeData() {
         try {
-            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            if(!probeZookeeper.existsZNode(properties.get("zkPath")))
+                probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
             assert probeZookeeper.deleteZNodeData(properties.get("zkPath"));
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();

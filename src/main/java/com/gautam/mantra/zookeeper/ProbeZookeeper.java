@@ -49,6 +49,10 @@ public class ProbeZookeeper implements ProbeService {
         return (zooKeeper.exists(path, true) != null);
     }
 
+    public boolean existsZNode(String path) throws KeeperException, InterruptedException {
+        return zooKeeper.exists(path, true) != null;
+    }
+
     public boolean getZNodeData(String path, boolean watchFlag)
             throws KeeperException, InterruptedException {
 
