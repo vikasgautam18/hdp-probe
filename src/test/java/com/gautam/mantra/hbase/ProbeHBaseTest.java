@@ -3,8 +3,6 @@ package com.gautam.mantra.hbase;
 import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
-
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -15,8 +13,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
 import java.util.Map;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 class ProbeHBaseTest {
 
@@ -63,10 +59,14 @@ class ProbeHBaseTest {
 
     @Test
     void createDatabase() {
+        assert hbase.createDatabase(properties.get("hbaseNS"));
     }
 
     @Test
     void deleteDatabase() {
+        if(!hbase.existsNameSpace(properties.get("hbaseNS")))
+            hbase.createDatabase(properties.get("hbaseNS"));
+        assert hbase.deleteDatabase(properties.get("hbaseNS"));
     }
 
     @Test
