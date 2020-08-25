@@ -20,7 +20,7 @@ public class Utilities {
     }
 
     /**
-     *
+     * Simple print utility
      * @param properties cluster properties loaded from config file
      */
     public void printProperties(Map<String, String> properties) {

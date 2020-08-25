@@ -73,6 +73,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method creates a new file in HDFS and writes some data into it
+     * @param props Cluster configuration as properties
+     * @return True if creating file works, false otherwise
+     */
     @Override
     public Boolean createFile(Map<String, String> props) {
 
@@ -96,6 +101,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method copies a file from local FS to HDFS
+     * @param props Cluster configuration as properties
+     * @return True if the copying worked, false otherwise
+     */
     public Boolean copyFileFromLocalFS(Map<String, String> props){
 
         Configuration conf= new Configuration();
@@ -115,6 +125,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * this method reads a file from HDFS
+     * @param props Cluster configuration as properties
+     * @return True if the file is read correctly, false otherwise
+     */
     @Override
     public Boolean readFile(Map<String, String> props) {
 
@@ -140,6 +155,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method deletes a file from HDFS
+     * @param props Cluster configuration as properties
+     * @return True of the deletion was successful, false otherwise
+     */
     @Override
     public Boolean deleteFile(Map<String, String> props) {
         Configuration conf= new Configuration();
@@ -163,6 +183,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method deletes a folder from HDFS
+     * @param props Cluster configuration as properties
+     * @return True if the deletion was successful, false otherwise
+     */
     @Override
     public Boolean deleteFolder(Map<String, String> props) {
         Configuration conf= new Configuration();
@@ -186,6 +211,11 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method updates the permissions of a file/folder
+     * @param props Cluster configuration as properties
+     * @return True of the update was successful, false otherwise
+     */
     @Override
     public Boolean updatePermissions(Map<String, String> props) {
         Configuration conf= new Configuration();
@@ -210,6 +240,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         }
     }
 
+    /**
+     * This method cleans up all the test data created before
+     * @param props Cluster configuration as properties
+     */
     @Override
     public void cleanup(Map<String, String> props) {
         Configuration conf= new Configuration();
