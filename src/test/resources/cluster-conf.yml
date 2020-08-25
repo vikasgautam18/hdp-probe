@@ -11,4 +11,7 @@ testText: "this is another test file"
 
 zkHost: localhost
 zkPort: "2181"
+zkPath: /FirstZnode
+zkData: ZNodeData
+zkDataUpdated: ZNodeDataUpdated
 

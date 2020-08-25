@@ -3,6 +3,7 @@ package com.gautam.mantra.zookeeper;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.zookeeper.MiniZooKeeperCluster;
+import org.apache.zookeeper.KeeperException;
 import org.junit.jupiter.api.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,7 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -46,6 +48,7 @@ class ProbeZookeeperTest {
     @AfterAll
     static void tearDown() {
         try {
+            probeZookeeper.closeConnection();
             hbt.shutdownMiniZKCluster();
         } catch (IOException e) {
             e.printStackTrace();
@@ -55,5 +58,44 @@ class ProbeZookeeperTest {
     @Test
     void isReachable() {
         assert probeZookeeper.isReachable(properties);
+    }
+
+    @Test
+    void testCreateZNodeData(){
+        try {
+            assert probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testGetZNodeData(){
+        try {
+            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            assert probeZookeeper.getZNodeData(properties.get("zkPath"), true);
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testUpdateZNodeData() {
+        try {
+            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            assert probeZookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkDataUpdated").getBytes());
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    void testDeleteZNodeData() {
+        try {
+            probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            assert probeZookeeper.deleteZNodeData(properties.get("zkPath"));
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 }
