@@ -59,18 +59,24 @@ class ProbeHBaseTest {
 
     @Test
     void createDatabase() {
-        assert hbase.createDatabase(properties.get("hbaseNS"));
+        assert hbase.createNameSpace(properties.get("hbaseNS"));
+        assert hbase.existsNameSpace(properties.get("hbaseNS"));
     }
 
     @Test
     void deleteDatabase() {
         if(!hbase.existsNameSpace(properties.get("hbaseNS")))
-            hbase.createDatabase(properties.get("hbaseNS"));
-        assert hbase.deleteDatabase(properties.get("hbaseNS"));
+            hbase.createNameSpace(properties.get("hbaseNS"));
+        assert hbase.deleteNameSpace(properties.get("hbaseNS"));
     }
 
     @Test
     void createTable() {
+        if(!hbase.existsNameSpace(properties.get("hbaseNS"))){
+            hbase.createNameSpace(properties.get("hbaseNS"));
+        }
+        assert hbase.createTable(properties.get("hbaseNS"),
+                properties.get("hbaseTable"), properties.get("hbaseCF"));
     }
 
     @Test

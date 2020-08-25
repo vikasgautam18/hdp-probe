@@ -1,35 +1,32 @@
 package com.gautam.mantra.hbase;
 
-import com.gautam.mantra.commons.ProbeDatabase;
 import org.apache.hadoop.conf.Configuration;
 
 import org.apache.hadoop.hbase.NamespaceDescriptor;
-import org.apache.hadoop.hbase.client.Admin;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 
 import java.io.IOException;
 import java.util.Map;
 
-public class ProbeHBase implements ProbeDatabase {
+public class ProbeHBase {
 
     public static Connection connection;
+    Admin admin;
 
     public ProbeHBase(Configuration conf){
         try {
             connection = ConnectionFactory.createConnection(conf);
-
+            admin = connection.getAdmin();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    @Override
-    public Boolean createDatabase(String database) {
+    public Boolean createNameSpace(String namespace) {
         try {
-            Admin admin = connection.getAdmin();
-            admin.createNamespace(NamespaceDescriptor.create(database).build());
-            return existsNameSpace(database);
+            admin.createNamespace(NamespaceDescriptor.create(namespace).build());
+            return existsNameSpace(namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -39,8 +36,6 @@ public class ProbeHBase implements ProbeDatabase {
 
     public boolean existsNameSpace(String namespace){
         try {
-            Admin admin = connection.getAdmin();
-
             NamespaceDescriptor ns = NamespaceDescriptor.create(namespace).build();
             NamespaceDescriptor[] list = admin.listNamespaceDescriptors();
             boolean exists = false;
@@ -59,12 +54,11 @@ public class ProbeHBase implements ProbeDatabase {
         }
     }
 
-    @Override
-    public Boolean deleteDatabase(String database) {
+    public Boolean deleteNameSpace(String namespace) {
         try {
-            Admin admin = connection.getAdmin();
-            admin.deleteNamespace(database);
-            return !existsNameSpace(database);
+
+            admin.deleteNamespace(namespace);
+            return !existsNameSpace(namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -72,22 +66,30 @@ public class ProbeHBase implements ProbeDatabase {
         }
     }
 
-    @Override
-    public Boolean createTable(String database, String table) {
-        return null;
+
+    public boolean createTable(String namespace, String table, String cf) {
+        try {
+            admin.createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(namespace + ":" + table))
+                    .setColumnFamily(ColumnFamilyDescriptorBuilder.of(cf))
+                    .build());
+
+            return admin.tableExists(TableName.valueOf(namespace + ":" + table));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
-    @Override
+
     public Boolean readTable(String database, String table) {
         return null;
     }
 
-    @Override
+
     public Boolean deleteTable(String database, String table) {
         return null;
     }
 
-    @Override
     public Boolean isReachable(Map<String, String> properties) {
         return !connection.isClosed();
     }
