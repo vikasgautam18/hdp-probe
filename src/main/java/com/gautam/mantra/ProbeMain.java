@@ -2,6 +2,8 @@ package com.gautam.mantra;
 
 import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hdfs.ProbeHDFS;
+import com.gautam.mantra.zookeeper.ProbeZookeeper;
+import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -85,6 +87,48 @@ public class ProbeMain {
                 logger.info("tests complete.. clean up in progress .. !");
                 hdfs.cleanup(properties);
                 logger.info("clean-up complete.. ");
+
+                // zookeeper tests begin
+                ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
+                if(zookeeper.isReachable(properties))
+                    logger.info("Zookeeper is reachable...");
+                else {
+                    logger.error("Zookeeper is not reachable, exiting.. ");
+                    System.exit(1);
+                }
+
+                try {
+                    if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                        logger.info("ZNode creation successful");
+
+                        if(zookeeper.getZNodeData(properties.get("zkPath"), true))
+                            logger.info("ZNode data is readable");
+                        else {
+                            logger.error("ZNode data read failed, exiting...");
+                            System.exit(1);
+                        }
+
+                        if(zookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                            logger.info("ZNode data update successful");
+                        } else {
+                            logger.error("ZNode data update failed, exiting...");
+                            System.exit(1);
+                        }
+
+                        if(zookeeper.deleteZNodeData(properties.get("zkPath"))){
+                            logger.info("ZNode data delete successful");
+                        } else {
+                            logger.error("ZNode data delete failed, exiting...");
+                            System.exit(1);
+                        }
+                    }
+                    else {
+                        logger.error("ZNode creation failed, exiting...");
+                        System.exit(1);
+                    }
+                } catch (KeeperException | InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
