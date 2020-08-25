@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
-    public static Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
 
     /**
      * This method verifies if HDFS is reachable
@@ -33,7 +33,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
         try {
             FileSystem fs = FileSystem.get(URI.create(props.get("hdfsPath")), conf);
 
-            return fs.exists(new Path("/user"));
+            return fs.exists(new Path("/"));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
