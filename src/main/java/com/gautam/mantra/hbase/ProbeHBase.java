@@ -56,6 +56,13 @@ public class ProbeHBase {
 
     public Boolean deleteNameSpace(String namespace) {
         try {
+            if(admin.listTableDescriptorsByNamespace(namespace.getBytes()).size() > 0){
+                for (TableDescriptor td: admin.listTableDescriptorsByNamespace(namespace.getBytes())
+                     ) {
+                    admin.disableTable(td.getTableName());
+                    admin.deleteTable(td.getTableName());
+                }
+            }
 
             admin.deleteNamespace(namespace);
             return !existsNameSpace(namespace);
@@ -86,8 +93,16 @@ public class ProbeHBase {
     }
 
 
-    public Boolean deleteTable(String database, String table) {
-        return null;
+    public Boolean deleteTable(String namespace, String table) {
+        try {
+            admin.disableTable(TableName.valueOf(namespace + ":" + table));
+            admin.deleteTable(TableName.valueOf(namespace + ":" + table));
+
+            return admin.tableExists(TableName.valueOf(namespace + ":" + table));
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public Boolean isReachable(Map<String, String> properties) {
