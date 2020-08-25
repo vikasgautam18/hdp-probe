@@ -4,7 +4,7 @@ hdfsSite: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 debugFlag: "True"
 
 testHDFSFolder: /user/vikgautammbb/smoke-test
-testHDFSLocalFile: /data/hdp-probe/conf/smoke-test.txt
+testHDFSLocalFile: target/test-classes/smoke-test.txt
 testHDFSCopyPath: /user/vikgautammbb/smoke-test/smoke-test-copy.txt
 testHDFSCreatePath: /user/vikgautammbb/smoke-test/smoke-test-create.txt
 testText: "this is another test file"

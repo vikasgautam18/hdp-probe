@@ -22,13 +22,11 @@ class ProbeHDFSTest {
     static MiniDFSCluster.Builder builder;
     static Configuration conf = new Configuration();
     static Map<String, String> properties;
-    ProbeHDFS hdfs = new ProbeHDFS();
+    static ProbeHDFS hdfs = new ProbeHDFS();
     static Utilities utilities = new Utilities();
 
     public static Yaml yaml = new Yaml();
     public static Logger logger = LoggerFactory.getLogger(ProbeHDFSTest.class.getName());
-
-
 
     @BeforeAll
     static void setUp() {
@@ -41,9 +39,10 @@ class ProbeHDFSTest {
         FileUtil.fullyDelete(baseDir);
 
         conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, baseDir.getAbsolutePath());
-
+        conf.set("dfs.namenode.acls.enabled", "true");
         builder = new MiniDFSCluster.Builder(conf);
         builder.nameNodePort(8020);
+
         try {
             hdfsCluster = builder.build();
         } catch (IOException e) {
@@ -55,6 +54,8 @@ class ProbeHDFSTest {
 
     @AfterAll
     static void tearDown() {
+        hdfs.cleanup(properties);
+        hdfsCluster.shutdown();
     }
 
     @Test
@@ -64,29 +65,40 @@ class ProbeHDFSTest {
 
     @Test
     void createFolder() {
+        assert hdfs.createFolder(properties);
     }
 
     @Test
     void createFile() {
+        assert hdfs.createFile(properties);
     }
 
     @Test
     void copyFileFromLocalFS() {
+        assert hdfs.copyFileFromLocalFS(properties);
     }
 
     @Test
     void readFile() {
+        hdfs.createFolder(properties);
+        hdfs.createFile(properties);
+        assert hdfs.readFile(properties);
     }
 
     @Test
     void deleteFile() {
+        assert hdfs.deleteFile(properties);
     }
 
     @Test
     void deleteFolder() {
+        assert hdfs.deleteFolder(properties);
     }
 
     @Test
     void updatePermissions() {
+        hdfs.createFolder(properties);
+        hdfs.createFile(properties);
+        assert hdfs.updatePermissions(properties);
     }
 }
