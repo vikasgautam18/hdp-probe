@@ -8,3 +8,7 @@ testHDFSLocalFile: target/test-classes/smoke-test.txt
 testHDFSCopyPath: /user/vikgautammbb/smoke-test/smoke-test-copy.txt
 testHDFSCreatePath: /user/vikgautammbb/smoke-test/smoke-test-create.txt
 testText: "this is another test file"
+
+zkHost: localhost
+zkPort: "2181"
+
