@@ -17,7 +17,7 @@ import java.util.Map;
 
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
-    public static Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
 
     /**
      * This method verifies if HDFS is reachable

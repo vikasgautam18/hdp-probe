@@ -9,7 +9,7 @@ import java.net.ServerSocket;
 import java.util.Map;
 
 public class Utilities {
-    public static Logger logger = LoggerFactory.getLogger(Utilities.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(Utilities.class.getName());
 
     public boolean isPortAvailable(int port) {
         try (ServerSocket ignored = new ServerSocket(port); DatagramSocket ignored1 = new DatagramSocket(port)) {

@@ -20,13 +20,13 @@ import java.util.Map;
 class ProbeHDFSTest {
     static MiniDFSCluster hdfsCluster;
     static MiniDFSCluster.Builder builder;
-    static Configuration conf = new Configuration();
+    static final Configuration conf = new Configuration();
     static Map<String, String> properties;
-    static ProbeHDFS hdfs = new ProbeHDFS();
-    static Utilities utilities = new Utilities();
+    static final ProbeHDFS hdfs = new ProbeHDFS();
+    static final Utilities utilities = new Utilities();
 
-    public static Yaml yaml = new Yaml();
-    public static Logger logger = LoggerFactory.getLogger(ProbeHDFSTest.class.getName());
+    public static final Yaml yaml = new Yaml();
+    public static final Logger logger = LoggerFactory.getLogger(ProbeHDFSTest.class.getName());
 
     @BeforeAll
     static void setUp() {

@@ -11,8 +11,8 @@ import java.util.Map;
 
 
 public class ProbeMain {
-    public static Yaml yaml = new Yaml();
-    public static Logger logger = LoggerFactory.getLogger(ProbeMain.class.getName());
+    public static final Yaml yaml = new Yaml();
+    public static final Logger logger = LoggerFactory.getLogger(ProbeMain.class.getName());
 
     public static void main(String[] args) {
 
@@ -53,7 +53,7 @@ public class ProbeMain {
                 if(hdfs.copyFileFromLocalFS(properties))
                     logger.info("HDFS copyFromLocal successful !");
                 else {
-                    logger.error("HDFS copy frol local failed exiting ...");
+                    logger.error("HDFS copy from local failed exiting ...");
                     System.exit(1);
                 }
 
