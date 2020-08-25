@@ -11,7 +11,6 @@ import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -66,6 +65,7 @@ class ProbeZookeeperTest {
     void testCreateZNodeData(){
         try {
             assert probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
+            assert probeZookeeper.existsZNode(properties.get("zkPath"));
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
         }
