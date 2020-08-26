@@ -151,4 +151,12 @@ public class ProbeHBase {
     public Boolean isReachable(Map<String, String> properties) {
         return !connection.isClosed();
     }
+
+    public void closeConnection(){
+        try {
+            connection.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }

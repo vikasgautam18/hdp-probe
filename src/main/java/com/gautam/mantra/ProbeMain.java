@@ -171,6 +171,7 @@ public class ProbeMain {
         assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
         logger.info("Namespace deletion successful... ");
 
+        hbase.closeConnection();
         logger.info("HBase tests are successful.. ");
     }
 }

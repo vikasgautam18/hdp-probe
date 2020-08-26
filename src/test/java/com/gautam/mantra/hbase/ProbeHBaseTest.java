@@ -52,6 +52,7 @@ class ProbeHBaseTest {
     static void tearDown() {
         logger.info("*** Shutting down Hbase Mini Cluster ***");
         try {
+            hbase.closeConnection();
             utility.shutdownMiniCluster();
         } catch (Exception e) {
             e.printStackTrace();
