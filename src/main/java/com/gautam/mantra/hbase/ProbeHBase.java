@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class ProbeHBase {
 
@@ -153,8 +152,14 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean isReachable(Connection connection, Map<String, String> properties) {
-        return !connection.isClosed();
+    public Boolean isReachable(Configuration hbaseConfiguration) {
+        try {
+            HBaseAdmin.available(hbaseConfiguration);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     public void closeConnection(Connection connection){

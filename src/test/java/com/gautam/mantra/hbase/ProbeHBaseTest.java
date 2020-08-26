@@ -98,6 +98,6 @@ class ProbeHBaseTest {
 
     @Test
     void isReachable() {
-        assert hbase.isReachable(connection, properties);
+        assert hbase.isReachable(utility.getConfiguration());
     }
 }

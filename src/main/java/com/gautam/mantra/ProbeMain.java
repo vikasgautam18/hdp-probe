@@ -9,13 +9,11 @@ import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -158,7 +156,7 @@ public class ProbeMain {
 
         logger.info("beginning HBase tests... ");
 
-        if (!hbase.isReachable(connection, properties)) throw new AssertionError("HBase is not reachable, exiting... ");
+        if (!hbase.isReachable(conf)) throw new AssertionError("HBase is not reachable, exiting... ");
         logger.info("HBase service is reachable... ");
 
         if (!hbase.createNameSpace(connection, properties.get("hbaseNS")))
