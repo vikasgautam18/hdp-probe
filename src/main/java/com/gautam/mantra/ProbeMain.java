@@ -7,12 +7,15 @@ import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.NamespaceDescriptor;
 import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
@@ -135,7 +138,11 @@ public class ProbeMain {
                     e.printStackTrace();
                 }
 
-                probeHBase(properties);
+                try {
+                    probeHBase(properties);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
             }
             else
@@ -143,13 +150,26 @@ public class ProbeMain {
         }
     }
 
-    private static void probeHBase(Map<String, String> properties) {
+    private static void probeHBase(Map<String, String> properties) throws IOException {
         Configuration conf = HBaseConfiguration.create();
         conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
         conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
         conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
         conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
-        ProbeHBase hbase = new ProbeHBase(conf);
+
+        HBaseAdmin.available(conf);
+
+        Connection connection = ConnectionFactory.createConnection(conf);
+        Admin admin = connection.getAdmin();
+
+        admin.createNamespace(NamespaceDescriptor.create(properties.get("hbaseNS")).build());
+
+        admin.createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(properties.get("hbaseNS") + ":" + properties.get("hbaseTable")))
+                .setColumnFamily(ColumnFamilyDescriptorBuilder.of(properties.get("hbaseCF")))
+                .build());
+
+
+        /*ProbeHBase hbase = new ProbeHBase(conf);
 
         logger.info("beginning HBase tests... ");
 
@@ -172,6 +192,6 @@ public class ProbeMain {
         logger.info("Namespace deletion successful... ");
 
         hbase.closeConnection();
-        logger.info("HBase tests are successful.. ");
+        logger.info("HBase tests are successful.. ");*/
     }
 }
