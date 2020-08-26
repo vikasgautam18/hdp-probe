@@ -138,11 +138,7 @@ public class ProbeMain {
                     e.printStackTrace();
                 }
 
-                try {
-                    probeHBase(properties);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                probeHBase(properties);
 
             }
             else
@@ -150,14 +146,12 @@ public class ProbeMain {
         }
     }
 
-    private static void probeHBase(Map<String, String> properties) throws IOException {
+    private static void probeHBase(Map<String, String> properties) {
         Configuration conf = HBaseConfiguration.create();
         conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
         conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
         conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
         conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
-
-        HBaseAdmin.available(conf);
 
         ProbeHBase hbase = new ProbeHBase();
         Connection connection = hbase.getHBaseConnection(conf);
