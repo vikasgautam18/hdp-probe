@@ -174,19 +174,21 @@ public class ProbeMain {
 
         logger.info("beginning HBase tests... ");
 
-        assert hbase.isReachable(connection, properties) : "HBase is not reachable, exiting... ";
+        if (!hbase.isReachable(connection, properties)) throw new AssertionError("HBase is not reachable, exiting... ");
         logger.info("HBase service is reachable... ");
 
-        assert hbase.createNameSpace(connection, properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
+        if (!hbase.createNameSpace(connection, properties.get("hbaseNS")))
+            throw new AssertionError("HBase Namespace creation failed, exiting... ");
         logger.info("Namespace creation successful");
 
-        assert hbase.createTable(connection, properties.get("hbaseNS"), properties.get("hbaseTable"),
-                properties.get("hbaseCF")) : "Hbase table creation failed, exiting... ";
+        if (!hbase.createTable(connection, properties.get("hbaseNS"), properties.get("hbaseTable"),
+                properties.get("hbaseCF"))) throw new AssertionError("Hbase table creation failed, exiting... ");
         logger.info("Table creation successful");
 
-        assert hbase.writeToTable(connection, properties.get("hbaseNS"),
+        if (!hbase.writeToTable(connection, properties.get("hbaseNS"),
                 TableName.valueOf(properties.get("hbaseTable")),
-                properties.get("hbaseCF").getBytes()) : "HBase write to table failed, exiting... ";
+                properties.get("hbaseCF").getBytes()))
+            throw new AssertionError("HBase write to table failed, exiting... ");
         logger.info("Write to table successful");
 
         //assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
