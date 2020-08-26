@@ -104,7 +104,7 @@ public class ProbeHBase {
                 puts.add(put);
             }
             table.put(puts);
-
+            table.close();
             return readTable(namespace, tableName, columnFamily, TBL_ROW_COUNT);
 
         } catch (IOException e) {
@@ -126,7 +126,7 @@ public class ProbeHBase {
                 for (Result result = results.next(); result != null; result = results.next())
                     rowCount++;
             }
-
+            table.close();
             return rowCount == TBL_ROW_COUNT;
 
         } catch (IOException e) {
@@ -154,6 +154,7 @@ public class ProbeHBase {
 
     public void closeConnection(){
         try {
+            admin.close();
             connection.close();
         } catch (IOException e) {
             e.printStackTrace();
