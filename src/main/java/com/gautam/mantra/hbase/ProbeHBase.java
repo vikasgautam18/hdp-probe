@@ -14,16 +14,15 @@ import java.util.List;
 
 public class ProbeHBase {
 
-    private static Logger logger = LoggerFactory.getLogger(ProbeHBase.class.getName());
+    private static Connection connection;
+    public static final Logger logger = LoggerFactory.getLogger(ProbeHBase.class.getName());
 
-    public Connection getHBaseConnection(Configuration hbaseConfiguration){
-        Connection connection = null;
-        try {
-            connection = ConnectionFactory.createConnection(hbaseConfiguration);
+    public ProbeHBase(Configuration conf) {
+        try{
+        connection = ConnectionFactory.createConnection(conf);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return connection;
     }
 
     /**
@@ -31,10 +30,10 @@ public class ProbeHBase {
      * @param namespace the namespace
      * @return true if the namespace was created successfully, false otherwise
      */
-    public Boolean createNameSpace(Connection connection, String namespace) {
+    public Boolean createNameSpace(String namespace) {
         try {
             connection.getAdmin().createNamespace(NamespaceDescriptor.create(namespace).build());
-            return existsNameSpace(connection, namespace);
+            return existsNameSpace(namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -42,7 +41,12 @@ public class ProbeHBase {
         }
     }
 
-    public boolean existsNameSpace(Connection connection, String namespace){
+    /**
+     * This method finds out if the namespace exists
+     * @param namespace the namespace
+     * @return true if it does exist, false otherwise
+     */
+    public boolean existsNameSpace(String namespace){
         try {
             NamespaceDescriptor ns = NamespaceDescriptor.create(namespace).build();
             NamespaceDescriptor[] list = connection.getAdmin().listNamespaceDescriptors();
@@ -62,17 +66,23 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean deleteNameSpace(Connection connection, String namespace) {
+    /**
+     * This method deletes a given namespace. Also deletes all tables associated
+     * @param namespace the namespace
+     * @return true if the delete was successful, false otherwise
+     */
+    public Boolean deleteNameSpace(String namespace) {
         try {
             if(connection.getAdmin().listTableDescriptorsByNamespace(namespace.getBytes()).size() > 0){
                 for (TableDescriptor td: connection.getAdmin().listTableDescriptorsByNamespace(namespace.getBytes())
                      ) {
-                    deleteTable(connection, td);
+                    if(deleteTable(td))
+                        logger.info("deleted table " + td.getTableName().getNameAsString() + " ...");
                 }
             }
 
             connection.getAdmin().deleteNamespace(namespace);
-            return !existsNameSpace(connection, namespace);
+            return !existsNameSpace(namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -80,8 +90,14 @@ public class ProbeHBase {
         }
     }
 
-
-    public boolean createTable(Connection connection, String namespace, String table, String cf) {
+    /**
+     * This method creates an HBase table
+     * @param namespace the namespace to use
+     * @param table the name of table
+     * @param cf the column family
+     * @return true if the table creation was successful, false otherwise
+     */
+    public boolean createTable(String namespace, String table, String cf) {
         try {
             connection.getAdmin().createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(namespace + ":" + table))
                     .setColumnFamily(ColumnFamilyDescriptorBuilder.of(cf))
@@ -94,7 +110,14 @@ public class ProbeHBase {
         }
     }
 
-    public boolean writeToTable(Connection connection,String namespace, TableName tableName, byte[] columnFamily){
+    /**
+     * This method writes some dummy rows to a given hbase table
+     * @param namespace the namespace to use
+     * @param tableName the table to be used
+     * @param columnFamily the column family to use
+     * @return true if the write to table was successful, false otherwise
+     */
+    public boolean writeToTable(String namespace, TableName tableName, byte[] columnFamily){
         try {
             Table table = connection.getTable(TableName.valueOf(namespace + ":" + tableName));
             int TBL_ROW_COUNT = 100;
@@ -108,7 +131,7 @@ public class ProbeHBase {
             }
             table.put(puts);
             table.close();
-            return readTable(connection, namespace, tableName, columnFamily, TBL_ROW_COUNT);
+            return readTable(namespace, tableName, columnFamily, TBL_ROW_COUNT);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -116,7 +139,15 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean readTable(Connection connection, String namespace, TableName tableName,
+    /**
+     * This method reads data from a given hbase table and matches the count against expected count
+     * @param namespace the namespace
+     * @param tableName the table name
+     * @param columnFamily the column family
+     * @param TBL_ROW_COUNT the given table row count
+     * @return true if the read count was same as expected
+     */
+    public Boolean readTable(String namespace, TableName tableName,
                              byte[] columnFamily, int TBL_ROW_COUNT) {
         try {
             Table table = connection.getTable(TableName.valueOf(namespace + ":" + tableName));
@@ -140,7 +171,12 @@ public class ProbeHBase {
     }
 
 
-    public Boolean deleteTable(Connection connection, TableDescriptor td) {
+    /**
+     * this method deletes a given table
+     * @param td table description
+     * @return true if the delete was successful, false otherwise
+     */
+    public Boolean deleteTable(TableDescriptor td) {
         try {
             connection.getAdmin().disableTable(td.getTableName());
             connection.getAdmin().deleteTable(td.getTableName());
@@ -152,9 +188,14 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean isReachable(Configuration hbaseConfiguration) {
+    /**
+     * Finds out if HBase is reachable
+     * @param conf the HBase configuration object
+     * @return true if HBase is reachable, false otherwise
+     */
+    public Boolean isReachable(Configuration conf) {
         try {
-            HBaseAdmin.available(hbaseConfiguration);
+            HBaseAdmin.available(conf);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,7 +203,7 @@ public class ProbeHBase {
         }
     }
 
-    public void closeConnection(Connection connection){
+    public void closeConnection(){
         try {
             connection.getAdmin().close();
             connection.close();
