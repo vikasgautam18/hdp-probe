@@ -1,10 +1,8 @@
 package com.gautam.mantra.hbase;
 
 import com.gautam.mantra.commons.Utilities;
-import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.Connection;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -24,11 +22,10 @@ class ProbeHBaseTest {
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();
-    static Connection connection;
 
     @BeforeAll
     static void setUp() {
-        InputStream inputStream = ProbeZookeeper.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
+        InputStream inputStream = ProbeHBaseTest.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
         properties = yaml.load(inputStream);
         utilities.printProperties(properties);
 
@@ -43,8 +40,8 @@ class ProbeHBaseTest {
             HBaseAdmin.available(utility.getConfiguration());
             logger.info("*** HBase Mini Cluster Successfully started ***");
 
-            hbase = new ProbeHBase();
-            connection = hbase.getHBaseConnection(utility.getConfiguration());
+            hbase = new ProbeHBase(utility.getConfiguration());
+
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -55,7 +52,7 @@ class ProbeHBaseTest {
     static void tearDown() {
         logger.info("*** Shutting down Hbase Mini Cluster ***");
         try {
-            hbase.closeConnection(connection);
+            hbase.closeConnection();
             utility.shutdownMiniCluster();
         } catch (Exception e) {
             e.printStackTrace();
@@ -64,35 +61,35 @@ class ProbeHBaseTest {
 
     @Test
     void createDatabase() {
-        assert hbase.createNameSpace(connection,properties.get("hbaseNS"));
-        assert hbase.existsNameSpace(connection,properties.get("hbaseNS"));
+        assert hbase.createNameSpace(properties.get("hbaseNS"));
+        assert hbase.existsNameSpace(properties.get("hbaseNS"));
     }
 
     @Test
     void deleteDatabase() {
-        if(!hbase.existsNameSpace(connection,properties.get("hbaseNS")))
-            hbase.createNameSpace(connection,properties.get("hbaseNS"));
-        assert hbase.deleteNameSpace(connection, properties.get("hbaseNS"));
+        if(!hbase.existsNameSpace(properties.get("hbaseNS")))
+            hbase.createNameSpace(properties.get("hbaseNS"));
+        assert hbase.deleteNameSpace(properties.get("hbaseNS"));
     }
 
     @Test
     void createTable() {
-        if(!hbase.existsNameSpace(connection,properties.get("hbaseNS"))){
-            hbase.createNameSpace(connection,properties.get("hbaseNS"));
+        if(!hbase.existsNameSpace(properties.get("hbaseNS"))){
+            hbase.createNameSpace(properties.get("hbaseNS"));
         }
-        assert hbase.createTable(connection, properties.get("hbaseNS"),
+        assert hbase.createTable(properties.get("hbaseNS"),
                 properties.get("hbaseTable"), properties.get("hbaseCF"));
     }
 
     @Test
     void writeToAndReadFromTable() {
-        if(!hbase.existsNameSpace(connection, properties.get("hbaseNS"))){
-            hbase.createNameSpace(connection, properties.get("hbaseNS"));
-            hbase.createTable(connection, properties.get("hbaseNS"),
+        if(!hbase.existsNameSpace(properties.get("hbaseNS"))){
+            hbase.createNameSpace(properties.get("hbaseNS"));
+            hbase.createTable(properties.get("hbaseNS"),
                     properties.get("hbaseTable"), properties.get("hbaseCF"));
         }
 
-        assert hbase.writeToTable(connection, properties.get("hbaseNS"),
+        assert hbase.writeToTable(properties.get("hbaseNS"),
                 TableName.valueOf(properties.get("hbaseTable")), properties.get("hbaseCF").getBytes());
     }
 
