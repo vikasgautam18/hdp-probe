@@ -159,39 +159,40 @@ public class ProbeMain {
 
         HBaseAdmin.available(conf);
 
-        Connection connection = ConnectionFactory.createConnection(conf);
-        Admin admin = connection.getAdmin();
+
+        /*Admin admin = connection.getAdmin();
 
         admin.createNamespace(NamespaceDescriptor.create(properties.get("hbaseNS")).build());
 
         admin.createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(properties.get("hbaseNS") + ":" + properties.get("hbaseTable")))
                 .setColumnFamily(ColumnFamilyDescriptorBuilder.of(properties.get("hbaseCF")))
-                .build());
+                .build());*/
 
 
-        /*ProbeHBase hbase = new ProbeHBase(conf);
+        ProbeHBase hbase = new ProbeHBase();
+        Connection connection = hbase.getHBaseConnection(conf);
 
         logger.info("beginning HBase tests... ");
 
-        assert hbase.isReachable(properties) : "HBase is not reachable, exiting... ";
+        assert hbase.isReachable(connection, properties) : "HBase is not reachable, exiting... ";
         logger.info("HBase service is reachable... ");
 
-        assert hbase.createNameSpace(properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
+        assert hbase.createNameSpace(connection, properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
         logger.info("Namespace creation successful");
 
-        assert hbase.createTable(properties.get("hbaseNS"), properties.get("hbaseTable"),
+        assert hbase.createTable(connection, properties.get("hbaseNS"), properties.get("hbaseTable"),
                 properties.get("hbaseCF")) : "Hbase table creation failed, exiting... ";
         logger.info("Table creation successful");
 
-        assert hbase.writeToTable(properties.get("hbaseNS"),
+        assert hbase.writeToTable(connection, properties.get("hbaseNS"),
                 TableName.valueOf(properties.get("hbaseTable")),
                 properties.get("hbaseCF").getBytes()) : "HBase write to table failed, exiting... ";
         logger.info("Write to table successful");
 
-        assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
-        logger.info("Namespace deletion successful... ");
+        //assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
+        //logger.info("Namespace deletion successful... ");
 
-        hbase.closeConnection();
-        logger.info("HBase tests are successful.. ");*/
+        hbase.closeConnection(connection);
+        logger.info("HBase tests are successful.. ");
     }
 }

@@ -15,20 +15,16 @@ import java.util.Map;
 
 public class ProbeHBase {
 
-    public Connection connection;
     private static Logger logger = LoggerFactory.getLogger(ProbeHBase.class.getName());
-    Admin admin;
 
-    public ProbeHBase(Configuration conf){
+    public Connection getHBaseConnection(Configuration hbaseConfiguration){
+        Connection connection = null;
         try {
-            connection = ConnectionFactory.createConnection(conf);
-            admin = connection.getAdmin();
-
-            HBaseAdmin.available(conf);
-            logger.info("Connected to HBase... ");
+            connection = ConnectionFactory.createConnection(hbaseConfiguration);
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return connection;
     }
 
     /**
@@ -36,10 +32,10 @@ public class ProbeHBase {
      * @param namespace the namespace
      * @return true if the namespace was created successfully, false otherwise
      */
-    public Boolean createNameSpace(String namespace) {
+    public Boolean createNameSpace(Connection connection, String namespace) {
         try {
-            admin.createNamespace(NamespaceDescriptor.create(namespace).build());
-            return existsNameSpace(namespace);
+            connection.getAdmin().createNamespace(NamespaceDescriptor.create(namespace).build());
+            return existsNameSpace(connection, namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -47,10 +43,10 @@ public class ProbeHBase {
         }
     }
 
-    public boolean existsNameSpace(String namespace){
+    public boolean existsNameSpace(Connection connection, String namespace){
         try {
             NamespaceDescriptor ns = NamespaceDescriptor.create(namespace).build();
-            NamespaceDescriptor[] list = admin.listNamespaceDescriptors();
+            NamespaceDescriptor[] list = connection.getAdmin().listNamespaceDescriptors();
             boolean exists = false;
             for (NamespaceDescriptor nsd : list) {
                 if (nsd.getName().equals(ns.getName())) {
@@ -67,17 +63,17 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean deleteNameSpace(String namespace) {
+    public Boolean deleteNameSpace(Connection connection, String namespace) {
         try {
-            if(admin.listTableDescriptorsByNamespace(namespace.getBytes()).size() > 0){
-                for (TableDescriptor td: admin.listTableDescriptorsByNamespace(namespace.getBytes())
+            if(connection.getAdmin().listTableDescriptorsByNamespace(namespace.getBytes()).size() > 0){
+                for (TableDescriptor td: connection.getAdmin().listTableDescriptorsByNamespace(namespace.getBytes())
                      ) {
-                    deleteTable(td);
+                    deleteTable(connection, td);
                 }
             }
 
-            admin.deleteNamespace(namespace);
-            return !existsNameSpace(namespace);
+            connection.getAdmin().deleteNamespace(namespace);
+            return !existsNameSpace(connection, namespace);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -86,20 +82,20 @@ public class ProbeHBase {
     }
 
 
-    public boolean createTable(String namespace, String table, String cf) {
+    public boolean createTable(Connection connection, String namespace, String table, String cf) {
         try {
-            admin.createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(namespace + ":" + table))
+            connection.getAdmin().createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(namespace + ":" + table))
                     .setColumnFamily(ColumnFamilyDescriptorBuilder.of(cf))
                     .build());
 
-            return admin.tableExists(TableName.valueOf(namespace + ":" + table));
+            return connection.getAdmin().tableExists(TableName.valueOf(namespace + ":" + table));
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public boolean writeToTable(String namespace, TableName tableName, byte[] columnFamily){
+    public boolean writeToTable(Connection connection,String namespace, TableName tableName, byte[] columnFamily){
         try {
             Table table = connection.getTable(TableName.valueOf(namespace + ":" + tableName));
             int TBL_ROW_COUNT = 100;
@@ -113,7 +109,7 @@ public class ProbeHBase {
             }
             table.put(puts);
             table.close();
-            return readTable(namespace, tableName, columnFamily, TBL_ROW_COUNT);
+            return readTable(connection, namespace, tableName, columnFamily, TBL_ROW_COUNT);
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -121,7 +117,8 @@ public class ProbeHBase {
         }
     }
 
-    public Boolean readTable(String namespace, TableName tableName, byte[] columnFamily, int TBL_ROW_COUNT) {
+    public Boolean readTable(Connection connection, String namespace, TableName tableName,
+                             byte[] columnFamily, int TBL_ROW_COUNT) {
         try {
             Table table = connection.getTable(TableName.valueOf(namespace + ":" + tableName));
             Scan scan = new Scan();
@@ -144,25 +141,25 @@ public class ProbeHBase {
     }
 
 
-    public Boolean deleteTable(TableDescriptor td) {
+    public Boolean deleteTable(Connection connection, TableDescriptor td) {
         try {
-            admin.disableTable(td.getTableName());
-            admin.deleteTable(td.getTableName());
+            connection.getAdmin().disableTable(td.getTableName());
+            connection.getAdmin().deleteTable(td.getTableName());
 
-            return admin.tableExists(td.getTableName());
+            return connection.getAdmin().tableExists(td.getTableName());
         } catch (IOException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    public Boolean isReachable(Map<String, String> properties) {
+    public Boolean isReachable(Connection connection, Map<String, String> properties) {
         return !connection.isClosed();
     }
 
-    public void closeConnection(){
+    public void closeConnection(Connection connection){
         try {
-            admin.close();
+            connection.getAdmin().close();
             connection.close();
         } catch (IOException e) {
             e.printStackTrace();
