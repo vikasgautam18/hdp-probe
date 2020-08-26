@@ -7,6 +7,7 @@ import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -134,23 +135,36 @@ public class ProbeMain {
                     e.printStackTrace();
                 }
 
-                Configuration conf = HBaseConfiguration.create();
-                conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
-                conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
-                conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
-                conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
-                ProbeHBase hbase = new ProbeHBase(conf);
-
-                logger.info("beginning HBase tests... ");
-                assert hbase.createNameSpace(properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
-                logger.info("Namespace creation successful");
-
-                assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
-                logger.info("Namespace deletion successful... ");
+                probeHBase(properties);
 
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
         }
+    }
+
+    private static void probeHBase(Map<String, String> properties) {
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+        ProbeHBase hbase = new ProbeHBase(conf);
+
+        logger.info("beginning HBase tests... ");
+        assert hbase.createNameSpace(properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
+        logger.info("Namespace creation successful");
+
+        assert hbase.createTable(properties.get("hbaseNS"), properties.get("hbaseTable"),
+                properties.get("hbaseCF")) : "Hbase table creation failed, exiting... ";
+        logger.info("Table creation successful");
+
+        assert hbase.writeToTable(properties.get("hbaseNS"),
+                TableName.valueOf(properties.get("hbaseTable")),
+                properties.get("hbaseCF").getBytes()) : "HBase write to table failed, exiting... ";
+        logger.info("Write to table successful");
+
+        assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
+        logger.info("Namespace deletion successful... ");
     }
 }
