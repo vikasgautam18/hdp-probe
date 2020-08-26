@@ -23,11 +23,19 @@ public class ProbeHBase {
         try {
             connection = ConnectionFactory.createConnection(conf);
             admin = connection.getAdmin();
+
+            HBaseAdmin.available(conf);
+            logger.info("Connected to HBase... ");
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    /**
+     * This method creates an HBase namespace
+     * @param namespace the namespace
+     * @return true if the namespace was created successfully, false otherwise
+     */
     public Boolean createNameSpace(String namespace) {
         try {
             admin.createNamespace(NamespaceDescriptor.create(namespace).build());
