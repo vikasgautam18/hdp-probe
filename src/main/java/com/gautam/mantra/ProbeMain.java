@@ -152,6 +152,10 @@ public class ProbeMain {
         ProbeHBase hbase = new ProbeHBase(conf);
 
         logger.info("beginning HBase tests... ");
+
+        assert hbase.isReachable(properties) : "HBase is not reachable, exiting... ";
+        logger.info("HBase service is reachable... ");
+
         assert hbase.createNameSpace(properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
         logger.info("Namespace creation successful");
 
@@ -166,5 +170,7 @@ public class ProbeMain {
 
         assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
         logger.info("Namespace deletion successful... ");
+
+        logger.info("HBase tests are successful.. ");
     }
 }
