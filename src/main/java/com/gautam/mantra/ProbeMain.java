@@ -168,8 +168,8 @@ public class ProbeMain {
                 properties.get("hbaseCF").getBytes()) : "HBase write to table failed, exiting... ";
         logger.info("Write to table successful");
 
-        assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
-        logger.info("Namespace deletion successful... ");
+        //assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
+        //logger.info("Namespace deletion successful... ");
 
         hbase.closeConnection();
         logger.info("HBase tests are successful.. ");
