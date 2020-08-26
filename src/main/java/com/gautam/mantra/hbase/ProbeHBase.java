@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class ProbeHBase {
 
-    public static Connection connection;
+    public Connection connection;
     private static Logger logger = LoggerFactory.getLogger(ProbeHBase.class.getName());
     Admin admin;
 
