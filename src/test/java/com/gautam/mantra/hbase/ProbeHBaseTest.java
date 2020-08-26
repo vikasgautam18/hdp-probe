@@ -3,6 +3,7 @@ package com.gautam.mantra.hbase;
 import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
+import org.apache.hadoop.hbase.TableName;
 import org.apache.hadoop.hbase.client.HBaseAdmin;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -80,11 +81,15 @@ class ProbeHBaseTest {
     }
 
     @Test
-    void readTable() {
-    }
+    void writeToAndReadFromTable() {
+        if(!hbase.existsNameSpace(properties.get("hbaseNS"))){
+            hbase.createNameSpace(properties.get("hbaseNS"));
+            hbase.createTable(properties.get("hbaseNS"),
+                    properties.get("hbaseTable"), properties.get("hbaseCF"));
+        }
 
-    @Test
-    void deleteTable() {
+        assert hbase.writeToTable(properties.get("hbaseNS"),
+                TableName.valueOf(properties.get("hbaseTable")), properties.get("hbaseCF").getBytes());
     }
 
     @Test
