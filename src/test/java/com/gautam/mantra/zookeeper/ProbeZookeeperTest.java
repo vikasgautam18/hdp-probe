@@ -22,7 +22,7 @@ class ProbeZookeeperTest {
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();
-    public static final Logger logger = LoggerFactory.getLogger(ProbeZookeeper.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(ProbeZookeeperTest.class.getName());
 
     @BeforeAll
     static void setUp() {
@@ -31,7 +31,6 @@ class ProbeZookeeperTest {
             InputStream inputStream = ProbeZookeeper.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
             properties = yaml.load(inputStream);
             utilities.printProperties(properties);
-            //probeZookeeper = new ProbeZookeeper(properties);
 
             cluster = hbt.startMiniZKCluster(1,Integer.getInteger(properties.get("zkPort"), 2181));
             assertEquals(0, cluster.getBackupZooKeeperServerNum());

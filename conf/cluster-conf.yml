@@ -14,3 +14,10 @@ zkPort: "2181"
 zkPath: /FirstZnode
 zkData: ZNodeData
 zkDataUpdated: ZNodeDataUpdated
+
+zkQuorum: localhost
+hbaseDataDir: /apps/hbase/data
+hbaseZnodeParent: /hbase-unsecure
+hbaseNS: smoke_test
+hbaseTable: test_table
+hbaseCF: cf

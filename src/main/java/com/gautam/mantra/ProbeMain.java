@@ -1,8 +1,14 @@
 package com.gautam.mantra;
 
 import com.gautam.mantra.commons.Utilities;
+import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.Connection;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,9 +135,49 @@ public class ProbeMain {
                 } catch (KeeperException | InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                probeHBase(properties);
+
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
         }
+    }
+
+    private static void probeHBase(Map<String, String> properties) {
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+
+        ProbeHBase hbase = new ProbeHBase();
+        Connection connection = hbase.getHBaseConnection(conf);
+
+        logger.info("beginning HBase tests... ");
+
+        if (!hbase.isReachable(conf)) throw new AssertionError("HBase is not reachable, exiting... ");
+        logger.info("HBase service is reachable... ");
+
+        if (!hbase.createNameSpace(connection, properties.get("hbaseNS")))
+            throw new AssertionError("HBase Namespace creation failed, exiting... ");
+        logger.info("Namespace creation successful");
+
+        if (!hbase.createTable(connection, properties.get("hbaseNS"), properties.get("hbaseTable"),
+                properties.get("hbaseCF"))) throw new AssertionError("Hbase table creation failed, exiting... ");
+        logger.info("Table creation successful");
+
+        if (!hbase.writeToTable(connection, properties.get("hbaseNS"),
+                TableName.valueOf(properties.get("hbaseTable")),
+                properties.get("hbaseCF").getBytes()))
+            throw new AssertionError("HBase write to table failed, exiting... ");
+        logger.info("Write to table successful");
+
+        if (!hbase.deleteNameSpace(connection, properties.get("hbaseNS")))
+            throw new AssertionError("HBase namespace deletion failed, exiting... ");
+        logger.info("Namespace deletion successful... ");
+
+        hbase.closeConnection(connection);
+        logger.info("HBase tests are successful.. ");
     }
 }
