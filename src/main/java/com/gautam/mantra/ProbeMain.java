@@ -159,16 +159,6 @@ public class ProbeMain {
 
         HBaseAdmin.available(conf);
 
-
-        /*Admin admin = connection.getAdmin();
-
-        admin.createNamespace(NamespaceDescriptor.create(properties.get("hbaseNS")).build());
-
-        admin.createTable(TableDescriptorBuilder.newBuilder(TableName.valueOf(properties.get("hbaseNS") + ":" + properties.get("hbaseTable")))
-                .setColumnFamily(ColumnFamilyDescriptorBuilder.of(properties.get("hbaseCF")))
-                .build());*/
-
-
         ProbeHBase hbase = new ProbeHBase();
         Connection connection = hbase.getHBaseConnection(conf);
 
@@ -191,8 +181,9 @@ public class ProbeMain {
             throw new AssertionError("HBase write to table failed, exiting... ");
         logger.info("Write to table successful");
 
-        //assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
-        //logger.info("Namespace deletion successful... ");
+        if (!hbase.deleteNameSpace(connection, properties.get("hbaseNS")))
+            throw new AssertionError("HBase namespace deletion failed, exiting... ");
+        logger.info("Namespace deletion successful... ");
 
         hbase.closeConnection(connection);
         logger.info("HBase tests are successful.. ");
