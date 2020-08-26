@@ -1,8 +1,12 @@
 package com.gautam.mantra;
 
 import com.gautam.mantra.commons.Utilities;
+import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.zookeeper.KeeperException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -129,6 +133,21 @@ public class ProbeMain {
                 } catch (KeeperException | InterruptedException e) {
                     e.printStackTrace();
                 }
+
+                Configuration conf = HBaseConfiguration.create();
+                conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+                conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+                conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+                conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+                ProbeHBase hbase = new ProbeHBase(conf);
+
+                logger.info("beginning HBase tests... ");
+                assert hbase.createNameSpace(properties.get("hbaseNS")) : "HBase Namespace creation failed, exiting... ";
+                logger.info("Namespace creation successful");
+
+                assert hbase.deleteNameSpace(properties.get("hbaseNS")) : "HBase namespace deletion failed, exiting... ";
+                logger.info("Namespace deletion successful... ");
+
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
