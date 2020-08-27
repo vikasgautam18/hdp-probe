@@ -1,6 +1,7 @@
 package com.gautam.mantra.hive;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.MiniMRCluster;
@@ -8,6 +9,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -18,6 +20,7 @@ import static org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 
 
 class ProbeHiveTest {
+    static MiniDFSCluster.Builder builder;
 
     @BeforeEach
     void setUp() {
@@ -35,14 +38,17 @@ class ProbeHiveTest {
 
     @Test
     public void testHiveMiniDFSClusterIntegration() throws IOException, SQLException {
-        System.setProperty(ConfVars.METASTOREWAREHOUSE.toString(), "/tmp");
+        //System.setProperty(ConfVars.METASTOREWAREHOUSE.toString(), "/tmp");
+        File baseDir = new File("./target/hdfs/" + ProbeHiveTest.class.getSimpleName()).getAbsoluteFile();
+        FileUtil.fullyDelete(baseDir);
+
         Configuration conf = new Configuration();
-        conf.set("hive.cluster.delegation.token.store.class", "org.apache.hadoop.hive.thrift.ZookeeperTokenStore");
-        conf.set("datanucleus.schema.autoCreateTables", "true");
-        conf.set("hive.metastore.schema.verification", "false");
-        conf.set("hive.metastore.schema.verification.record.version", "false");
+        conf.set(MiniDFSCluster.HDFS_MINIDFS_BASEDIR, baseDir.getAbsolutePath());
+        conf.set("dfs.namenode.acls.enabled", "true");
+        builder = new MiniDFSCluster.Builder(conf);
+        builder.nameNodePort(8020);
         /* Build MiniDFSCluster */
-        MiniDFSCluster miniDFS = new MiniDFSCluster.Builder(conf).build();
+        MiniDFSCluster miniDFS = builder.build();
 
         /* Build MiniMR Cluster */
         System.setProperty("hadoop.log.dir", "/tmp");
