@@ -1,45 +1,30 @@
 package com.gautam.mantra.hive;
 
 import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
-import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.mapred.JobConf;
-import org.apache.hadoop.mapred.MiniMRCluster;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import org.apache.hadoop.mapred.MiniMRClientCluster;
+import org.apache.hadoop.mapred.MiniMRClientClusterFactory;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URI;
 import java.sql.*;
-
-import static org.apache.hadoop.hive.conf.HiveConf.ConfVars;
-
+import java.util.Random;
 
 class ProbeHiveTest {
     static MiniDFSCluster.Builder builder;
+    static Connection hiveConnection;
+    static Statement stm;
+    static MiniDFSCluster miniDFS;
+    static MiniMRClientCluster miniMR;
 
-    @BeforeEach
-    void setUp() {
-
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
-
-    @Test
-    void test(){
-        assert true;
-    }
-
-    @Test
-    public void testHiveMiniDFSClusterIntegration() throws IOException, SQLException {
-        System.setProperty(ConfVars.METASTOREWAREHOUSE.toString(), "/tmp");
+    @BeforeAll
+    static void setUp() throws IOException, SQLException {
+        System.setProperty("hive.metastore.warehouse.dir", "/tmp");
         File baseDir = new File("./target/hdfs/" + ProbeHiveTest.class.getSimpleName()).getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
 
@@ -48,36 +33,17 @@ class ProbeHiveTest {
         conf.set("dfs.namenode.acls.enabled", "true");
         builder = new MiniDFSCluster.Builder(conf);
         builder.nameNodePort(8020);
-        /* Build MiniDFSCluster */
-        MiniDFSCluster miniDFS = builder.build();
+        miniDFS = builder.build();
 
-        Configuration conf1= new Configuration();
-        conf1.set("fs.defaultFS", "hdfs://localhost:8020");
-        conf1.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-        conf1.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-
-        try {
-            FileSystem fs = FileSystem.get(URI.create("hdfs://localhost:8020"), conf1);
-
-            if(!fs.exists(new Path("/tmp/hive"))){
-                fs.mkdirs(new Path ("/tmp/hive"));
-                fs.setPermission(new Path("/tmp/hive"), new FsPermission("0777"));
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        /* Build MiniMR Cluster */
         System.setProperty("hadoop.log.dir", "/tmp");
         int numTaskTrackers = 1;
-        int numTaskTrackerDirectories = 1;
-        String[] racks = null;
-        String[] hosts = null;
-        MiniMRCluster miniMR = new MiniMRCluster(numTaskTrackers, miniDFS.getFileSystem().getUri().toString(),
-                numTaskTrackerDirectories, racks, hosts, new JobConf(conf));
 
-        System.setProperty("mapred.job.tracker", miniMR.createJobConf(
-                new JobConf(conf)).get("mapred.job.tracker"));
+        String identifier = ProbeHiveTest.class.getSimpleName() + "_"
+                + new Random().nextInt(Integer.MAX_VALUE);
+
+        miniMR = MiniMRClientClusterFactory.create(ProbeHiveTest.class,
+                identifier, numTaskTrackers, new JobConf(miniDFS.getConfiguration(0)));
+        System.setProperty("mapred.job.tracker", miniMR.getConfig().get("mapred.job.tracker"));
 
         try {
             String driverName = "org.apache.hive.jdbc.HiveDriver";
@@ -87,13 +53,34 @@ class ProbeHiveTest {
             System.exit(1);
         }
 
-        Connection hiveConnection = DriverManager.getConnection(
-                "jdbc:hive2:///", "", "");
-        Statement stm = hiveConnection.createStatement();
+        hiveConnection = DriverManager.getConnection("jdbc:hive2:///", "", "");
+        stm = hiveConnection.createStatement();
 
-        // now create test tables and query them
+    }
+
+    @AfterAll
+    static void tearDown() throws IOException, SQLException {
+        cleanUp();
+        miniMR.stop();
+        miniDFS.shutdown(true, true);
+        stm.close();
+        hiveConnection.close();
+    }
+
+    private static void cleanUp() throws SQLException {
         stm.execute("set hive.support.concurrency = false");
-        stm.execute("show databases");
+        stm.execute("drop database if exists db_test");
+    }
+
+    @Test
+    void test(){
+        assert true;
+    }
+
+    @Test
+    public void createDatabase() throws SQLException {
+
+        stm.execute("set hive.support.concurrency = false");
         stm.execute("create database if not exists db_test");
         ResultSet res = stm.executeQuery("show databases");
         while (res.next()) {
