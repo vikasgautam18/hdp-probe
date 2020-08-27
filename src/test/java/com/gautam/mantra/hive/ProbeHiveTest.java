@@ -42,7 +42,7 @@ class ProbeHiveTest {
 
     @Test
     public void testHiveMiniDFSClusterIntegration() throws IOException, SQLException {
-        //System.setProperty(ConfVars.METASTOREWAREHOUSE.toString(), "/tmp");
+        System.setProperty(ConfVars.METASTOREWAREHOUSE.toString(), "/tmp");
         File baseDir = new File("./target/hdfs/" + ProbeHiveTest.class.getSimpleName()).getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
 
