@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+<configuration>
+    <property>
+        <name>javax.jdo.option.ConnectionURL</name>
+        <value>jdbc:derby:;databaseName=metastore_db;create=true</value>
+    </property>
+    <property>
+        <name>javax.jdo.option.ConnectionDriverName</name>
+        <value>org.apache.derby.jdbc.EmbeddedDriver</value>
+    </property>
+    <!--<property>
+        <name>javax.jdo.PersistenceManagerFactoryClass</name>
+        <value>org.datanucleus.jdo.JDOPersistenceManagerFactory</value>
+    </property>-->
+
+    <property>
+        <name>javax.jdo.option.ConnectionUserName</name>
+        <value>APP</value>
+    </property>
+
+    <property>
+        <name>javax.jdo.option.ConnectionPassword</name>
+        <value>mine</value>
+    </property>
+    <property>
+        <name>datanucleus.schema.validateTables</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>datanucleus.schema.validateColumns</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>datanucleus.schema.autoCreateAll</name>
+        <value>true</value>
+    </property>
+
+    <property>
+        <name>hive.metastore.schema.verification</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>hive.metastore.schema.verification.record.version</name>
+        <value>false</value>
+    </property>
+    <property>
+        <name>hive.cluster.delegation.token.store.class</name>
+        <value>org.apache.hadoop.hive.thrift.ZookeeperTokenStore</value>
+    </property>
+
+    <property>
+        <name>datanucleus.schema.autoCreateTables</name>
+        <value>true</value>
+    </property>
+</configuration>
