@@ -15,10 +15,7 @@ import org.junit.jupiter.api.Test;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
+import java.sql.*;
 
 import static org.apache.hadoop.hive.conf.HiveConf.ConfVars;
 
@@ -96,10 +93,11 @@ class ProbeHiveTest {
 
         // now create test tables and query them
         stm.execute("set hive.support.concurrency = false");
-        stm.execute("drop table if exists test");
-        stm.execute("create table if not exists test(a int, b int) row format delimited fields terminated by ' '");
-        stm.execute("create table dual as select 1 as one from test");
-        stm.execute("insert into table test select stack(1,4,5) AS (a,b) from dual");
-        stm.execute("select * from test");
+        stm.execute("show databases");
+        stm.execute("create database if not exists db_test");
+        ResultSet res = stm.executeQuery("show databases");
+        while (res.next()) {
+            System.out.println(res.getString(1));
+        }
     }
 }
