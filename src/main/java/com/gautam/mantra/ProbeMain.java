@@ -32,6 +32,15 @@ public class ProbeMain {
         // print all loaded properties to console
         utilities.printProperties(properties);
 
+        probeHDFS(properties);
+
+        zookeeperProbe(properties);
+
+        probeHBase(properties);
+
+    }
+
+    private static void probeHDFS(Map<String, String> properties) {
         // begin probe - HDFS first
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(properties);
@@ -92,54 +101,53 @@ public class ProbeMain {
                 logger.info("tests complete.. clean up in progress .. !");
                 hdfs.cleanup(properties);
                 logger.info("clean-up complete.. ");
-
-                // zookeeper tests begin
-                ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
-                if(zookeeper.isReachable(properties))
-                    logger.info("Zookeeper is reachable...");
-                else {
-                    logger.error("Zookeeper is not reachable, exiting.. ");
-                    System.exit(1);
-                }
-
-                try {
-                    if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
-                        logger.info("ZNode creation successful");
-
-                        if(zookeeper.getZNodeData(properties.get("zkPath"), true))
-                            logger.info("ZNode data is readable");
-                        else {
-                            logger.error("ZNode data read failed, exiting...");
-                            System.exit(1);
-                        }
-
-                        if(zookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
-                            logger.info("ZNode data update successful");
-                        } else {
-                            logger.error("ZNode data update failed, exiting...");
-                            System.exit(1);
-                        }
-
-                        if(zookeeper.deleteZNodeData(properties.get("zkPath"))){
-                            logger.info("ZNode data delete successful");
-                        } else {
-                            logger.error("ZNode data delete failed, exiting...");
-                            System.exit(1);
-                        }
-                    }
-                    else {
-                        logger.error("ZNode creation failed, exiting...");
-                        System.exit(1);
-                    }
-                } catch (KeeperException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                probeHBase(properties);
-
             }
             else
                 logger.error("HDFS test folder cannot be created. exiting ...");
+        }
+    }
+
+    private static void zookeeperProbe(Map<String, String> properties) {
+        // zookeeper tests begin
+        ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
+        if(zookeeper.isReachable(properties))
+            logger.info("Zookeeper is reachable...");
+        else {
+            logger.error("Zookeeper is not reachable, exiting.. ");
+            System.exit(1);
+        }
+
+        try {
+            if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                logger.info("ZNode creation successful");
+
+                if(zookeeper.getZNodeData(properties.get("zkPath"), true))
+                    logger.info("ZNode data is readable");
+                else {
+                    logger.error("ZNode data read failed, exiting...");
+                    System.exit(1);
+                }
+
+                if(zookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                    logger.info("ZNode data update successful");
+                } else {
+                    logger.error("ZNode data update failed, exiting...");
+                    System.exit(1);
+                }
+
+                if(zookeeper.deleteZNodeData(properties.get("zkPath"))){
+                    logger.info("ZNode data delete successful");
+                } else {
+                    logger.error("ZNode data delete failed, exiting...");
+                    System.exit(1);
+                }
+            }
+            else {
+                logger.error("ZNode creation failed, exiting...");
+                System.exit(1);
+            }
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
         }
     }
 
