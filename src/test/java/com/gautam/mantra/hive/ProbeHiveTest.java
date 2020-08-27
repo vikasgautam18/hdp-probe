@@ -1,7 +1,10 @@
 package com.gautam.mantra.hive;
 
 import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.permission.FsPermission;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.apache.hadoop.mapred.JobConf;
 import org.apache.hadoop.mapred.MiniMRCluster;
@@ -11,6 +14,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -49,6 +53,22 @@ class ProbeHiveTest {
         builder.nameNodePort(8020);
         /* Build MiniDFSCluster */
         MiniDFSCluster miniDFS = builder.build();
+
+        Configuration conf1= new Configuration();
+        conf1.set("fs.defaultFS", "hdfs://localhost:8020");
+        conf1.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf1.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try {
+            FileSystem fs = FileSystem.get(URI.create("hdfs://localhost:8020"), conf1);
+
+            if(!fs.exists(new Path("/tmp/hive"))){
+                fs.mkdirs(new Path ("/tmp/hive"));
+                fs.setPermission(new Path("/tmp/hive"), new FsPermission("0777"));
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
         /* Build MiniMR Cluster */
         System.setProperty("hadoop.log.dir", "/tmp");
