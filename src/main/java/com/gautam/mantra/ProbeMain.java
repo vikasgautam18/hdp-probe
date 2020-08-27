@@ -32,14 +32,21 @@ public class ProbeMain {
         // print all loaded properties to console
         utilities.printProperties(properties);
 
+        // HDFS tests
         probeHDFS(properties);
 
+        // ZOOKEEPER tests
         zookeeperProbe(properties);
 
+        // HBase tests
         probeHBase(properties);
 
     }
 
+    /**
+     * Set of HDFS tests
+     * @param properties The cluster properties
+     */
     private static void probeHDFS(Map<String, String> properties) {
         // begin probe - HDFS first
         ProbeHDFS hdfs = new ProbeHDFS();
@@ -102,11 +109,17 @@ public class ProbeMain {
                 hdfs.cleanup(properties);
                 logger.info("clean-up complete.. ");
             }
-            else
+            else {
                 logger.error("HDFS test folder cannot be created. exiting ...");
+                System.exit(1);
+            }
         }
     }
 
+    /**
+     * Set of Zookeeper tests
+     * @param properties The cluster properties
+     */
     private static void zookeeperProbe(Map<String, String> properties) {
         // zookeeper tests begin
         ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
@@ -151,6 +164,11 @@ public class ProbeMain {
         }
     }
 
+
+    /**
+     * Set of HBase tests
+     * @param properties The cluster properties
+     */
     private static void probeHBase(Map<String, String> properties) {
 
         Configuration conf = HBaseConfiguration.create();
