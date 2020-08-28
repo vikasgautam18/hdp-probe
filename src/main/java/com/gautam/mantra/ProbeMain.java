@@ -211,6 +211,10 @@ public class ProbeMain {
         logger.info("HBase tests are successful.. ");
     }
 
+    /**
+     * set of hive tests
+     * @param properties the cluster properties
+     */
     private static void probeHive(Map<String, String> properties) {
         try {
             Connection hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");

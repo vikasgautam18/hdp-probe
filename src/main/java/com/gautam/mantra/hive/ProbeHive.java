@@ -19,6 +19,11 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * Creates and verifies a hive database
+     * @param database the name of database
+     * @return true if the database was created successfully, false otherwise
+     */
     public boolean createDatabase(String database){
         try {
             statement.execute("CREATE DATABASE IF NOT EXISTS " + database);
@@ -29,6 +34,11 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * This method finds out if the given database exists
+     * @param database the name of database
+     * @return true if the database exists, false otherwise
+     */
     public boolean databaseExists(String database){
         try {
             ResultSet resultSet = statement.executeQuery("show databases");
@@ -46,6 +56,13 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * Creates and verifies a table in hive
+     * @param sql the sql statement to create table
+     * @param database the name of database
+     * @param table the name of table
+     * @return true if the table was created, false otherwise
+     */
     public boolean createTable(String sql, String database, String table){
         try {
             statement.execute(sql);
@@ -56,6 +73,12 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * Verifies if a hive table exists
+     * @param database the name of database
+     * @param table the name of table
+     * @return true if the table exists, false otherwise
+     */
     public boolean tableExists(String database, String table){
         try {
             ResultSet resultSet = statement.executeQuery("show tables in " + database);
@@ -73,6 +96,10 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * Load data to Hive table
+     * @param properties the cluster configuration
+     */
     public void writeToTable(Map<String, String> properties){
         try {
             String filepath = properties.get("hiveTestFilePath");
@@ -84,6 +111,12 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * Drops a table and verifies if the table was indeed dropped
+     * @param database the name of database
+     * @param table the name of table to be dropped
+     * @return true if the table was dropped successfully, false otherwise
+     */
     public boolean dropTable(String database, String table){
         try {
             statement.execute("drop table if exists " + String.join(".", database, table));
@@ -94,6 +127,12 @@ public class ProbeHive {
         }
     }
 
+    /**
+     * This method drops a database from hive
+     * @param database the name of database to be dropped
+     * @param cascade True if child tables need to be dropped as well
+     * @return true of the database was dropped successfully, false otherwise
+     */
     public boolean dropDatabase(String database, boolean cascade){
         try {
             String CASCADE = cascade ? " CASCADE": "";
@@ -104,5 +143,4 @@ public class ProbeHive {
             return false;
         }
     }
-
 }
