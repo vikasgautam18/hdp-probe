@@ -1,6 +1,7 @@
 package com.gautam.mantra.hive;
 
 import java.sql.*;
+import java.util.Map;
 
 public class ProbeHive {
 
@@ -74,5 +75,14 @@ public class ProbeHive {
         }
     }
 
+    public void writeToTable(Map<String, String> properties){
+        try {
+            String filepath = properties.get("hiveTestFilePath");
+            String sql = "load data local inpath '" + filepath + "' into table db_test.table_test" ;
+            statement.execute(sql);
 
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
+    }
 }

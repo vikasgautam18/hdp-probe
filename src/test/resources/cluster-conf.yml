@@ -22,6 +22,10 @@ hbaseNS: smoke_test
 hbaseTable: test_table
 hbaseCF: cf
 
+hiveTestFilePath: target/test-classes/hive-test-data.txt
+hiveDatabase: db_test
+hiveTable: table_test
+
 
 
 

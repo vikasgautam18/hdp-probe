@@ -1,5 +1,6 @@
 package com.gautam.mantra.hive;
 
+import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
@@ -9,10 +10,14 @@ import org.apache.hadoop.mapred.MiniMRClientClusterFactory;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 class ProbeHiveTest {
@@ -22,9 +27,16 @@ class ProbeHiveTest {
     static MiniDFSCluster miniDFS;
     static MiniMRClientCluster miniMR;
     static ProbeHive hive;
+    static Map<String, String> properties;
+    public static final Yaml yaml = new Yaml();
+    static final Utilities utilities = new Utilities();
 
     @BeforeAll
     static void setUp() throws IOException, SQLException {
+        InputStream inputStream = ProbeHiveTest.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
+        properties = yaml.load(inputStream);
+        utilities.printProperties(properties);
+
         System.setProperty("hive.metastore.warehouse.dir", "/tmp");
         File baseDir = new File("./target/hdfs/" + ProbeHiveTest.class.getSimpleName()).getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
@@ -75,9 +87,24 @@ class ProbeHiveTest {
     }
 
     @Test
-    public void testCreationAndDeletion() {
+    public void testCreationAndDeletion() throws SQLException {
+        cleanUp();
         assert hive.createDatabase("db_test");
         assert hive.createTable("db_test", "table_test");
+
+        hive.writeToTable(properties);
+
+        ResultSet rs = stm.executeQuery("select * from db_test.table_test");
+        Map<Integer, String> resultMap = new HashMap<>();
+        while(rs.next()){
+            resultMap.put(rs.getInt("key"), rs.getString("value"));
+        }
+
+        assert !resultMap.isEmpty();
+        assert resultMap.size() == 2;
+        assert resultMap.get(1).equals("one");
+        assert resultMap.get(2).equals("two");
+
 
     }
 }

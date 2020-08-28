@@ -21,3 +21,7 @@ hbaseZnodeParent: /hbase-unsecure
 hbaseNS: smoke_test
 hbaseTable: test_table
 hbaseCF: cf
+
+hiveTestFilePath: /data/hdp-probe/conf/hive-test-data.txt
+hiveDatabase: db_test
+hiveTable: table_test
