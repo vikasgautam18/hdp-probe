@@ -46,11 +46,9 @@ public class ProbeHive {
         }
     }
 
-    public boolean createTable(String database, String table){
+    public boolean createTable(String sql, String database, String table){
         try {
-            String tableNameWithDB = String.join(".", database, table);
-            statement.execute("create table " + tableNameWithDB + " (key int, value string)");
-
+            statement.execute(sql);
             return tableExists(database, table);
         } catch (SQLException throwables) {
             throwables.printStackTrace();
@@ -85,4 +83,26 @@ public class ProbeHive {
             throwables.printStackTrace();
         }
     }
+
+    public boolean dropTable(String database, String table){
+        try {
+            statement.execute("drop table if exists " + String.join(".", database, table));
+            return !tableExists(database, table);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
+    public boolean dropDatabase(String database, boolean cascade){
+        try {
+            String CASCADE = cascade ? " CASCADE": "";
+            statement.execute("drop database if exists " + database + CASCADE);
+            return !databaseExists(database);
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return false;
+        }
+    }
+
 }

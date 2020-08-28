@@ -66,9 +66,8 @@ class ProbeHiveTest {
             System.exit(1);
         }
 
-        hiveConnection = DriverManager.getConnection("jdbc:hive2:///", "", "");
+        hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
         stm = hiveConnection.createStatement();
-
         hive = new ProbeHive();
     }
 
@@ -83,18 +82,20 @@ class ProbeHiveTest {
 
     private static void cleanUp() throws SQLException {
         stm.execute("set hive.support.concurrency = false");
-        stm.execute("drop database if exists db_test cascade");
+        stm.execute("drop database if exists " + properties.get("hiveDatabase") + " cascade");
     }
 
     @Test
     public void testCreationAndDeletion() throws SQLException {
         cleanUp();
-        assert hive.createDatabase("db_test");
-        assert hive.createTable("db_test", "table_test");
+        assert hive.createDatabase(properties.get("hiveDatabase"));
+        assert hive.createTable(properties.get("hiveTableCreateStmt"),
+                properties.get("hiveDatabase"), properties.get("hiveTable"));
 
         hive.writeToTable(properties);
 
-        ResultSet rs = stm.executeQuery("select * from db_test.table_test");
+        ResultSet rs = stm.executeQuery("select * from " +
+                        String.join(".", properties.get("hiveDatabase"), properties.get("hiveTable")));
         Map<Integer, String> resultMap = new HashMap<>();
         while(rs.next()){
             resultMap.put(rs.getInt("key"), rs.getString("value"));
@@ -105,6 +106,7 @@ class ProbeHiveTest {
         assert resultMap.get(1).equals("one");
         assert resultMap.get(2).equals("two");
 
-
+        assert hive.dropTable(properties.get("hiveDatabase"), properties.get("hiveTable"));
+        assert hive.dropDatabase(properties.get("hiveDatabase"), false);
     }
 }
