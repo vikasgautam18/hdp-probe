@@ -21,6 +21,7 @@ class ProbeHiveTest {
     static Statement stm;
     static MiniDFSCluster miniDFS;
     static MiniMRClientCluster miniMR;
+    static ProbeHive hive;
 
     @BeforeAll
     static void setUp() throws IOException, SQLException {
@@ -56,6 +57,7 @@ class ProbeHiveTest {
         hiveConnection = DriverManager.getConnection("jdbc:hive2:///", "", "");
         stm = hiveConnection.createStatement();
 
+        hive = new ProbeHive();
     }
 
     @AfterAll
@@ -69,22 +71,13 @@ class ProbeHiveTest {
 
     private static void cleanUp() throws SQLException {
         stm.execute("set hive.support.concurrency = false");
-        stm.execute("drop database if exists db_test");
+        stm.execute("drop database if exists db_test cascade");
     }
 
     @Test
-    void test(){
-        assert true;
-    }
+    public void testCreationAndDeletion() {
+        assert hive.createDatabase("db_test");
+        assert hive.createTable("db_test", "table_test");
 
-    @Test
-    public void createDatabase() throws SQLException {
-
-        stm.execute("set hive.support.concurrency = false");
-        stm.execute("create database if not exists db_test");
-        ResultSet res = stm.executeQuery("show databases");
-        while (res.next()) {
-            System.out.println(res.getString(1));
-        }
     }
 }
