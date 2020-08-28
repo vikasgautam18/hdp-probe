@@ -68,7 +68,7 @@ class ProbeHiveTest {
 
         hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
         stm = hiveConnection.createStatement();
-        hive = new ProbeHive();
+        hive = new ProbeHive(properties);
     }
 
     @AfterAll

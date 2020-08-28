@@ -7,11 +7,11 @@ public class ProbeHive {
 
     private static Statement statement;
 
-    public ProbeHive(){
+    public ProbeHive(Map<String, String> properties){
         try {
             String driverName = "org.apache.hive.jdbc.HiveDriver";
             Class.forName(driverName);
-            Connection jdbcConnection = DriverManager.getConnection("jdbc:hive2:///", "", "");
+            Connection jdbcConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
             statement = jdbcConnection.createStatement();
         } catch (ClassNotFoundException | SQLException e) {
             e.printStackTrace();

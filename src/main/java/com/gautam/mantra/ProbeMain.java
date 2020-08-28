@@ -215,7 +215,7 @@ public class ProbeMain {
         try {
             Connection hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
             Statement stm = hiveConnection.createStatement();
-            ProbeHive hive = new ProbeHive();
+            ProbeHive hive = new ProbeHive(properties);
 
             if(!hive.createDatabase(properties.get("hiveDatabase"))) throw new AssertionError(
                     "Hive database not created, exiting... ");
