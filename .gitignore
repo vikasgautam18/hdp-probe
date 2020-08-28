@@ -3,3 +3,5 @@
 *.iml
 /dependency-reduced-pom.xml
 /target/
+/derby.log
+/dependency-tree.log

@@ -3,6 +3,7 @@ package com.gautam.mantra;
 import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
+import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.sql.*;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -32,6 +35,25 @@ public class ProbeMain {
         // print all loaded properties to console
         utilities.printProperties(properties);
 
+        // HDFS tests
+        probeHDFS(properties);
+
+        // ZOOKEEPER tests
+        zookeeperProbe(properties);
+
+        // HBase tests
+        probeHBase(properties);
+
+        // Hive tests
+        probeHive(properties);
+
+    }
+
+    /**
+     * Set of HDFS tests
+     * @param properties The cluster properties
+     */
+    private static void probeHDFS(Map<String, String> properties) {
         // begin probe - HDFS first
         ProbeHDFS hdfs = new ProbeHDFS();
         Boolean isReachable = hdfs.isReachable(properties);
@@ -92,57 +114,67 @@ public class ProbeMain {
                 logger.info("tests complete.. clean up in progress .. !");
                 hdfs.cleanup(properties);
                 logger.info("clean-up complete.. ");
-
-                // zookeeper tests begin
-                ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
-                if(zookeeper.isReachable(properties))
-                    logger.info("Zookeeper is reachable...");
-                else {
-                    logger.error("Zookeeper is not reachable, exiting.. ");
-                    System.exit(1);
-                }
-
-                try {
-                    if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
-                        logger.info("ZNode creation successful");
-
-                        if(zookeeper.getZNodeData(properties.get("zkPath"), true))
-                            logger.info("ZNode data is readable");
-                        else {
-                            logger.error("ZNode data read failed, exiting...");
-                            System.exit(1);
-                        }
-
-                        if(zookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
-                            logger.info("ZNode data update successful");
-                        } else {
-                            logger.error("ZNode data update failed, exiting...");
-                            System.exit(1);
-                        }
-
-                        if(zookeeper.deleteZNodeData(properties.get("zkPath"))){
-                            logger.info("ZNode data delete successful");
-                        } else {
-                            logger.error("ZNode data delete failed, exiting...");
-                            System.exit(1);
-                        }
-                    }
-                    else {
-                        logger.error("ZNode creation failed, exiting...");
-                        System.exit(1);
-                    }
-                } catch (KeeperException | InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                probeHBase(properties);
-
             }
-            else
+            else {
                 logger.error("HDFS test folder cannot be created. exiting ...");
+                System.exit(1);
+            }
         }
     }
 
+    /**
+     * Set of Zookeeper tests
+     * @param properties The cluster properties
+     */
+    private static void zookeeperProbe(Map<String, String> properties) {
+        // zookeeper tests begin
+        ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
+        if(zookeeper.isReachable(properties))
+            logger.info("Zookeeper is reachable...");
+        else {
+            logger.error("Zookeeper is not reachable, exiting.. ");
+            System.exit(1);
+        }
+
+        try {
+            if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                logger.info("ZNode creation successful");
+
+                if(zookeeper.getZNodeData(properties.get("zkPath"), true))
+                    logger.info("ZNode data is readable");
+                else {
+                    logger.error("ZNode data read failed, exiting...");
+                    System.exit(1);
+                }
+
+                if(zookeeper.updateZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
+                    logger.info("ZNode data update successful");
+                } else {
+                    logger.error("ZNode data update failed, exiting...");
+                    System.exit(1);
+                }
+
+                if(zookeeper.deleteZNodeData(properties.get("zkPath"))){
+                    logger.info("ZNode data delete successful");
+                } else {
+                    logger.error("ZNode data delete failed, exiting...");
+                    System.exit(1);
+                }
+            }
+            else {
+                logger.error("ZNode creation failed, exiting...");
+                System.exit(1);
+            }
+        } catch (KeeperException | InterruptedException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    /**
+     * Set of HBase tests
+     * @param properties The cluster properties
+     */
     private static void probeHBase(Map<String, String> properties) {
 
         Configuration conf = HBaseConfiguration.create();
@@ -177,5 +209,54 @@ public class ProbeMain {
 
         hbase.closeConnection();
         logger.info("HBase tests are successful.. ");
+    }
+
+    /**
+     * set of hive tests
+     * @param properties the cluster properties
+     */
+    private static void probeHive(Map<String, String> properties) {
+        try {
+            Connection hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
+            Statement stm = hiveConnection.createStatement();
+            ProbeHive hive = new ProbeHive(properties);
+
+            if(!hive.createDatabase(properties.get("hiveDatabase"))) throw new AssertionError(
+                    "Hive database not created, exiting... ");
+            logger.info("Hive database was successfully created");
+
+            if(!hive.createTable(properties.get("hiveTableCreateStmt"),
+                    properties.get("hiveDatabase"), properties.get("hiveTable"))) throw new AssertionError(
+                            "Hive table not created, exiting... ");
+            logger.info("Hive table was successfully created");
+
+            hive.writeToTable(properties);
+
+            ResultSet rs = stm.executeQuery("select * from " +
+                    String.join(".", properties.get("hiveDatabase"), properties.get("hiveTable")));
+            Map<Integer, String> resultMap = new HashMap<>();
+            while(rs.next()){
+                resultMap.put(rs.getInt("key"), rs.getString("value"));
+            }
+
+            if(resultMap.size() == 2 && resultMap.get(1).equals("one")
+                    && resultMap.get(2).equals("two"))
+                logger.info("Loading data to hive was successful");
+            else
+                throw new AssertionError("Loading data to hive failed, exiting... ");
+
+            if(!hive.dropTable(properties.get("hiveDatabase"), properties.get("hiveTable"))) throw new AssertionError(
+                    "Hive Drop table failed, exiting... ");
+            logger.info("Hive Drop table was successful");
+
+            if(!hive.dropDatabase(properties.get("hiveDatabase"), false)) throw new AssertionError(
+                    "Hive drop database failed, exiting... ");
+            logger.info("Hive drop database successful");
+
+            logger.info("Hive tests successfully completed");
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }

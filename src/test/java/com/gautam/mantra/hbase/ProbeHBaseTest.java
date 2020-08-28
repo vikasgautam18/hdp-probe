@@ -18,7 +18,7 @@ class ProbeHBaseTest {
 
     private static HBaseTestingUtility utility;
     private static ProbeHBase hbase;
-    private static Logger logger = LoggerFactory.getLogger(ProbeHBaseTest.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(ProbeHBaseTest.class.getName());
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();

@@ -21,3 +21,9 @@ hbaseZnodeParent: /hbase-unsecure
 hbaseNS: smoke_test
 hbaseTable: test_table
 hbaseCF: cf
+
+hiveTestFilePath: /data/hdp-probe/conf/hive-test-data.txt
+hiveDatabase: db_test
+hiveTable: table_test
+hiveJDBCURL: "jdbc:hive2://localhost:2181/;serviceDiscoveryMode=zooKeeper;zooKeeperNamespace=hiveserver2"
+hiveTableCreateStmt: "create table if not exists db_test.table_test (key int, value string) STORED AS TEXTFILE"
