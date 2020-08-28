@@ -3,6 +3,7 @@ package com.gautam.mantra;
 import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
+import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -14,6 +15,8 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.sql.*;
+import java.util.HashMap;
 import java.util.Map;
 
 
@@ -40,6 +43,9 @@ public class ProbeMain {
 
         // HBase tests
         probeHBase(properties);
+
+        // Hive tests
+        probeHive(properties);
 
     }
 
@@ -203,5 +209,50 @@ public class ProbeMain {
 
         hbase.closeConnection();
         logger.info("HBase tests are successful.. ");
+    }
+
+    private static void probeHive(Map<String, String> properties) {
+        try {
+            Connection hiveConnection = DriverManager.getConnection(properties.get("hiveJDBCURL"), "", "");
+            Statement stm = hiveConnection.createStatement();
+            ProbeHive hive = new ProbeHive();
+
+            if(!hive.createDatabase(properties.get("hiveDatabase"))) throw new AssertionError(
+                    "Hive database not created, exiting... ");
+            logger.info("Hive database was successfully created");
+
+            if(!hive.createTable(properties.get("hiveTableCreateStmt"),
+                    properties.get("hiveDatabase"), properties.get("hiveTable"))) throw new AssertionError(
+                            "Hive table not created, exiting... ");
+            logger.info("Hive table was successfully created");
+
+            hive.writeToTable(properties);
+
+            ResultSet rs = stm.executeQuery("select * from " +
+                    String.join(".", properties.get("hiveDatabase"), properties.get("hiveTable")));
+            Map<Integer, String> resultMap = new HashMap<>();
+            while(rs.next()){
+                resultMap.put(rs.getInt("key"), rs.getString("value"));
+            }
+
+            if(resultMap.size() == 2 && resultMap.get(1).equals("one")
+                    && resultMap.get(2).equals("two"))
+                logger.info("Loading data to hive was successful");
+            else
+                throw new AssertionError("Loading data to hive failed, exiting... ");
+
+            if(!hive.dropTable(properties.get("hiveDatabase"), properties.get("hiveTable"))) throw new AssertionError(
+                    "Hive Drop table failed, exiting... ");
+            logger.info("Hive Drop table was successful");
+
+            if(!hive.dropDatabase(properties.get("hiveDatabase"), false)) throw new AssertionError(
+                    "Hive drop database failed, exiting... ");
+            logger.info("Hive drop database successful");
+
+            logger.info("Hive tests successfully completed");
+
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+        }
     }
 }
