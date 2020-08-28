@@ -26,7 +26,7 @@ hiveTestFilePath: target/test-classes/hive-test-data.txt
 hiveDatabase: db_test
 hiveTable: table_test
 hiveJDBCURL: "jdbc:hive2:///"
-hiveTableCreateStmt: "create table if not exists db_test.table_test (key int, value string)"
+hiveTableCreateStmt: "create table if not exists db_test.table_test (key int, value string) STORED AS TEXTFILE"
 
 
 
