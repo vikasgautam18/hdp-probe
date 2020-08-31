@@ -3,11 +3,10 @@ package com.gautam.mantra.hdfs;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileUtil;
+import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-
-import org.apache.hadoop.hdfs.MiniDFSCluster;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -54,6 +53,7 @@ class ProbeHDFSTest {
 
     @AfterAll
     static void tearDown() {
+        builder.checkExitOnShutdown(true);
         hdfs.cleanup(properties);
         hdfsCluster.shutdown();
     }

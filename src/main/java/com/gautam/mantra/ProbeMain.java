@@ -4,6 +4,7 @@ import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
+import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -47,6 +48,14 @@ public class ProbeMain {
         // Hive tests
         probeHive(properties);
 
+        // probeSpark
+        probeSpark(properties);
+
+    }
+
+    private static void probeSpark(Map<String, String> properties) {
+        ProbeSpark spark = new ProbeSpark(properties);
+        spark.submitJob(properties);
     }
 
     /**
