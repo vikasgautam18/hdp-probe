@@ -5,3 +5,4 @@
 /target/
 /derby.log
 /dependency-tree.log
+/metastore_db/

@@ -4,6 +4,7 @@ import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
+import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -47,6 +48,21 @@ public class ProbeMain {
         // Hive tests
         probeHive(properties);
 
+        // probeSpark
+        probeSpark(properties);
+
+    }
+
+    private static void probeSpark(Map<String, String> properties) {
+        ProbeSpark spark = new ProbeSpark();
+        boolean isJobSuccessful = spark.submitJob(properties);
+
+        if(!isJobSuccessful){
+            logger.error("Spark job sumbission failed, exiting ...");
+            System.exit(1);
+        }
+
+        logger.info("Spark Tests are successful.. ");
     }
 
     /**
@@ -140,7 +156,7 @@ public class ProbeMain {
             if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
                 logger.info("ZNode creation successful");
 
-                if(zookeeper.getZNodeData(properties.get("zkPath"), true))
+                if(zookeeper.getZNodeData(properties.get("zkPath")))
                     logger.info("ZNode data is readable");
                 else {
                     logger.error("ZNode data read failed, exiting...");

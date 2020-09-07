@@ -82,12 +82,11 @@ public class ProbeZookeeper implements ProbeService {
     /**
      * This method reads the data present at a given ZNode
      * @param path the ZNode path
-     * @param watchFlag the watch flag
      * @return true if the read was successful, false otherwise
      * @throws KeeperException
      * @throws InterruptedException
      */
-    public boolean getZNodeData(String path, boolean watchFlag)
+    public boolean getZNodeData(String path)
             throws KeeperException, InterruptedException {
 
         byte[] b;
@@ -96,7 +95,7 @@ public class ProbeZookeeper implements ProbeService {
     }
 
     /**
-     * This method updates the data present at a given znode with new content and increments the version
+     * This method updates the data present at a given z-node with new content and increments the version
      * @param path the ZNode path
      * @param data the updated data
      * @return true if the update was successful, false otherwise
