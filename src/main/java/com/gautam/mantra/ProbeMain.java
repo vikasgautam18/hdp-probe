@@ -54,7 +54,7 @@ public class ProbeMain {
     }
 
     private static void probeSpark(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark(properties);
+        ProbeSpark spark = new ProbeSpark();
         spark.submitJob(properties);
     }
 
