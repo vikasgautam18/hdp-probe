@@ -28,6 +28,12 @@ hiveTable: table_test
 hiveJDBCURL: "jdbc:hive2:///"
 hiveTableCreateStmt: "create table if not exists db_test.table_test (key int, value string) STORED AS TEXTFILE"
 
+spark2Master: local
+spark2AppName: spark-local
+spark2DeployMode: client
+spark2Home: /usr/hdp/3.1.0.0-78/spark2
+spark2JarFile: /Users/vikasgautam/Downloads/spark-examples_2.11-2.3.2.3.1.0.0-78.jar
+
 
 
 
