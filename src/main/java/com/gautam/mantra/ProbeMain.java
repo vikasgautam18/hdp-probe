@@ -55,7 +55,14 @@ public class ProbeMain {
 
     private static void probeSpark(Map<String, String> properties) {
         ProbeSpark spark = new ProbeSpark();
-        spark.submitJob(properties);
+        boolean isJobSuccessful = spark.submitJob(properties);
+
+        if(!isJobSuccessful){
+            logger.error("Spark job sumbission failed, exiting ...");
+            System.exit(1);
+        }
+
+        logger.info("Spark Tests are successful.. ");
     }
 
     /**

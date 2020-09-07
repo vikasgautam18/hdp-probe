@@ -13,27 +13,7 @@ import scala.Tuple2;
 import java.util.Map;
 
 public class ProbeSpark {
-    //Configuration config;
     public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
-
-    /*public ProbeSpark(Map<String, String> properties){
-        config = new Configuration();
-        try {
-            config.addResource(new File(properties.get("coreSiteLocation")).getAbsoluteFile().toURI().toURL());
-            config.addResource(new File(properties.get("hdfsSiteLocation")).getAbsoluteFile().toURI().toURL());
-            config.addResource(new File(properties.get("mapredSiteLocation")).getAbsoluteFile().toURI().toURL());
-            config.addResource(new File(properties.get("yarnSiteLocation")).getAbsoluteFile().toURI().toURL());
-            config.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-            config.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
-            config.set("hadoop.home.dir", properties.get("hadoopHomeDir"));
-            config.set("hadoop.conf.dir", properties.get("hadoopConfDir"));
-            config.set("yarn.conf.dir", properties.get("yarnConfDir"));
-
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }*/
-
 
     public boolean submitJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
@@ -66,11 +46,6 @@ public class ProbeSpark {
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
                 client.monitorApplication(applicationId, false, true, 3000L);
 
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
         logger.info("final status:: " + result._2.toString());
 
         return true;
