@@ -22,10 +22,10 @@ public class ProbeSpark {
         SparkConf sparkConf = new SparkConf();
         sparkConf.setSparkHome(properties.get("spark2Home"));
 
-        sparkConf.setMaster("yarn");
-        sparkConf.setAppName("spark-yarn");
-        sparkConf.set("master", "yarn");
-        sparkConf.set("spark.submit.deployMode", "cluster");
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("spark2AppName"));
+        //sparkConf.set("master", "yarn");
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
