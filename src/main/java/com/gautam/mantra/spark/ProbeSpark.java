@@ -66,6 +66,11 @@ public class ProbeSpark {
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
                 client.monitorApplication(applicationId, true, true, 100L);
 
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         logger.info("final status:: " + result._2.toString());
 
         return true;
