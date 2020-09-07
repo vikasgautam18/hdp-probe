@@ -1,6 +1,5 @@
 package com.gautam.mantra.spark;
 
-import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -11,15 +10,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
-import java.io.File;
-import java.net.MalformedURLException;
 import java.util.Map;
 
 public class ProbeSpark {
-    Configuration config;
+    //Configuration config;
     public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
 
-    public ProbeSpark(Map<String, String> properties){
+    /*public ProbeSpark(Map<String, String> properties){
         config = new Configuration();
         try {
             config.addResource(new File(properties.get("coreSiteLocation")).getAbsoluteFile().toURI().toURL());
@@ -35,12 +32,13 @@ public class ProbeSpark {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-    }
+    }*/
 
 
     public boolean submitJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
+
         SparkConf sparkConf = new SparkConf();
         sparkConf.setSparkHome(properties.get("spark2Home"));
 
@@ -49,8 +47,8 @@ public class ProbeSpark {
         sparkConf.set("master", "yarn");
         sparkConf.set("spark.submit.deployMode", "cluster");
 
-        sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
-        sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        //sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        //sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
 
         final String[] args = new String[]{
                 "--jar",
@@ -68,11 +66,11 @@ public class ProbeSpark {
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
                 client.monitorApplication(applicationId, false, true, 3000L);
 
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         logger.info("final status:: " + result._2.toString());
 
         return true;
