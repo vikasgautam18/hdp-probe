@@ -65,7 +65,7 @@ public class ProbeSpark {
         logger.info("application id is ::" + applicationId.toString());
 
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
-                client.monitorApplication(applicationId, true, true, 100L);
+                client.monitorApplication(applicationId, false, true, 3000L);
 
         try {
             Thread.sleep(10000);
