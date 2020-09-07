@@ -4,7 +4,9 @@ import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.hbase.HBaseTestingUtility;
 import org.apache.hadoop.hbase.zookeeper.MiniZooKeeperCluster;
 import org.apache.zookeeper.KeeperException;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -13,7 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ProbeZookeeperTest {
     static HBaseTestingUtility hbt = new HBaseTestingUtility();
@@ -75,7 +77,7 @@ class ProbeZookeeperTest {
         try {
             if(!probeZookeeper.existsZNode(properties.get("zkPath")))
                 probeZookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes());
-            assert probeZookeeper.getZNodeData(properties.get("zkPath"), true);
+            assert probeZookeeper.getZNodeData(properties.get("zkPath"));
         } catch (KeeperException | InterruptedException e) {
             e.printStackTrace();
         }

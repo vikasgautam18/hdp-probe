@@ -149,7 +149,7 @@ public class ProbeMain {
             if(zookeeper.createZNodeData(properties.get("zkPath"), properties.get("zkData").getBytes())){
                 logger.info("ZNode creation successful");
 
-                if(zookeeper.getZNodeData(properties.get("zkPath"), true))
+                if(zookeeper.getZNodeData(properties.get("zkPath")))
                     logger.info("ZNode data is readable");
                 else {
                     logger.error("ZNode data read failed, exiting...");
