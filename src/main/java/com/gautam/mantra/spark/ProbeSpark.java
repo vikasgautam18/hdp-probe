@@ -32,7 +32,7 @@ public class ProbeSpark {
 
         final String[] args = new String[]{
                 "--jar",
-                properties.get("sparkJarFile"),
+                properties.get("spark2JarFile"),
                 "--class",
                 "org.apache.spark.examples.SparkPi"
         };
