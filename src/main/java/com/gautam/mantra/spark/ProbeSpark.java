@@ -47,6 +47,7 @@ public class ProbeSpark {
         sparkConf.setAppName("spark-yarn");
         sparkConf.set("master", "yarn");
         sparkConf.set("spark.submit.deployMode", "cluster");
+        sparkConf.set("hdp.version", "3.1.0.0-78");
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
 
