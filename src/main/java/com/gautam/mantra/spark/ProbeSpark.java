@@ -18,10 +18,10 @@ public class ProbeSpark {
     public boolean submitPiExampleJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
+        System.setProperty("SPARK_HOME", properties.get("spark2Home"));
 
         SparkConf sparkConf = new SparkConf();
         sparkConf.setSparkHome(properties.get("spark2Home"));
-
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("spark2AppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
@@ -38,8 +38,11 @@ public class ProbeSpark {
 
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
+
         logger.info("submitting spark pi example application to YARN :: ");
+
         ApplicationId applicationId = client.submitApplication();
+
         logger.info("application id is ::" + applicationId.toString());
 
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
