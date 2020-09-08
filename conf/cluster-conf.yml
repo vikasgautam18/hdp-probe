@@ -33,6 +33,7 @@ spark2AppName: spark-yarn
 spark2DeployMode: cluster
 spark2Home: /usr/hdp/3.1.0.0-78/spark2
 spark2JarFile: /usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar
+spark2YarnJobStatus: "true"
 
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
