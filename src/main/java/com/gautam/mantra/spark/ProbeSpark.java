@@ -72,6 +72,8 @@ public class ProbeSpark {
 
         SparkSession spark = SparkSession
                 .builder()
+                .config("fs.hdfs.impl", "org.apache.hadoop.hdfs.DistributedFileSystem")
+                .config("fs.file.impl", "org.apache.hadoop.fs.LocalFileSystem")
                 .appName("Build a DataFrame from Scratch")
                 .master("local[*]")
                 .getOrCreate();
