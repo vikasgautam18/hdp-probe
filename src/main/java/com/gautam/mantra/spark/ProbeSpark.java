@@ -15,7 +15,7 @@ import java.util.Map;
 public class ProbeSpark {
     public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
 
-    public boolean submitJob(Map<String, String> properties){
+    public boolean submitPiExampleJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
 
@@ -24,7 +24,6 @@ public class ProbeSpark {
 
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("spark2AppName"));
-        //sparkConf.set("master", "yarn");
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
@@ -39,15 +38,15 @@ public class ProbeSpark {
 
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
-        logger.info("submitting application:: ");
+        logger.info("submitting spark pi example application to YARN :: ");
         ApplicationId applicationId = client.submitApplication();
         logger.info("application id is ::" + applicationId.toString());
 
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
                 client.monitorApplication(applicationId, false, true, 3000L);
 
-        logger.info("final status:: " + result._2.toString());
-        // TODO: return actual result - not true always
-        return true;
+        logger.info("final status of spark pi example job :: " + result._2.toString());
+
+        return result._2.toString().equals("SUCCEEDED");
     }
 }
