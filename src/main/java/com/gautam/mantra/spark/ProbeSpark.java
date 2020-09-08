@@ -73,6 +73,7 @@ public class ProbeSpark {
         SparkSession spark = SparkSession
                 .builder()
                 .appName("Build a DataFrame from Scratch")
+                .master("local[*]")
                 .getOrCreate();
 
         Dataset<Row> dataset = spark.read().schema(schema).csv(spark.emptyDataset(Encoders.STRING()));
