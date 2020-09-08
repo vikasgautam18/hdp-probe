@@ -47,7 +47,7 @@ public class ProbeSpark {
                 client.monitorApplication(applicationId, false, true, 3000L);
 
         logger.info("final status:: " + result._2.toString());
-
+        // TODO: return actual result - not true always
         return true;
     }
 }
