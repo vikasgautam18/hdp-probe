@@ -43,7 +43,7 @@ public class ProbeSpark {
         logger.info("application id is ::" + applicationId.toString());
 
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
-                client.monitorApplication(applicationId, false, Boolean.getBoolean(properties.get("spark2YarnJobStatus")), 3000L);
+                client.monitorApplication(applicationId, false, true, 3000L);
 
         logger.info("final status of spark pi example job :: " + result._2.toString());
 
