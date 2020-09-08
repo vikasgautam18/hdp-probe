@@ -49,13 +49,13 @@ public class ProbeMain {
         probeHive(properties);
 
         // probeSpark
-        probeSpark(properties);
+        probeSparkYARN(properties);
 
     }
 
-    private static void probeSpark(Map<String, String> properties) {
+    private static void probeSparkYARN(Map<String, String> properties) {
         ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitJob(properties);
+        boolean isJobSuccessful = spark.submitPiExampleJob(properties);
 
         if(!isJobSuccessful){
             logger.error("Spark job sumbission failed, exiting ...");

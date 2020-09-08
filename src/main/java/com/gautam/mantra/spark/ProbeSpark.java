@@ -15,39 +15,42 @@ import java.util.Map;
 public class ProbeSpark {
     public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
 
-    public boolean submitJob(Map<String, String> properties){
+    public boolean submitPiExampleJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
+        System.setProperty("SPARK_HOME", properties.get("spark2Home"));
 
         SparkConf sparkConf = new SparkConf();
         sparkConf.setSparkHome(properties.get("spark2Home"));
-
-        sparkConf.setMaster("yarn");
-        sparkConf.setAppName("spark-yarn");
-        sparkConf.set("master", "yarn");
-        sparkConf.set("spark.submit.deployMode", "cluster");
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("spark2AppName"));
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
 
         final String[] args = new String[]{
                 "--jar",
-                properties.get("sparkJarFile"),
+                properties.get("spark2JarFile"),
                 "--class",
                 "org.apache.spark.examples.SparkPi"
         };
 
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
-        logger.info("submitting application:: ");
+
+        logger.info("submitting spark pi example application to YARN :: ");
+
         ApplicationId applicationId = client.submitApplication();
+
         logger.info("application id is ::" + applicationId.toString());
 
         Tuple2<YarnApplicationState, FinalApplicationStatus> result =
-                client.monitorApplication(applicationId, false, true, 3000L);
+                client.monitorApplication(applicationId, false,
+                        Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
 
-        logger.info("final status:: " + result._2.toString());
+        logger.info("final status of spark pi example job :: " + result._2.toString());
 
-        return true;
+        return result._2.toString().equals("SUCCEEDED");
     }
 }

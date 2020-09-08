@@ -28,6 +28,18 @@ hiveTable: table_test
 hiveJDBCURL: "jdbc:hive2:///"
 hiveTableCreateStmt: "create table if not exists db_test.table_test (key int, value string) STORED AS TEXTFILE"
 
+spark2Master: yarn
+spark2AppName: spark-local
+spark2DeployMode: cluster
+spark2Home: /usr/hdp/3.1.0.0-78/spark2
+spark2JarFile: /usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar
 
+coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
+hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
+mapredSiteLocation: /etc/hadoop/3.1.0.0-78/0/mapred-site.xml
+yarnSiteLocation: /etc/hadoop/3.1.0.0-78/0/yarn-site.xml
+hadoopHomeDir: /usr/hdp/3.1.0.0-78/hadoop
+hadoopConfDir: /usr/hdp/3.1.0.0-78/hadoop/conf
+yarnConfDir: /usr/hdp/3.1.0.0-78/hadoop-yarn/conf
 
 
