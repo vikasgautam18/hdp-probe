@@ -39,6 +39,7 @@ sparkHDFSAppName: spark-hdfs-probe
 sparkHDFSNumRecords: "1000"
 sparkHDFSOutFolder: /user/vikgautammbb/spark-hdfs-test
 sparkHDFSFinalFile: /user/vikgautammbb/spark-hdfs-test.csv
+sparkHDFSjar: /data/hdp-probe/target/hdp-probe.jar
 
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml

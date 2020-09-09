@@ -26,11 +26,8 @@ public class SparkHDFSProbe {
     public static void main(String[] args) throws IOException {
         Logger.getLogger("org").setLevel(Level.ERROR);
 
-        // Load Cluster properties and configurations
-        //ClassLoader loader = Thread.currentThread().getContextClassLoader();
         InputStream inputStream = new FileInputStream(
                 new File(System.getProperty("spark2hdfs.cluster.yml")));
-                //loader.getResourceAsStream("cluster-conf.yml");
         Utilities utilities = new Utilities();
 
         Map<String, String> properties = yaml.load(inputStream);
@@ -58,7 +55,7 @@ public class SparkHDFSProbe {
         Path outPath = null;
         while(files.hasNext()){
             Path path = files.next().getPath();
-            System.out.println("found file:: "+ path.getName());
+            Logger.getLogger("org").info("found file:: "+ path.getName());
             if(path.getName().startsWith("part-00000"))
                 outPath = path;
         }
@@ -68,6 +65,7 @@ public class SparkHDFSProbe {
 
         if(outPath != null){
             FileUtil.copy(fs, outPath, fs, new Path(dstPath), false, config);
+            Logger.getLogger("org").info("Output file written to HDFS at ::" + dstPath);
         }
 
         fs.delete(new Path(properties.get("sparkHDFSOutFolder")), true);
