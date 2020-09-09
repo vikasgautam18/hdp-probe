@@ -63,16 +63,16 @@ public class ProbeSpark {
         sparkConf.setAppName(properties.get("sparkHDFSAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
-        sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        sparkConf.set("spark.driver.extraJavaOptions", "-Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
 
         final String[] args = new String[]{
                 "--jar",
                 properties.get("sparkHDFSjar"),
                 "--class",
-                "com.gautam.mantra.spark.SparkHDFSProbe",
-                "--driver-java-options",
-                "-Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile")
+                "com.gautam.mantra.spark.SparkHDFSProbe"//,
+                //"--conf",
+                //"-Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile")
         };
 
         ClientArguments clientArguments = new ClientArguments(args);
