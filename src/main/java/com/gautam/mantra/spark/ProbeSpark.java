@@ -63,7 +63,7 @@ public class ProbeSpark {
         sparkConf.setAppName(properties.get("sparkHDFSAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
-        sparkConf.set("spark.driver.extraJavaOptions", "-Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile"));
+        sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
 
         final String[] args = new String[]{
