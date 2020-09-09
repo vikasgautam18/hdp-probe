@@ -9,16 +9,13 @@ import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
-import java.io.File;
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 
 public class SparkHDFSProbe {
 
-    public static void main(String[] args) throws URISyntaxException, IOException {
+    public static void main(String[] args) throws IOException {
         Logger.getLogger("org").setLevel(Level.ERROR);
         SparkSession spark = SparkSession.builder()
                 .appName("spark-hdfs-test")
@@ -33,7 +30,7 @@ public class SparkHDFSProbe {
                 .save("/user/vikgautammbb/spark-hdfs-test");
 
         Configuration config = spark.sparkContext().hadoopConfiguration();
-        FileSystem fs = FileSystem.get(new URI("/user/vikgautammbb/spark-hdfs-test"), config);
+        FileSystem fs = FileSystem.get(config);
         RemoteIterator<LocatedFileStatus> files = fs.listFiles(new Path("/user/vikgautammbb/spark-hdfs-test"),
                 false);
 
@@ -48,13 +45,14 @@ public class SparkHDFSProbe {
         //String srcPath = "/user/vikgautammbb/spark-hdfs-test/";
         String dstPath = "/user/vikgautammbb/spark-hdfs-test.csv";
 
+
+
         if(outPath != null){
             System.out.println(outPath);
-            FileUtil.copy(fs, outPath, fs, new Path(dstPath), true, config);
-            FileUtil.fullyDelete(new File("/user/vikgautammbb/spark-hdfs-test"));
+            FileUtil.copy(fs, outPath, fs, new Path(dstPath), false, config);
         }
 
-
+        fs.delete(new Path("/user/vikgautammbb/spark-hdfs-test"), true);
         spark.stop();
     }
 
