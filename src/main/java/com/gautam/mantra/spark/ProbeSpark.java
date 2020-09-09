@@ -1,5 +1,6 @@
 package com.gautam.mantra.spark;
 
+import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -78,10 +79,14 @@ public class ProbeSpark {
                 .master("local[*]")
                 .getOrCreate();
 
+        Configuration hadoopConfig = spark.sparkContext().hadoopConfiguration();
+        hadoopConfig.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        hadoopConfig.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
         Dataset<Row> dataset = spark.read().schema(schema).csv(spark.emptyDataset(Encoders.STRING()));
 
         dataset.printSchema();
         dataset.show();
-        return null;
+        return dataset;
     }
 }
