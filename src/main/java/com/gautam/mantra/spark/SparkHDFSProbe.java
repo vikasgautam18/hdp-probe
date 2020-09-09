@@ -30,7 +30,7 @@ public class SparkHDFSProbe {
         dataset.coalesce(1).write()
                 .format("csv").option("header", "false")
                 .mode(SaveMode.Overwrite)
-                .save("/user/vikgautammbb/spark-hdfs-test.csv");
+                .save("/user/vikgautammbb/spark-hdfs-test");
 
         Configuration config = spark.sparkContext().hadoopConfiguration();
         FileSystem fs = FileSystem.get(new URI("/user/vikgautammbb/spark-hdfs-test"), config);
