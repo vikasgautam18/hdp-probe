@@ -62,8 +62,6 @@ public class ProbeMain {
             System.exit(1);
         }
 
-        spark.generateRandomDF(100);
-
         logger.info("Spark Tests are successful.. ");
     }
 
