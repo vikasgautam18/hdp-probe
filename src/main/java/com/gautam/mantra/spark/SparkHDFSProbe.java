@@ -11,6 +11,8 @@ import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
@@ -25,8 +27,10 @@ public class SparkHDFSProbe {
         Logger.getLogger("org").setLevel(Level.DEBUG);
 
         // Load Cluster properties and configurations
-        ClassLoader loader = Thread.currentThread().getContextClassLoader();
-        InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
+        //ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = new FileInputStream(
+                new File(System.getProperty("spark2hdfs.cluster.yml")));
+                //loader.getResourceAsStream("cluster-conf.yml");
         Utilities utilities = new Utilities();
 
         Map<String, String> properties = yaml.load(inputStream);
