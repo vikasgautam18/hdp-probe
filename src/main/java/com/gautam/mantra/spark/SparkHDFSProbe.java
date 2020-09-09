@@ -4,6 +4,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
+import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
 
 import java.sql.Timestamp;
@@ -20,7 +21,11 @@ public class SparkHDFSProbe {
         Dataset<Row> dataset = generateDataSet(spark, 100);
         dataset.show();
 
-        dataset.write().csv("/user/vikgautammbb/spark-hdfs-test");
+        dataset.coalesce(1).write()
+                .format("csv").option("header", "false")
+                .mode(SaveMode.Overwrite)
+                .save("/user/vikgautammbb/spark-hdfs-test.csv");
+
         spark.stop();
     }
 
