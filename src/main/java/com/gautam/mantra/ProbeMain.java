@@ -50,7 +50,20 @@ public class ProbeMain {
 
         // probeSpark
         probeSparkYARN(properties);
+        probeSparkHDFS(properties);
 
+    }
+
+    private static void probeSparkHDFS(Map<String, String> properties) {
+        ProbeSpark spark = new ProbeSpark();
+        boolean isJobSuccessful = spark.submitHDFSJob(properties);
+
+        if(!isJobSuccessful){
+            logger.error("Spark job sumbission failed, exiting ...");
+            System.exit(1);
+        }
+
+        logger.info("Spark HDFS ests are successful.. ");
     }
 
     private static void probeSparkYARN(Map<String, String> properties) {
@@ -62,7 +75,7 @@ public class ProbeMain {
             System.exit(1);
         }
 
-        logger.info("Spark Tests are successful.. ");
+        logger.info("Spark pi example job submission is successful.. ");
     }
 
     /**
