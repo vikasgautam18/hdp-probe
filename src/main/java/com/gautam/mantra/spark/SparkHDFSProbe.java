@@ -37,7 +37,7 @@ public class SparkHDFSProbe {
         Path outPath = null;
         while(files.hasNext()){
             Path path = files.next().getPath();
-            System.out.println("found file:: "+ files.next().getPath().getName());
+            System.out.println("found file:: "+ path.getName());
             if(path.getName().startsWith("part-00000"))
                 outPath = path;
         }
