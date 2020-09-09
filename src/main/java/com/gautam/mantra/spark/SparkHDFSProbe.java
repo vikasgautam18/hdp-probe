@@ -24,7 +24,7 @@ public class SparkHDFSProbe {
     public static final Yaml yaml = new Yaml();
 
     public static void main(String[] args) throws IOException {
-        Logger.getLogger("org").setLevel(Level.DEBUG);
+        Logger.getLogger("org").setLevel(Level.ERROR);
 
         // Load Cluster properties and configurations
         //ClassLoader loader = Thread.currentThread().getContextClassLoader();
