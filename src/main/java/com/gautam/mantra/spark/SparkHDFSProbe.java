@@ -2,7 +2,9 @@ package com.gautam.mantra.spark;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.fs.RemoteIterator;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
@@ -34,8 +36,12 @@ public class SparkHDFSProbe {
 
         Configuration config = spark.sparkContext().hadoopConfiguration();
         FileSystem fs = FileSystem.get(new URI("/user/vikgautammbb/spark-hdfs-test"), config);
+        RemoteIterator<LocatedFileStatus> files = fs.listFiles(new Path("/user/vikgautammbb/spark-hdfs-test"),
+                false);
 
-        System.out.println(fs.listFiles(new Path("/user/vikgautammbb/spark-hdfs-test"), false));
+        while(files.hasNext()){
+            System.out.println(files.next().getPath().getName());
+        }
 
         //String srcPath = "/user/vikgautammbb/spark-hdfs-test/";
         //String dstPath = "/user/vikgautammbb/spark-hdfs-test.csv";
