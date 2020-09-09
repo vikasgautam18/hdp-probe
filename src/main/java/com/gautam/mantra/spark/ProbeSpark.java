@@ -57,6 +57,7 @@ public class ProbeSpark {
 
     public boolean submitHDFSJob(Map<String, String> properties){
         System.setProperty("hdp.version", "3.1.0.0-78");
+        System.setProperty("spark2hdfs.cluster.yml", properties.get("clusterPropsFile"));
 
         SparkConf sparkConf = new SparkConf();
         sparkConf.setMaster(properties.get("spark2Master"));
