@@ -32,23 +32,20 @@ public class SparkHDFSProbe {
         Configuration config = spark.sparkContext().hadoopConfiguration();
         FileSystem fs = FileSystem.get(config);
         RemoteIterator<LocatedFileStatus> files = fs.listFiles(new Path("/user/vikgautammbb/spark-hdfs-test"),
-                false);
+                true);
 
         Path outPath = null;
         while(files.hasNext()){
             Path path = files.next().getPath();
-            System.out.println(files.next().getPath().getName());
+            System.out.println("found file:: "+ files.next().getPath().getName());
             if(path.getName().startsWith("part-00000"))
                 outPath = path;
         }
 
-        //String srcPath = "/user/vikgautammbb/spark-hdfs-test/";
         String dstPath = "/user/vikgautammbb/spark-hdfs-test.csv";
-
-
+        System.out.println("outpath::" + outPath);
 
         if(outPath != null){
-            System.out.println(outPath);
             FileUtil.copy(fs, outPath, fs, new Path(dstPath), false, config);
         }
 
@@ -64,7 +61,7 @@ public class SparkHDFSProbe {
         }
 
         for (Event e: dataList) {
-            System.out.println(e.toString());
+            Logger.getLogger("org").debug(e.toString());
         }
 
         return spark.createDataFrame(dataList, Event.class);
