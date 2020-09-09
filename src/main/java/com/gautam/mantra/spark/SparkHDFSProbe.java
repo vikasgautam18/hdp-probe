@@ -1,5 +1,6 @@
 package com.gautam.mantra.spark;
 
+import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.log4j.Level;
@@ -8,31 +9,47 @@ import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SaveMode;
 import org.apache.spark.sql.SparkSession;
+import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Map;
 
 public class SparkHDFSProbe {
 
-    public static void main(String[] args) throws IOException {
-        Logger.getLogger("org").setLevel(Level.ERROR);
-        SparkSession spark = SparkSession.builder()
-                .appName("spark-hdfs-test")
-                .master("local[1]").getOrCreate();
+    public static final Yaml yaml = new Yaml();
 
-        Dataset<Row> dataset = generateDataSet(spark, 100);
-        dataset.show();
+    public static void main(String[] args) throws IOException {
+        Logger.getLogger("org").setLevel(Level.DEBUG);
+
+        // Load Cluster properties and configurations
+        ClassLoader loader = Thread.currentThread().getContextClassLoader();
+        InputStream inputStream = loader.getResourceAsStream("cluster-conf.yml");
+        Utilities utilities = new Utilities();
+
+        Map<String, String> properties = yaml.load(inputStream);
+        // print all loaded properties to console
+        utilities.printProperties(properties);
+
+        System.out.println("**********************************************************************************");
+
+        SparkSession spark = SparkSession.builder()
+                .appName(properties.get("sparkHDFSAppName")).getOrCreate();
+
+        Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHDFSNumRecords")));
+        dataset.show(10, false);
 
         dataset.coalesce(1).write()
-                .format("csv").option("header", "false")
+                .format("csv").option("header", "true")
                 .mode(SaveMode.Overwrite)
-                .save("/user/vikgautammbb/spark-hdfs-test");
+                .save(properties.get("sparkHDFSOutFolder"));
 
         Configuration config = spark.sparkContext().hadoopConfiguration();
         FileSystem fs = FileSystem.get(config);
-        RemoteIterator<LocatedFileStatus> files = fs.listFiles(new Path("/user/vikgautammbb/spark-hdfs-test"),
-                true);
+        RemoteIterator<LocatedFileStatus> files =
+                fs.listFiles(new Path(properties.get("sparkHDFSOutFolder")), true);
 
         Path outPath = null;
         while(files.hasNext()){
@@ -42,14 +59,14 @@ public class SparkHDFSProbe {
                 outPath = path;
         }
 
-        String dstPath = "/user/vikgautammbb/spark-hdfs-test.csv";
-        System.out.println("outpath::" + outPath);
+        String dstPath = properties.get("sparkHDFSFinalFile");
+        Logger.getLogger("org").debug("outpath::" + outPath);
 
         if(outPath != null){
             FileUtil.copy(fs, outPath, fs, new Path(dstPath), false, config);
         }
 
-        fs.delete(new Path("/user/vikgautammbb/spark-hdfs-test"), true);
+        fs.delete(new Path(properties.get("sparkHDFSOutFolder")), true);
         spark.stop();
     }
 

@@ -7,11 +7,19 @@ public class Event {
     String eventId;
     Timestamp eventTs;
 
+
+    /** Constructor
+     * @param s Event id
+     * @param timestamp timestamp
+     */
     public Event(String s, java.sql.Timestamp timestamp) {
         this.setEventId(s);
         this.setEventTs(timestamp);
     }
 
+    /**
+     * default constructor
+     */
     public Event() {
 
     }
