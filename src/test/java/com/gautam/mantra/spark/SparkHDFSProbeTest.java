@@ -51,7 +51,7 @@ class SparkHDFSProbeTest {
     @Test
     void writeDatasetToHDFS() throws IOException {
         spark.sparkContext().hadoopConfiguration().forEach(stringStringEntry ->
-            System.out.println(stringStringEntry.getKey() + "--> " + stringStringEntry.getValue()));
+            logger.info(stringStringEntry.getKey() + "--> " + stringStringEntry.getValue()));
 
         Dataset<Row> dataset = SparkHDFSProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHDFSNumRecords")));
         dataset.show(10, false);
