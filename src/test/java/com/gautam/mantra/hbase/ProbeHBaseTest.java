@@ -12,13 +12,14 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 class ProbeHBaseTest {
 
     private static HBaseTestingUtility utility;
     private static ProbeHBase hbase;
-    private static final Logger logger = LoggerFactory.getLogger(ProbeHBaseTest.class.getName());
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();

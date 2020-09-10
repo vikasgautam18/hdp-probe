@@ -16,6 +16,7 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,7 +24,7 @@ import java.util.Map;
 
 public class ProbeMain {
     public static final Yaml yaml = new Yaml();
-    public static final Logger logger = LoggerFactory.getLogger(ProbeMain.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     public static void main(String[] args) {
 

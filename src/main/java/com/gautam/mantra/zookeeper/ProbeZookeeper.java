@@ -8,6 +8,7 @@ import org.apache.zookeeper.ZooKeeper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.invoke.MethodHandles;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
@@ -15,7 +16,7 @@ public class ProbeZookeeper implements ProbeService {
 
     ZKConnection zkConnection = new ZKConnection();
     private static ZooKeeper zooKeeper;
-    private static final Logger logger = LoggerFactory.getLogger(ProbeZookeeper.class);
+    private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     public ProbeZookeeper(Map<String, String> properties) {
         initialize(properties);

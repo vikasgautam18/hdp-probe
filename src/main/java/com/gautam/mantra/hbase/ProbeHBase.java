@@ -9,13 +9,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProbeHBase {
 
     private static Connection connection;
-    public static final Logger logger = LoggerFactory.getLogger(ProbeHBase.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     public ProbeHBase(Configuration conf) {
         try{
