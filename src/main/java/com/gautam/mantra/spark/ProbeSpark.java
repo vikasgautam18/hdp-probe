@@ -16,12 +16,13 @@ import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ProbeSpark {
-    public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
+    public final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     /**
      * This method submits a spark job to YARN

@@ -7,8 +7,6 @@ import org.apache.zookeeper.KeeperException;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.IOException;
@@ -24,7 +22,6 @@ class ProbeZookeeperTest {
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();
-    public static final Logger logger = LoggerFactory.getLogger(ProbeZookeeperTest.class.getName());
 
     @BeforeAll
     static void setUp() {

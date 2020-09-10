@@ -14,6 +14,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 class ProbeHDFSTest {
@@ -25,11 +26,10 @@ class ProbeHDFSTest {
     static final Utilities utilities = new Utilities();
 
     public static final Yaml yaml = new Yaml();
-    public static final Logger logger = LoggerFactory.getLogger(ProbeHDFSTest.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     @BeforeAll
     static void setUp() {
-
         InputStream inputStream = ProbeHDFSTest.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
         properties = yaml.load(inputStream);
         utilities.printProperties(properties);

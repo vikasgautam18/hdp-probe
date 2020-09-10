@@ -12,12 +12,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.lang.invoke.MethodHandles;
 import java.net.URI;
 import java.util.Map;
 
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
-    public static final Logger logger = LoggerFactory.getLogger(ProbeHDFS.class.getName());
+    public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     /**
      * This method verifies if HDFS is reachable
