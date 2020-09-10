@@ -1,5 +1,9 @@
 package com.gautam.mantra.spark;
 
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.fs.FSDataInputStream;
+import org.apache.hadoop.fs.FileSystem;
+import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -10,11 +14,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
 
+import java.io.IOException;
+import java.net.URI;
 import java.util.Map;
 
 public class ProbeSpark {
     public final Logger logger = LoggerFactory.getLogger(ProbeSpark.class.getName());
 
+    /**
+     * This method submits a spark job to YARN
+     * @param properties the cluster configuration
+     * @return True if the job was successful, false otherwise
+     */
     public boolean submitPiExampleJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
@@ -54,7 +65,11 @@ public class ProbeSpark {
         return result._2.toString().equals("SUCCEEDED");
     }
 
-
+    /**
+     * This method submits a spark job to YARN
+     * @param properties the cluster configuration
+     * @return True if the job was successful, false otherwise
+     */
     public boolean submitHDFSJob(Map<String, String> properties){
         System.setProperty("hdp.version", "3.1.0.0-78");
 
@@ -70,9 +85,7 @@ public class ProbeSpark {
                 "--jar",
                 properties.get("sparkHDFSjar"),
                 "--class",
-                "com.gautam.mantra.spark.SparkHDFSProbe"//,
-                //"--conf",
-                //"-Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile")
+                "com.gautam.mantra.spark.SparkHDFSProbe"
         };
 
         ClientArguments clientArguments = new ClientArguments(args);
@@ -90,6 +103,36 @@ public class ProbeSpark {
 
         logger.info("final status of spark hdfs probe job :: " + result._2.toString());
 
+        System.out.println(verifyHDFSJobResult(properties));
+
         return result._2.toString().equals("SUCCEEDED");
+    }
+
+    private boolean verifyHDFSJobResult(Map<String, String> properties) {
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", properties.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
+            if(fs.exists(new Path(properties.get("testHDFSCreatePath")))){
+                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHDFSFinalFile")));
+                return countLines(inputStream.readUTF()) == Integer.parseInt(properties.get("sparkHDFSNumRecords")) + 1 ;
+            }
+            else {
+                logger.error("Test file does not exist !");
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private static int countLines(String str){
+        String[] lines = str.split("\r\n|\r|\n");
+        System.out.println(lines.length);
+        return  lines.length;
     }
 }
