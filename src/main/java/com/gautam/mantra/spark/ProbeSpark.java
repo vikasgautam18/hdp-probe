@@ -116,7 +116,7 @@ public class ProbeSpark {
 
         try{
             FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
-            if(fs.exists(new Path(properties.get("testHDFSCreatePath")))){
+            if(fs.exists(new Path(properties.get("sparkHDFSFinalFile")))){
                 FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHDFSFinalFile")));
                 return countLines(inputStream.readUTF()) == Integer.parseInt(properties.get("sparkHDFSNumRecords")) + 1 ;
             }
