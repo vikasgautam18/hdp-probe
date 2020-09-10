@@ -1,5 +1,6 @@
 package com.gautam.mantra.spark;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
@@ -16,6 +17,7 @@ import scala.Tuple2;
 
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
 public class ProbeSpark {
@@ -118,7 +120,8 @@ public class ProbeSpark {
             FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
             if(fs.exists(new Path(properties.get("sparkHDFSFinalFile")))){
                 FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHDFSFinalFile")));
-                return countLines(inputStream.readUTF()) == Integer.parseInt(properties.get("sparkHDFSNumRecords")) + 1 ;
+                String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                return countLines(content) == Integer.parseInt(properties.get("sparkHDFSNumRecords")) + 1 ;
             }
             else {
                 logger.error("Test file does not exist !");
