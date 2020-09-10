@@ -105,9 +105,7 @@ public class ProbeSpark {
 
         logger.info("final status of spark hdfs probe job :: " + result._2.toString());
 
-        System.out.println(verifyHDFSJobResult(properties));
-
-        return result._2.toString().equals("SUCCEEDED");
+        return result._2.toString().equals("SUCCEEDED") && verifyHDFSJobResult(properties);
     }
 
     private boolean verifyHDFSJobResult(Map<String, String> properties) {
@@ -124,7 +122,7 @@ public class ProbeSpark {
                 return countLines(content) == Integer.parseInt(properties.get("sparkHDFSNumRecords")) + 1 ;
             }
             else {
-                logger.error("Test file does not exist !");
+                logger.error("File does not exist !");
                 return false;
             }
         } catch (IOException e) {
@@ -133,9 +131,8 @@ public class ProbeSpark {
         }
     }
 
-    private static int countLines(String str){
+    private int countLines(String str){
         String[] lines = str.split("\r\n|\r|\n");
-        System.out.println(lines.length);
         return  lines.length;
     }
 }
