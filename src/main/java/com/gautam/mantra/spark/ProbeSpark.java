@@ -31,7 +31,6 @@ public class ProbeSpark {
     public boolean submitPiExampleJob(Map<String, String> properties){
         System.setProperty("SPARK_YARN_MODE", "true");
         System.setProperty("hdp.version", "3.1.0.0-78");
-        System.setProperty("SPARK_HOME", properties.get("spark2Home"));
 
         SparkConf sparkConf = new SparkConf();
         sparkConf.setSparkHome(properties.get("spark2Home"));
