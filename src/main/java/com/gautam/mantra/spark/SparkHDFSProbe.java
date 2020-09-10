@@ -41,7 +41,12 @@ public class SparkHDFSProbe {
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHDFSNumRecords")));
         dataset.show(10, false);
+        // write to HDFS
+        writeDatasetToHDFS(properties, spark, dataset);
+        spark.stop();
+    }
 
+    public static void writeDatasetToHDFS(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) throws IOException {
         dataset.coalesce(1).write()
                 .format("csv").option("header", "true")
                 .mode(SaveMode.Overwrite)
@@ -69,7 +74,6 @@ public class SparkHDFSProbe {
         }
 
         fs.delete(new Path(properties.get("sparkHDFSOutFolder")), true);
-        spark.stop();
     }
 
     public static Dataset<Row> generateDataSet(SparkSession spark, int numRows){
