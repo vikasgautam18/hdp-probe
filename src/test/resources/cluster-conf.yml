@@ -34,6 +34,11 @@ spark2DeployMode: cluster
 spark2Home: /usr/hdp/3.1.0.0-78/spark2
 spark2JarFile: /usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar
 
+sparkHDFSAppName: spark-hdfs-probe
+sparkHDFSNumRecords: "1000"
+sparkHDFSOutFolder: /tmp/spark-hdfs-test
+sparkHDFSFinalFile: /tmp/spark-hdfs-test.csv
+
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 mapredSiteLocation: /etc/hadoop/3.1.0.0-78/0/mapred-site.xml
