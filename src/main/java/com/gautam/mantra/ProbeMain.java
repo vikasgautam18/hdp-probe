@@ -59,11 +59,11 @@ public class ProbeMain {
         boolean isJobSuccessful = spark.submitHDFSJob(properties);
 
         if(!isJobSuccessful){
-            logger.error("Spark job sumbission failed, exiting ...");
+            logger.error("Spark job submission failed, exiting ...");
             System.exit(1);
         }
 
-        logger.info("Spark HDFS ests are successful.. ");
+        logger.info("Spark HDFS tests are successful.. ");
     }
 
     private static void probeSparkYARN(Map<String, String> properties) {
@@ -71,7 +71,7 @@ public class ProbeMain {
         boolean isJobSuccessful = spark.submitPiExampleJob(properties);
 
         if(!isJobSuccessful){
-            logger.error("Spark job sumbission failed, exiting ...");
+            logger.error("Spark job submission failed, exiting ...");
             System.exit(1);
         }
 
