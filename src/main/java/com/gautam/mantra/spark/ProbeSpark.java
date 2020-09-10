@@ -108,6 +108,11 @@ public class ProbeSpark {
         return result._2.toString().equals("SUCCEEDED") && verifyHDFSJobResult(properties);
     }
 
+    /**
+     * This method verifies the result in HDFS by counting the number of rows
+     * @param properties the cluster configuration
+     * @return true if the HDFS file is accurately created, false otherwise
+     */
     private boolean verifyHDFSJobResult(Map<String, String> properties) {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", properties.get("hdfsPath"));
@@ -131,6 +136,11 @@ public class ProbeSpark {
         }
     }
 
+    /**
+     * A small utility for counting the total rows
+     * @param str the input string
+     * @return
+     */
     private int countLines(String str){
         String[] lines = str.split("\r\n|\r|\n");
         return  lines.length;
