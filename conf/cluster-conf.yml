@@ -41,6 +41,14 @@ sparkHDFSOutFolder: /user/vikgautammbb/spark-hdfs-test
 sparkHDFSFinalFile: /user/vikgautammbb/spark-hdfs-test.csv
 sparkHDFSjar: /data/hdp-probe/target/hdp-probe.jar
 
+sparkHiveAppName: spark-hive-probe
+sparkHiveNumRecords: "1000"
+sparkHiveDB: spark_hive_probe
+sparkHiveTable: test_table
+sparkHivejar: /data/hdp-probe/target/hdp-probe.jar
+sparkSQLExportFolder: /user/vikgautammbb/spark-sql-export
+sparkSQLExportFile: /user/vikgautammbb/spark-sql-export.csv
+
 clusterPropsFile: /data/hdp-probe/conf/cluster-conf.yml
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml

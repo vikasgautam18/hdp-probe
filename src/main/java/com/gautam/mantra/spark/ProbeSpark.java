@@ -145,4 +145,84 @@ public class ProbeSpark {
         String[] lines = str.split("\r\n|\r|\n");
         return  lines.length;
     }
+
+
+    /**
+     * This method submits a spark job to YARN
+     * @param properties the cluster configuration
+     * @return True if the job was successful, false otherwise
+     */
+    public boolean submitSparkSQLJob(Map<String, String> properties){
+        System.setProperty("hdp.version", "3.1.0.0-78");
+
+        SparkConf sparkConf = new SparkConf();
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("sparkHiveAppName"));
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
+        //TODO: read the below properties from yml file
+        sparkConf.set("spark.driver.extraLibraryPath",
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
+        sparkConf.set("spark.executor.extraLibraryPath",
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
+        sparkConf.set("spark.driver.extraJavaOptions",
+                "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        sparkConf.set("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*");
+        sparkConf.set("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*");
+        sparkConf.set("spark.sql.hive.metastore.version", "3.0");
+        sparkConf.set("spark.sql.warehouse.dir", "/apps/spark/warehouse");
+
+        final String[] args = new String[]{
+                "--jar",
+                properties.get("sparkHivejar"),
+                "--class",
+                "com.gautam.mantra.spark.SparkSQLProbe"
+        };
+
+        ClientArguments clientArguments = new ClientArguments(args);
+        Client client = new Client(clientArguments, sparkConf);
+
+        logger.info("submitting spark sql probe application to YARN :: ");
+
+        ApplicationId applicationId = client.submitApplication();
+
+        logger.info("application id is ::" + applicationId.toString());
+
+        Tuple2<YarnApplicationState, FinalApplicationStatus> result =
+                client.monitorApplication(applicationId, false,
+                        Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
+
+        logger.info("final status of spark sql probe job :: " + result._2.toString());
+
+        return result._2.toString().equals("SUCCEEDED") && verifySparkSQLJobResult(properties);
+    }
+
+    /**
+     * this method verifies the result of sparksql spark job
+     * @param properties the cluster configuration
+     * @return returns true if the job was successful, false otherwise
+     */
+    private boolean verifySparkSQLJobResult(Map<String, String> properties) {
+
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", properties.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
+            if(fs.exists(new Path(properties.get("sparkSQLExportFile")))){
+                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkSQLExportFile")));
+                String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                return countLines(content) == Integer.parseInt(properties.get("sparkHiveNumRecords"));
+            }
+            else {
+                logger.error("File does not exist !");
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
