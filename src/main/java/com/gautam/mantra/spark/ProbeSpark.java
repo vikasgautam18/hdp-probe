@@ -198,6 +198,25 @@ public class ProbeSpark {
 
     private boolean verifySparkSQLJobResult(Map<String, String> properties) {
 
-        return true;
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", properties.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
+            if(fs.exists(new Path(properties.get("sparkSQLExportFile")))){
+                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkSQLExportFile")));
+                String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                return countLines(content) == Integer.parseInt(properties.get("sparkHiveNumRecords"));
+            }
+            else {
+                logger.error("File does not exist !");
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
