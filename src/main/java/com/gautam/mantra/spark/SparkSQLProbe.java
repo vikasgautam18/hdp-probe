@@ -51,6 +51,9 @@ public class SparkSQLProbe {
         dataset.show(10, false);
         // write to HDFS
         writeDatasetToSparkSQL(properties, spark, dataset);
+        exportDataToHDFS(spark, properties.get("sparkHiveDB") +
+                TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
+
         spark.stop();
     }
 
@@ -70,8 +73,6 @@ public class SparkSQLProbe {
 
         // write dataset in  overwrite mode
         dataset.write().mode(SaveMode.Overwrite).saveAsTable(finalTableName);
-
-        exportDataToHDFS(spark, finalTableName, properties);
     }
 
     /**
