@@ -198,10 +198,12 @@ public class ProbeSpark {
     }
 
     private boolean verifySparkSQLJobResult(Map<String, String> properties) {
+
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
                 .enableHiveSupport()
                 .config("job.local.dir", "/tmp/")
+                .config("spark.sql.warehouse.dir", "/tmp/")
                 .config("spark.driver.extraLibraryPath",
                     "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
                             "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
@@ -220,9 +222,8 @@ public class ProbeSpark {
                 .master("local[*]")
                 .getOrCreate();
 
-        Configuration conf= spark.sparkContext().hadoopConfiguration();
-        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        spark.sparkContext().hadoopConfiguration().set("fs.hdfs.impl","org.apache.hadoop.hdfs.DistributedFileSystem");
+        spark.sparkContext().hadoopConfiguration().set("fs.file.impl","org.apache.hadoop.fs.LocalFileSystem");
 
         String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
         boolean result = spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
