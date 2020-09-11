@@ -202,9 +202,11 @@ public class ProbeSpark {
                 .appName(properties.get("sparkHiveAppName"))
                 .enableHiveSupport()
                 .config("spark.driver.extraLibraryPath",
-                    "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64")
+                    "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
+                            "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
                 .config("spark.executor.extraLibraryPath",
-                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64")
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
+                        "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
                 .config("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
                 .config("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
                 .config("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*")
