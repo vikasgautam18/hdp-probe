@@ -208,8 +208,10 @@ public class ProbeSpark {
                 .config("spark.executor.extraLibraryPath",
                 "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
                         "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
-                .config("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
-                .config("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
+                .config("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dfs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem " +
+                        "-Dfs.file.impl=org.apache.hadoop.fs.LocalFileSystem")
+                .config("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dfs.hdfs.impl=org.apache.hadoop.hdfs.DistributedFileSystem " +
+                        "-Dfs.file.impl=org.apache.hadoop.fs.LocalFileSystem")
                 .config("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*:/usr/hdp/3.1.0.0-78/spark2/jars/")
                 .config("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*")
                 .config("spark.sql.hive.metastore.version", "3.0")
