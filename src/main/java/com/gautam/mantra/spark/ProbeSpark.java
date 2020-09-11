@@ -201,6 +201,7 @@ public class ProbeSpark {
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
                 .enableHiveSupport()
+                .config("job.local.dir", "/tmp/")
                 .config("spark.driver.extraLibraryPath",
                     "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
                             "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
