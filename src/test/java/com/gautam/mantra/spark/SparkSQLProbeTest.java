@@ -46,11 +46,11 @@ class SparkSQLProbeTest {
     }
 
     @Test
-    void writeDatasetToHive() {
+    void writeDatasetToSparkSQL() {
         Dataset<Row> dataset = SparkSQLProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show(10, false);
         // write to HDFS
-        SparkSQLProbe.writeDatasetToHive(properties, spark, dataset);
+        SparkSQLProbe.writeDatasetToSparkSQL(properties, spark, dataset);
         String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
         assert spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
     }

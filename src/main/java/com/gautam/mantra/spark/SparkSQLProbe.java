@@ -19,6 +19,10 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 
+/**
+ * A simple spark job to generate some event data and write it to spark sql
+ * Also, exports the data from spark sql to file
+ */
 public class SparkSQLProbe {
 
     public static final Yaml yaml = new Yaml();
@@ -46,11 +50,17 @@ public class SparkSQLProbe {
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show(10, false);
         // write to HDFS
-        writeDatasetToHive(properties, spark, dataset);
+        writeDatasetToSparkSQL(properties, spark, dataset);
         spark.stop();
     }
 
-    public static void writeDatasetToHive(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) {
+    /**
+     * This method writes a dataset to spark-sql
+     * @param properties the cluster configuration
+     * @param spark the spark session
+     * @param dataset the dataset to be written to spark-sql
+     */
+    public static void writeDatasetToSparkSQL(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) {
 
         // create database if not exists
         spark.sql("create database if not exists " + properties.get("sparkHiveDB"));
@@ -64,6 +74,12 @@ public class SparkSQLProbe {
         exportDataToHDFS(spark, finalTableName, properties);
     }
 
+    /**
+     * This method reads all the daya from a given spark-sql table and exports it to a file in HDFS
+     * @param spark the spark session
+     * @param finalTableName the table name = database name + table name
+     * @param properties the cluster configuration
+     */
     private static void exportDataToHDFS(SparkSession spark, String finalTableName, Map<String, String> properties) {
         spark.sql("select * from " + finalTableName)
                 .write().mode(SaveMode.Overwrite)
@@ -96,6 +112,12 @@ public class SparkSQLProbe {
         }
     }
 
+    /**
+     * This method generates some event data
+     * @param spark the spark session
+     * @param numRows number of rows to be created
+     * @return returns the spark dataframe
+     */
     public static Dataset<Row> generateDataSet(SparkSession spark, int numRows){
         ArrayList<Event> dataList = new ArrayList<>();
 

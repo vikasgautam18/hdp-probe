@@ -159,6 +159,7 @@ public class ProbeSpark {
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("sparkHiveAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
+        //TODO: read the below properties from yml file
         sparkConf.set("spark.driver.extraLibraryPath",
                 "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
         sparkConf.set("spark.executor.extraLibraryPath",
@@ -196,6 +197,11 @@ public class ProbeSpark {
         return result._2.toString().equals("SUCCEEDED") && verifySparkSQLJobResult(properties);
     }
 
+    /**
+     * this method verifies the result of sparksql spark job
+     * @param properties the cluster configuration
+     * @return returns true if the job was successful, false otherwise
+     */
     private boolean verifySparkSQLJobResult(Map<String, String> properties) {
 
         Configuration conf= new Configuration();
