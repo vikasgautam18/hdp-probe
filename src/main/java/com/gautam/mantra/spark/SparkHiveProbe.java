@@ -37,6 +37,7 @@ public class SparkHiveProbe {
 
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
+                .enableHiveSupport()
                 .getOrCreate();
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
