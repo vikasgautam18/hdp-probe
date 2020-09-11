@@ -167,7 +167,6 @@ public class ProbeSpark {
                 "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*");
-        //sparkConf.set("datanucleus.connectionPoolingType", "none");
         sparkConf.set("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*");
         sparkConf.set("spark.sql.hive.metastore.version", "3.0");
         sparkConf.set("spark.sql.warehouse.dir", "/apps/spark/warehouse");
@@ -182,7 +181,7 @@ public class ProbeSpark {
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
 
-        logger.info("submitting spark hive probe application to YARN :: ");
+        logger.info("submitting spark sql probe application to YARN :: ");
 
         ApplicationId applicationId = client.submitApplication();
 
@@ -192,7 +191,7 @@ public class ProbeSpark {
                 client.monitorApplication(applicationId, false,
                         Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
 
-        logger.info("final status of spark hive probe job :: " + result._2.toString());
+        logger.info("final status of spark sql probe job :: " + result._2.toString());
 
         return result._2.toString().equals("SUCCEEDED");
     }
