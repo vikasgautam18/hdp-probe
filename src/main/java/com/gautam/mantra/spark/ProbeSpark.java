@@ -219,6 +219,10 @@ public class ProbeSpark {
                 .master("local[*]")
                 .getOrCreate();
 
+        Configuration conf= spark.sparkContext().hadoopConfiguration();
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
         String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
         boolean result = spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
         spark.stop();
