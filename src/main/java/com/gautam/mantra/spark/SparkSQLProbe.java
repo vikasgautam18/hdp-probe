@@ -17,7 +17,7 @@ import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
 
-public class SparkHiveProbe {
+public class SparkSQLProbe {
 
     public static final Yaml yaml = new Yaml();
     public static final String TABLE_SEPARATOR = ".";

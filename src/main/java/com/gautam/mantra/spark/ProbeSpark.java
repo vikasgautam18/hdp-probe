@@ -162,12 +162,13 @@ public class ProbeSpark {
 
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        sparkConf.set("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*");
 
         final String[] args = new String[]{
                 "--jar",
                 properties.get("sparkHivejar"),
                 "--class",
-                "com.gautam.mantra.spark.SparkHiveProbe"
+                "com.gautam.mantra.spark.SparkSQLProbe"
         };
 
         ClientArguments clientArguments = new ClientArguments(args);
