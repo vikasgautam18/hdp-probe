@@ -216,6 +216,7 @@ public class ProbeSpark {
                 .config("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*")
                 .config("spark.sql.hive.metastore.version", "3.0")
                 .config("spark.sql.warehouse.dir", "/apps/spark/warehouse")
+                .config("spark.submit.deployMode", "client")
                 .master("local[*]")
                 .getOrCreate();
 
