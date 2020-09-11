@@ -9,6 +9,7 @@ import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.spark.SparkConf;
+import org.apache.spark.SparkContext;
 import org.apache.spark.deploy.yarn.Client;
 import org.apache.spark.deploy.yarn.ClientArguments;
 import org.apache.spark.sql.SparkSession;
@@ -199,11 +200,15 @@ public class ProbeSpark {
 
     private boolean verifySparkSQLJobResult(Map<String, String> properties) {
 
+        SparkContext context = new SparkContext();
+        context.hadoopConfiguration().set("fs.hdfs.impl","org.apache.hadoop.hdfs.DistributedFileSystem");
+        context.hadoopConfiguration().set("fs.file.impl","org.apache.hadoop.fs.LocalFileSystem");
+
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
                 .enableHiveSupport()
+                .sparkContext(context)
                 .config("job.local.dir", "/tmp/")
-                .config("spark.sql.warehouse.dir", "/tmp/")
                 .config("spark.driver.extraLibraryPath",
                     "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64:" +
                             "/usr/hdp/3.1.0.0-78/spark2/jars/spark-hive_2.11-2.3.2.3.1.0.0-78.jar")
@@ -221,9 +226,6 @@ public class ProbeSpark {
                 .config("spark.submit.deployMode", "client")
                 .master("local[*]")
                 .getOrCreate();
-
-        spark.sparkContext().hadoopConfiguration().set("fs.hdfs.impl","org.apache.hadoop.hdfs.DistributedFileSystem");
-        spark.sparkContext().hadoopConfiguration().set("fs.file.impl","org.apache.hadoop.fs.LocalFileSystem");
 
         String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
         boolean result = spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
