@@ -37,8 +37,6 @@ public class SparkHiveProbe {
 
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
-                .enableHiveSupport()
-                .config("hive.metastore.warehouse.dir", "/apps/hive/warehouse")
                 .getOrCreate();
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
