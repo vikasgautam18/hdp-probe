@@ -82,9 +82,6 @@ public class SparkSQLProbe {
      * @param properties the cluster configuration
      */
     private static void exportDataToHDFS(SparkSession spark, String finalTableName, Map<String, String> properties) {
-
-        System.out.println(spark.sql("select * from " + finalTableName).count());
-
         spark.sql("select * from " + finalTableName)
                 .coalesce(1)
                 .write().mode(SaveMode.Overwrite)
