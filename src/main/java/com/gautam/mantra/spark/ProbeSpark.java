@@ -11,6 +11,7 @@ import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.spark.SparkConf;
 import org.apache.spark.deploy.yarn.Client;
 import org.apache.spark.deploy.yarn.ClientArguments;
+import org.apache.spark.sql.SparkSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import scala.Tuple2;
@@ -152,7 +153,7 @@ public class ProbeSpark {
      * @param properties the cluster configuration
      * @return True if the job was successful, false otherwise
      */
-    public boolean submitHiveJob(Map<String, String> properties){
+    public boolean submitSparkSQLJob(Map<String, String> properties){
         System.setProperty("hdp.version", "3.1.0.0-78");
 
         SparkConf sparkConf = new SparkConf();
@@ -193,6 +194,29 @@ public class ProbeSpark {
 
         logger.info("final status of spark sql probe job :: " + result._2.toString());
 
-        return result._2.toString().equals("SUCCEEDED");
+        return result._2.toString().equals("SUCCEEDED") && verifySparkSQLJobResult(properties);
+    }
+
+    private boolean verifySparkSQLJobResult(Map<String, String> properties) {
+        SparkSession spark = SparkSession.builder()
+                .appName(properties.get("sparkHiveAppName"))
+                .enableHiveSupport()
+                .config("spark.driver.extraLibraryPath",
+                    "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64")
+                .config("spark.executor.extraLibraryPath",
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64")
+                .config("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
+                .config("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78")
+                .config("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*")
+                .config("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*")
+                .config("spark.sql.hive.metastore.version", "3.0")
+                .config("spark.sql.warehouse.dir", "/apps/spark/warehouse")
+                .master("local[*]")
+                .getOrCreate();
+
+        String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
+        boolean result = spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
+        spark.stop();
+        return result;
     }
 }

@@ -58,7 +58,7 @@ public class ProbeMain {
 
     private static void probeSparkHive(Map<String, String> properties) {
         ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitHiveJob(properties);
+        boolean isJobSuccessful = spark.submitSparkSQLJob(properties);
 
         if(!isJobSuccessful){
             logger.error("Spark job submission failed, exiting ...");
