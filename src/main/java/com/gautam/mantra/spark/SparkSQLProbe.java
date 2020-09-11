@@ -86,6 +86,7 @@ public class SparkSQLProbe {
         System.out.println(spark.sql("select * from " + finalTableName).count());
 
         spark.sql("select * from " + finalTableName)
+                .coalesce(1)
                 .write().mode(SaveMode.Overwrite)
                 .csv(properties.get("sparkSQLExportFolder"));
 
