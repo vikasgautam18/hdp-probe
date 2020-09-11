@@ -159,11 +159,18 @@ public class ProbeSpark {
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("sparkHiveAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
-
-        sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
+        sparkConf.set("spark.driver.extraLibraryPath",
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
+        sparkConf.set("spark.executor.extraLibraryPath",
+                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
+        sparkConf.set("spark.driver.extraJavaOptions",
+                "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*");
-        sparkConf.set("datanucleus.connectionPoolingType", "none");
+        //sparkConf.set("datanucleus.connectionPoolingType", "none");
+        sparkConf.set("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*");
+        sparkConf.set("spark.sql.hive.metastore.version", "3.0");
+        sparkConf.set("spark.sql.warehouse.dir", "/apps/spark/warehouse");
 
         final String[] args = new String[]{
                 "--jar",
