@@ -245,7 +245,8 @@ public class ProbeSpark {
         sparkConf.set("spark.sql.hive.hiveserver2.jdbc.url", properties.get("hiveJDBCURL"));
         sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
         sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
-
+        sparkConf.set("spark.security.credentials.hiveserver2.enabled", "false");
+        sparkConf.set("spark.datasource.hive.warehouse.load.staging.dir", "/tmp/");
 
         final String[] args = new String[]{
                 "--jar",
