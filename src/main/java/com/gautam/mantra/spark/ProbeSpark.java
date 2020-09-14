@@ -269,6 +269,35 @@ public class ProbeSpark {
 
         logger.info("final status of spark hive probe job :: " + result._2.toString());
 
-        return result._2.toString().equals("SUCCEEDED") && verifySparkSQLJobResult(properties);
+        return result._2.toString().equals("SUCCEEDED") && verifySparkHiveJobResult(properties);
+    }
+
+    /**
+     * this method verifies the result of sparksql spark job
+     * @param properties the cluster configuration
+     * @return returns true if the job was successful, false otherwise
+     */
+    private boolean verifySparkHiveJobResult(Map<String, String> properties) {
+
+        Configuration conf= new Configuration();
+        conf.set("fs.defaultFS", properties.get("hdfsPath"));
+        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
+        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+
+        try{
+            FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
+            if(fs.exists(new Path(properties.get("sparkHWCExportFile")))){
+                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHWCExportFile")));
+                String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
+                return countLines(content) == Integer.parseInt(properties.get("sparkHiveNumRecords"));
+            }
+            else {
+                logger.error("File does not exist !");
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 }
