@@ -58,21 +58,14 @@ hadoopHomeDir: /usr/hdp/3.1.0.0-78/hadoop
 hadoopConfDir: /usr/hdp/3.1.0.0-78/hadoop/conf
 yarnConfDir: /usr/hdp/3.1.0.0-78/hadoop-yarn/conf
 
-spark:
-  sql:
-    warehouse:
-      dir: "/apps/spark/warehouse"
-    hive:
-      metastore:
-        version: "3.0"
-        jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
-  yarn:
-    am:
-      extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
-  driver:
-    extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
-    extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
-    extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
-  executor:
-    extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
+spark.driver.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
+spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
+spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
 
+spark.sql.warehouse.dir: "/apps/spark/warehouse"
+spark.sql.hive.metastore.version: "3.0"
+spark.sql.hive.metastore.jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
+
+spark.yarn.am.extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
+
+spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
