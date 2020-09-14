@@ -242,6 +242,7 @@ public class ProbeSpark {
         sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
         sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
+        sparkConf.set("spark.executor.extraClassPath", properties.get("spark.executor.extraClassPath"));
         sparkConf.set("spark.sql.hive.hiveserver2.jdbc.url", properties.get("hiveJDBCURL"));
         sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
         sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
