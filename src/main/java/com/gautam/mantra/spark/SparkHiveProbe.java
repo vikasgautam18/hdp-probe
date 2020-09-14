@@ -48,6 +48,7 @@ public class SparkHiveProbe {
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHiveAppName"))
                 .config("hive.metastore.schema.verification", "false")
+                .enableHiveSupport()
                 .getOrCreate();
         HiveWarehouseSessionImpl hive = HiveWarehouseBuilder.session(spark).build();
 
