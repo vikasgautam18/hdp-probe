@@ -159,18 +159,15 @@ public class ProbeSpark {
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("sparkHiveAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
-        //TODO: read the below properties from yml file
-        sparkConf.set("spark.driver.extraLibraryPath",
-                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
-        sparkConf.set("spark.executor.extraLibraryPath",
-                "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64");
-        sparkConf.set("spark.driver.extraJavaOptions",
-                "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml="+ properties.get("clusterPropsFile"));
-        sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
-        sparkConf.set("spark.driver.extraClassPath", "/usr/hdp/3.1.0.0-78/spark2/jars/*");
-        sparkConf.set("spark.sql.hive.metastore.jars", "/usr/hdp/current/spark2-client/standalone-metastore/*");
-        sparkConf.set("spark.sql.hive.metastore.version", "3.0");
-        sparkConf.set("spark.sql.warehouse.dir", "/apps/spark/warehouse");
+        sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
+        sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
+        sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
+        sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
+        sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
+        sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
+        sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.sql.warehouse.dir"));
+
 
         final String[] args = new String[]{
                 "--jar",
