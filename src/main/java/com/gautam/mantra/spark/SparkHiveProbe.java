@@ -51,12 +51,12 @@ public class SparkHiveProbe {
                 .getOrCreate();
         HiveWarehouseSessionImpl hive = HiveWarehouseBuilder.session(spark).build();
 
-        Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
+        Dataset<Row> dataset = generateDataSet(hive.session(), Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show(10, false);
         // write to HDFS
         writeDatasetToHive(properties, hive, dataset);
-        exportDataToHDFS(hive, properties.get("sparkHiveDB") +
-                TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
+        //exportDataToHDFS(hive, properties.get("sparkHiveDB") +
+                //TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
 
         spark.stop();
     }

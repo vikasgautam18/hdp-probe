@@ -255,7 +255,7 @@ public class ProbeSpark {
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
 
-        logger.info("submitting spark sql hive application to YARN :: ");
+        logger.info("submitting spark hive application to YARN :: ");
 
         ApplicationId applicationId = client.submitApplication();
 
