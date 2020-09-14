@@ -56,8 +56,8 @@ public class SparkHiveProbe {
         dataset.show(10, false);
         // write to HDFS
         writeDatasetToHive(properties, hive, dataset);
-        //exportDataToHDFS(hive, properties.get("sparkHiveDB") +
-                //TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
+        exportDataToHDFS(hive, properties.get("sparkHiveDB") +
+                TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
 
         spark.stop();
     }
@@ -90,13 +90,14 @@ public class SparkHiveProbe {
         hive.executeQuery("select * from " + finalTableName)
                 .coalesce(1)
                 .write().mode(SaveMode.Overwrite)
-                .csv(properties.get("sparkSQLExportFolder"));
+                .format("csv")
+                .save(properties.get("sparkHWCExportFolder"));
 
         try {
             Configuration config = hive.session().sparkContext().hadoopConfiguration();
             FileSystem fs = FileSystem.get(config);
             RemoteIterator<LocatedFileStatus> files;
-            files = fs.listFiles(new Path(properties.get("sparkSQLExportFolder")), true);
+            files = fs.listFiles(new Path(properties.get("sparkHWCExportFolder")), true);
             Path outPath = null;
             while(files.hasNext()){
                 Path path = files.next().getPath();
@@ -105,7 +106,7 @@ public class SparkHiveProbe {
                     outPath = path;
             }
 
-            String dstPath = properties.get("sparkSQLExportFile");
+            String dstPath = properties.get("sparkHWCExportFile");
             Logger.getLogger("org").debug("outpath::" + outPath);
 
             if(outPath != null){
@@ -113,7 +114,7 @@ public class SparkHiveProbe {
                 Logger.getLogger("org").info("Output file written to HDFS at ::" + dstPath);
             }
 
-            fs.delete(new Path(properties.get("sparkSQLExportFolder")), true);
+            fs.delete(new Path(properties.get("sparkHWCExportFolder")), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
