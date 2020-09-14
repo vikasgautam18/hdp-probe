@@ -242,15 +242,9 @@ public class ProbeSpark {
         sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
         sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
-        sparkConf.set("spark.executor.extraClassPath", properties.get("spark.executor.extraClassPath"));
-        sparkConf.set("spark.sql.hive.hiveserver2.jdbc.url", properties.get("hiveJDBCURL"));
         sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
         sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
-        sparkConf.set("spark.security.credentials.hiveserver2.enabled", "false");
-        sparkConf.set("spark.datasource.hive.warehouse.load.staging.dir", "/tmp/");
-        sparkConf.set("spark.hadoop.hive.llap.daemon.service.hosts",
-                properties.get("spark.hadoop.hive.llap.daemon.service.hosts"));
-        sparkConf.set("spark.hadoop.hive.zookeeper.quorum", properties.get("spark.hadoop.hive.zookeeper.quorum"));
+        sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.hive.warehouse.dir"));
 
         final String[] args = new String[]{
                 "--jar",
@@ -278,7 +272,7 @@ public class ProbeSpark {
     }
 
     /**
-     * this method verifies the result of sparksql spark job
+     * this method verifies the result of spark-hive spark job
      * @param properties the cluster configuration
      * @return returns true if the job was successful, false otherwise
      */
@@ -291,8 +285,8 @@ public class ProbeSpark {
 
         try{
             FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
-            if(fs.exists(new Path(properties.get("sparkHWCExportFile")))){
-                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHWCExportFile")));
+            if(fs.exists(new Path(properties.get("sparkHiveExportFile")))){
+                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHiveExportFile")));
                 String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
                 return countLines(content) == Integer.parseInt(properties.get("sparkHiveNumRecords"));
             }

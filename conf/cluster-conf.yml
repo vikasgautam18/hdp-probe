@@ -48,8 +48,8 @@ sparkHiveTable: test_table
 sparkHivejar: /data/hdp-probe/target/hdp-probe.jar
 sparkSQLExportFolder: /user/vikgautammbb/spark-sql-export
 sparkSQLExportFile: /user/vikgautammbb/spark-sql-export.csv
-sparkHWCExportFolder: /user/vikgautammbb/spark-hwc-export
-sparkHWCExportFile: /user/vikgautammbb/spark-hwc-export.csv
+sparkHiveExportFolder: /user/vikgautammbb/spark-hive-export
+sparkHiveExportFile: /user/vikgautammbb/spark-hive-export.csv
 
 clusterPropsFile: /data/hdp-probe/conf/cluster-conf.yml
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
@@ -61,14 +61,13 @@ hadoopConfDir: /usr/hdp/3.1.0.0-78/hadoop/conf
 yarnConfDir: /usr/hdp/3.1.0.0-78/hadoop-yarn/conf
 
 spark.driver.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
-spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*:/usr/hdp/3.1.0.0-78/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.0.0-78.jar"
+spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
 spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
 
 spark.sql.warehouse.dir: "/apps/spark/warehouse"
+spark.hive.warehouse.dir: "/warehouse/tablespace/managed/hive"
 spark.sql.hive.metastore.version: "3.0"
 spark.sql.hive.metastore.jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
-spark.hadoop.hive.llap.daemon.service.hosts: "@llap0"
-spark.hadoop.hive.zookeeper.quorum: localhost:2181
 spark.yarn.am.extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
-spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*:/usr/hdp/3.1.0.0-78/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.0.0-78.jar"
+spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
 spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"

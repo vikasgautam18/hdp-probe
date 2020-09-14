@@ -1,8 +1,6 @@
 package com.gautam.mantra.spark;
 
 import com.gautam.mantra.commons.Utilities;
-import com.hortonworks.spark.sql.hive.llap.HiveWarehouseBuilder;
-import com.hortonworks.spark.sql.hive.llap.HiveWarehouseSessionImpl;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;
 import org.apache.log4j.Level;
@@ -20,8 +18,6 @@ import java.io.InputStream;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Map;
-
-import static com.hortonworks.hwc.HiveWarehouseSession.HIVE_WAREHOUSE_CONNECTOR;
 
 /**
  * A simple spark job to generate some event data and write it to spark sql
@@ -50,13 +46,13 @@ public class SparkHiveProbe {
                 .config("hive.metastore.schema.verification", "false")
                 .enableHiveSupport()
                 .getOrCreate();
-        HiveWarehouseSessionImpl hive = HiveWarehouseBuilder.session(spark).build();
 
-        Dataset<Row> dataset = generateDataSet(hive.session(), Integer.parseInt(properties.get("sparkHiveNumRecords")));
+
+        Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show(10, false);
         // write to HDFS
-        writeDatasetToHive(properties, hive, dataset);
-        exportDataToHDFS(hive, properties.get("sparkHiveDB") +
+        writeDatasetToHive(properties, spark, dataset);
+        exportDataToHDFS(spark, properties.get("sparkHiveDB") +
                 TABLE_SEPARATOR + properties.get("sparkHiveTable"), properties);
 
         spark.stop();
@@ -65,39 +61,38 @@ public class SparkHiveProbe {
     /**
      * This method writes a dataset to spark-sql
      * @param properties the cluster configuration
-     * @param hive the spark session
+     * @param spark the spark session
      * @param dataset the dataset to be written to spark-sql
      */
-    public static void writeDatasetToHive(Map<String, String> properties, HiveWarehouseSessionImpl hive, Dataset<Row> dataset) {
+    public static void writeDatasetToHive(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) {
 
         // create database if not exists
-        hive.createDatabase(properties.get("sparkHiveDB"), true);
+        spark.sql("create database if not exists " + properties.get("sparkHiveDB"));
 
         // tablename = database.table
         String finalTableName = properties.get("sparkHiveDB") + TABLE_SEPARATOR + properties.get("sparkHiveTable");
 
         // write dataset in  overwrite mode
-        dataset.write().format(HIVE_WAREHOUSE_CONNECTOR).mode(SaveMode.Overwrite).option("table", finalTableName).save();
+        dataset.write().mode(SaveMode.Overwrite).saveAsTable(finalTableName);
     }
 
     /**
      * This method reads all the daya from a given spark-sql table and exports it to a file in HDFS
-     * @param hive the spark session
+     * @param spark the spark session
      * @param finalTableName the table name = database name + table name
      * @param properties the cluster configuration
      */
-    private static void exportDataToHDFS(HiveWarehouseSessionImpl hive, String finalTableName, Map<String, String> properties) {
-        hive.executeQuery("select * from " + finalTableName)
+    private static void exportDataToHDFS(SparkSession spark, String finalTableName, Map<String, String> properties) {
+        spark.sql("select * from " + finalTableName)
                 .coalesce(1)
                 .write().mode(SaveMode.Overwrite)
-                .format("csv")
-                .save(properties.get("sparkHWCExportFolder"));
+                .csv(properties.get("sparkHiveExportFolder"));
 
         try {
-            Configuration config = hive.session().sparkContext().hadoopConfiguration();
+            Configuration config = spark.sparkContext().hadoopConfiguration();
             FileSystem fs = FileSystem.get(config);
             RemoteIterator<LocatedFileStatus> files;
-            files = fs.listFiles(new Path(properties.get("sparkHWCExportFolder")), true);
+            files = fs.listFiles(new Path(properties.get("sparkHiveExportFolder")), true);
             Path outPath = null;
             while(files.hasNext()){
                 Path path = files.next().getPath();
@@ -106,7 +101,7 @@ public class SparkHiveProbe {
                     outPath = path;
             }
 
-            String dstPath = properties.get("sparkHWCExportFile");
+            String dstPath = properties.get("sparkHiveExportFile");
             Logger.getLogger("org").debug("outpath::" + outPath);
 
             if(outPath != null){
@@ -114,7 +109,7 @@ public class SparkHiveProbe {
                 Logger.getLogger("org").info("Output file written to HDFS at ::" + dstPath);
             }
 
-            fs.delete(new Path(properties.get("sparkHWCExportFolder")), true);
+            fs.delete(new Path(properties.get("sparkHiveExportFolder")), true);
         } catch (IOException e) {
             e.printStackTrace();
         }
