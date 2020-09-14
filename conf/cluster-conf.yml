@@ -48,6 +48,8 @@ sparkHiveTable: test_table
 sparkHivejar: /data/hdp-probe/target/hdp-probe.jar
 sparkSQLExportFolder: /user/vikgautammbb/spark-sql-export
 sparkSQLExportFile: /user/vikgautammbb/spark-sql-export.csv
+sparkHiveExportFolder: /user/vikgautammbb/spark-hive-export
+sparkHiveExportFile: /user/vikgautammbb/spark-hive-export.csv
 
 clusterPropsFile: /data/hdp-probe/conf/cluster-conf.yml
 coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
@@ -63,9 +65,9 @@ spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
 spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
 
 spark.sql.warehouse.dir: "/apps/spark/warehouse"
+spark.hive.warehouse.dir: "/warehouse/tablespace/managed/hive"
 spark.sql.hive.metastore.version: "3.0"
 spark.sql.hive.metastore.jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
-
 spark.yarn.am.extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
-
+spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
 spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"

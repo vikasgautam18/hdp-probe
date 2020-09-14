@@ -6,3 +6,4 @@
 /derby.log
 /dependency-tree.log
 /metastore_db/
+/spark-warehouse/
