@@ -222,4 +222,50 @@ public class ProbeSpark {
             return false;
         }
     }
+
+
+
+    /**
+     * This method submits a spark job to YARN
+     * @param properties the cluster configuration
+     * @return True if the job was successful, false otherwise
+     */
+    public boolean submitSparkHiveJob(Map<String, String> properties){
+        System.setProperty("hdp.version", "3.1.0.0-78");
+
+        SparkConf sparkConf = new SparkConf();
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("sparkHiveAppName"));
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
+        sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
+        sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
+        sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
+        sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
+
+
+        final String[] args = new String[]{
+                "--jar",
+                properties.get("sparkHivejar"),
+                "--class",
+                "com.gautam.mantra.spark.SparkHiveProbe"
+        };
+
+        ClientArguments clientArguments = new ClientArguments(args);
+        Client client = new Client(clientArguments, sparkConf);
+
+        logger.info("submitting spark sql hive application to YARN :: ");
+
+        ApplicationId applicationId = client.submitApplication();
+
+        logger.info("application id is ::" + applicationId.toString());
+
+        Tuple2<YarnApplicationState, FinalApplicationStatus> result =
+                client.monitorApplication(applicationId, false,
+                        Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
+
+        logger.info("final status of spark hive probe job :: " + result._2.toString());
+
+        return result._2.toString().equals("SUCCEEDED") && verifySparkSQLJobResult(properties);
+    }
 }
