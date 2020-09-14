@@ -248,6 +248,9 @@ public class ProbeSpark {
         sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
         sparkConf.set("spark.security.credentials.hiveserver2.enabled", "false");
         sparkConf.set("spark.datasource.hive.warehouse.load.staging.dir", "/tmp/");
+        sparkConf.set("spark.hadoop.hive.llap.daemon.service.hosts",
+                properties.get("spark.hadoop.hive.llap.daemon.service.hosts"));
+        sparkConf.set("spark.hadoop.hive.zookeeper.quorum", properties.get("spark.hadoop.hive.zookeeper.quorum"));
 
         final String[] args = new String[]{
                 "--jar",

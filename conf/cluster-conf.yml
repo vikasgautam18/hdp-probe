@@ -67,7 +67,8 @@ spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.ym
 spark.sql.warehouse.dir: "/apps/spark/warehouse"
 spark.sql.hive.metastore.version: "3.0"
 spark.sql.hive.metastore.jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
-
+spark.hadoop.hive.llap.daemon.service.hosts: "@llap0"
+spark.hadoop.hive.zookeeper.quorum: localhost:2181
 spark.yarn.am.extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
-spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.0.0-78.jar"
+spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*:/usr/hdp/3.1.0.0-78/hive_warehouse_connector/hive-warehouse-connector-assembly-1.0.0.3.1.0.0-78.jar"
 spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
