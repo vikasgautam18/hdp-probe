@@ -77,7 +77,7 @@ public class SparkHiveProbe {
         String finalTableName = properties.get("sparkHiveDB") + TABLE_SEPARATOR + properties.get("sparkHiveTable");
 
         // write dataset in  overwrite mode
-        dataset.write().format(HIVE_WAREHOUSE_CONNECTOR).mode(SaveMode.Overwrite).saveAsTable(finalTableName);
+        dataset.write().format(HIVE_WAREHOUSE_CONNECTOR).mode(SaveMode.Overwrite).option("table", finalTableName).save();
     }
 
     /**
