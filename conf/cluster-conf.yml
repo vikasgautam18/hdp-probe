@@ -73,6 +73,6 @@ spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
 spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
 
 sparkHBaseAppName: spark-hbase-probe
-sparkHBaseNumRecords: 1000
+sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: spark-hbase-test
 sparkHBaseTableCF: cf
