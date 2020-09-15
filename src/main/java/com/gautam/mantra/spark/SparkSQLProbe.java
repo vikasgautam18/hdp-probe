@@ -32,7 +32,7 @@ public class SparkSQLProbe {
         Logger.getLogger("org").setLevel(Level.ERROR);
 
         InputStream inputStream = new FileInputStream(
-                new File(System.getProperty("spark2hive.cluster.yml")));
+                new File(System.getProperty("spark.probe.cluster.yml")));
         Utilities utilities = new Utilities();
 
         Map<String, String> properties = yaml.load(inputStream);
