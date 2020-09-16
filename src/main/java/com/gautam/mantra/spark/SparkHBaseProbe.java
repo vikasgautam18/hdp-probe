@@ -61,14 +61,16 @@ public class SparkHBaseProbe {
 
         String catalog = new StringBuilder().append("{")
                 .append(newLine)
-                .append("|\"table\":{\"namespace\":\"default\", \"name\":\"events\"},").append(newLine)
-                .append("|\"rowkey\":\"eventId\",").append(newLine)
-                .append("|\"columns\":{").append(newLine)
-                .append("|\"rowkey\":{\"cf\":\"rowkey\", \"col\":\"eventId\", \"type\":\"string\"},").append(newLine)
-                .append("|\"eventTs\":{\"cf\":\"cf\", \"col\":\"eventTs\", \"type\":\"timestamp\"},").append(newLine)
-                .append("|}").append(newLine)
-                .append("|}")
+                .append("\"table\":{\"namespace\":\"default\", \"name\":\"events\"},").append(newLine)
+                .append("\"rowkey\":\"eventId\",").append(newLine)
+                .append("\"columns\":{").append(newLine)
+                .append("\"rowkey\":{\"cf\":\"rowkey\", \"col\":\"eventId\", \"type\":\"string\"},").append(newLine)
+                .append("\"eventTs\":{\"cf\":\"cf\", \"col\":\"eventTs\", \"type\":\"timestamp\"},").append(newLine)
+                .append("}").append(newLine)
+                .append("}")
                 .toString().trim();
+
+        System.out.println(catalog);
 
         Map<String, String> tempMap = new HashMap<>();
         tempMap.put(HBaseTableCatalog.tableCatalog(), catalog);
