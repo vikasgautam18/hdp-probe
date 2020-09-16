@@ -2,14 +2,14 @@ package com.gautam.mantra.spark;
 
 public class ContactRecord {
 
-    private String rowKey;
+    private String rowkey;
     private String officeAddress;
     private String officePhone;
     private String personalName;
     private String personalPhone;
 
     public ContactRecord(String rowKey, String officeAddress, String officePhone, String personalName, String personalPhone) {
-        this.rowKey = rowKey;
+        this.rowkey = rowKey;
         this.officeAddress = officeAddress;
         this.officePhone = officePhone;
         this.personalName = personalName;
@@ -17,11 +17,11 @@ public class ContactRecord {
     }
 
     public String getRowKey() {
-        return rowKey;
+        return rowkey;
     }
 
     public void setRowKey(String rowKey) {
-        this.rowKey = rowKey;
+        this.rowkey = rowKey;
     }
 
     public String getOfficeAddress() {
