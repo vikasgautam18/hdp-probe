@@ -55,4 +55,15 @@ public class ContactRecord {
     public void setPersonalName(String personalName) {
         this.personalName = personalName;
     }
+
+    @Override
+    public String toString() {
+        return "ContactRecord{" +
+                "rowkey='" + rowkey + '\'' +
+                ", officeAddress='" + officeAddress + '\'' +
+                ", officePhone='" + officePhone + '\'' +
+                ", personalName='" + personalName + '\'' +
+                ", personalPhone='" + personalPhone + '\'' +
+                '}';
+    }
 }

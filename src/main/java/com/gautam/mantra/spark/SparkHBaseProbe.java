@@ -13,7 +13,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -85,23 +84,24 @@ public class SparkHBaseProbe {
 
         System.out.println(catalog);
 
-        Map<String, String> tempMap = new HashMap<>();
-        tempMap.put(HBaseTableCatalog.tableCatalog(), catalog);
-        tempMap.put(HBaseTableCatalog.newTable(), "5");
+        Map<String, String> optionsMap = new HashMap<>();
+        optionsMap.put(HBaseTableCatalog.tableCatalog(), catalog);
+        optionsMap.put(HBaseTableCatalog.newTable(), "5");
 
-        ContactRecord contactRecord = new ContactRecord("16896", "46 Ellis St.",
+        /*ContactRecord contactRecord = new ContactRecord("16896", "46 Ellis St.",
                 "674-666-0110", "John Jackson","230-555-0194");
 
         List<ContactRecord> contactRecordList = new ArrayList<>();
         contactRecordList.add(contactRecord);
 
-        Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);
+        Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);*/
+        Dataset<Row> data = generateDataSet(spark, Integer.parseInt(properties.get("sparkHBaseNumRecords")));
 
         data.show();
         data.printSchema();
 
         data.withColumnRenamed("rowKey", "rowkey").write()
-                .options(tempMap)
+                .options(optionsMap)
                 .format("org.apache.spark.sql.execution.datasources.hbase")
                 .save();
     }
@@ -113,13 +113,14 @@ public class SparkHBaseProbe {
      * @return returns the spark dataframe
      */
     public static Dataset<Row> generateDataSet(SparkSession spark, int numRows){
-        ArrayList<Event> dataList = new ArrayList<>();
+        List<ContactRecord> dataList = new ArrayList<>();
 
         for (int i=1; i <= numRows; i++){
-            dataList.add(new Event("event-" + i, new Timestamp(System.currentTimeMillis())));
+            dataList.add(new ContactRecord(String.valueOf(i), String.valueOf(i) + " Ellis St.",
+                    "674-666-0110", "John Jackson","230-555-0194"));
         }
 
-        for (Event e: dataList) {
+        for (ContactRecord e: dataList) {
             Logger.getLogger("org").debug(e.toString());
         }
 
