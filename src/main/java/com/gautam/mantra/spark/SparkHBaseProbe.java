@@ -3,6 +3,8 @@ package com.gautam.mantra.spark;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
+import org.apache.spark.api.java.JavaRDD;
+import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -14,9 +16,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 /**
  * A simple spark job to generate some event data and write it to spark sql
@@ -57,9 +57,9 @@ public class SparkHBaseProbe {
 //        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
 //        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
 
-        String newLine = System.getProperty("line.separator");
+        //String newLine = System.getProperty("line.separator");
 
-        String catalog = new StringBuilder().append("{")
+        /*String catalog = new StringBuilder().append("{")
                 .append(newLine)
                 .append("\"table\":{\"namespace\":\"default\", \"name\":\"events\"},").append(newLine)
                 .append("\"rowkey\":\"eventId\",").append(newLine)
@@ -68,17 +68,40 @@ public class SparkHBaseProbe {
                 .append("\"eventTs\":{\"cf\":\"cf\", \"col\":\"eventTs\", \"type\":\"timestamp\"},").append(newLine)
                 .append("}").append(newLine)
                 .append("}")
-                .toString().trim();
+                .toString().trim();*/
+
+        String catalog = "{\n" +
+                "\"table\":{\"namespace\":\"default\", \"name\":\"Contacts\"},\n" +
+                "\"rowkey\":\"key\",\n" +
+                "\"columns\":{\n" +
+                "\"rowkey\":{\"cf\":\"rowkey\", \"col\":\"key\", \"type\":\"string\"},\n" +
+                "\"officeAddress\":{\"cf\":\"Office\", \"col\":\"Address\", \"type\":\"string\"},\n" +
+                "\"officePhone\":{\"cf\":\"Office\", \"col\":\"Phone\", \"type\":\"string\"},\n" +
+                "\"personalName\":{\"cf\":\"Personal\", \"col\":\"Name\", \"type\":\"string\"},\n" +
+                "\"personalPhone\":{\"cf\":\"Personal\", \"col\":\"Phone\", \"type\":\"string\"}\n" +
+                "}\n" +
+                "}";
 
         System.out.println(catalog);
 
         Map<String, String> tempMap = new HashMap<>();
         tempMap.put(HBaseTableCatalog.tableCatalog(), catalog);
-        tempMap.put(HBaseTableCatalog.newTable(), "2");
+        tempMap.put(HBaseTableCatalog.newTable(), "5");
 
-        dataset.write().options(tempMap)
+        ContactRecord contactRecord = new ContactRecord("16895", "45 Ellis St.",
+                "674-555-0110", "John Jackson","230-555-0194");
+
+        List<ContactRecord> contactRecordList = Arrays.asList(contactRecord);
+        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext().conf());
+
+        JavaRDD<ContactRecord> rdd = sc.parallelize(contactRecordList);
+
+        spark.createDataFrame(rdd, ContactRecord.class)
+        .write()
+        .options(tempMap)
         .format("org.apache.spark.sql.execution.datasources.hbase")
         .save();
+
     }
 
     /**
