@@ -343,14 +343,14 @@ public class ProbeSpark {
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("sparkHiveAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
-        sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
-        sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
+        //sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
+        //sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
         sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
-        sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
-        sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
-        sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
-        sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.hive.warehouse.dir"));
+        //sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
+        //sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
+        //sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
+        //sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.hive.warehouse.dir"));
 
         final String[] args = new String[]{
                 "--jar",
@@ -362,7 +362,7 @@ public class ProbeSpark {
         ClientArguments clientArguments = new ClientArguments(args);
         Client client = new Client(clientArguments, sparkConf);
 
-        logger.info("submitting spark hive application to YARN :: ");
+        logger.info("submitting spark hbase application to YARN :: ");
 
         ApplicationId applicationId = client.submitApplication();
 
@@ -372,9 +372,9 @@ public class ProbeSpark {
                 client.monitorApplication(applicationId, false,
                         Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
 
-        logger.info("final status of spark hive probe job :: " + result._2.toString());
+        logger.info("final status of spark hbase probe job :: " + result._2.toString());
 
-        return result._2.toString().equals("SUCCEEDED") && verifySparkHiveJobResult(properties);
+        return result._2.toString().equals("SUCCEEDED");
     }
 
     /**
