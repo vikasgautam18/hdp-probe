@@ -75,4 +75,3 @@ spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr
 sparkHBaseAppName: spark-hbase-probe
 sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: Contacts
-sparkHBaseTableCF: cf

@@ -313,7 +313,7 @@ public class ProbeSpark {
      * @return True if the job was successful, false otherwise
      */
     public boolean submitSparkHBaseJob(Map<String, String> properties){
-
+        TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
         Configuration conf = HBaseConfiguration.create();
         conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
         conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
@@ -321,20 +321,21 @@ public class ProbeSpark {
         conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
         try {
             Connection connection = ConnectionFactory.createConnection(conf);
-            if(!connection.getAdmin().tableExists(TableName.valueOf(properties.get("sparkHBaseTableName")))){
+            if(!connection.getAdmin().tableExists(tableName)){
                 //table does not exist. create it
                 connection.getAdmin().createTable(TableDescriptorBuilder
-                        .newBuilder(TableName.valueOf(properties.get("sparkHBaseTableName")))
-                        .setColumnFamily(ColumnFamilyDescriptorBuilder.of(properties.get("sparkHBaseTableCF")))
+                        .newBuilder(tableName)
+                        .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Office"))
+                        .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Personal"))
                         .build());
-            } else
+            } /*else
             {
                 //table exists - empty it
-                TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
+
                 connection.getAdmin().disableTable(tableName);
                 connection.getAdmin().truncateTable(tableName, false);
                 connection.getAdmin().enableTable(tableName);
-            }
+            }*/
         } catch (IOException e) {
             e.printStackTrace();
         }
