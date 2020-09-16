@@ -331,6 +331,8 @@ public class ProbeSpark {
             {
                 //table exists - empty it
                 connection.getAdmin()
+                        .disableTable(TableName.valueOf(properties.get("sparkHBaseTableName")));
+                connection.getAdmin()
                         .truncateTable(TableName.valueOf(properties.get("sparkHBaseTableName")), false);
             }
         } catch (IOException e) {
