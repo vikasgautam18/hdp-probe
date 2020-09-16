@@ -95,7 +95,7 @@ public class SparkHBaseProbe {
         data.show();
         data.printSchema();
 
-        data.write()
+        data.withColumnRenamed("rowKey", "rowkey").write()
                 .options(tempMap)
                 .format("org.apache.spark.sql.execution.datasources.hbase")
                 .save();
