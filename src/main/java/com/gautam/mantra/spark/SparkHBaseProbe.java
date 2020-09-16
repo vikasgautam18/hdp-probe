@@ -124,7 +124,7 @@ public class SparkHBaseProbe {
             Logger.getLogger("org").debug(e.toString());
         }
 
-        return spark.createDataFrame(dataList, Event.class);
+        return spark.createDataFrame(dataList, ContactRecord.class);
     }
 
     /*
