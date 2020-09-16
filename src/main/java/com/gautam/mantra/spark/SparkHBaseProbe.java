@@ -86,10 +86,12 @@ public class SparkHBaseProbe {
         tempMap.put(HBaseTableCatalog.tableCatalog(), catalog);
         tempMap.put(HBaseTableCatalog.newTable(), "5");
 
-        ContactRecord contactRecord = new ContactRecord("16895", "45 Ellis St.",
-                "674-555-0110", "John Jackson","230-555-0194");
+        ContactRecord contactRecord = new ContactRecord("16896", "46 Ellis St.",
+                "674-666-0110", "John Jackson","230-555-0194");
 
-        List<ContactRecord> contactRecordList = Arrays.asList(contactRecord);
+        List<ContactRecord> contactRecordList = Arrays.asList();
+        contactRecordList.add(contactRecord);
+
         Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);
 
         data.show();
