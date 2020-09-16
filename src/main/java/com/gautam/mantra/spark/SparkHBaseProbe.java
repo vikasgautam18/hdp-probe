@@ -1,6 +1,9 @@
 package com.gautam.mantra.spark;
 
 import com.gautam.mantra.commons.Utilities;
+import org.apache.hadoop.conf.Configuration;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HConstants;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
@@ -46,11 +49,16 @@ public class SparkHBaseProbe {
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHBaseNumRecords")));
         dataset.show(10, false);
-        writeDatasetToHBase(properties, spark, dataset);
+        writeDatasetToHBase(properties, dataset);
         spark.stop();
     }
 
-    private static void writeDatasetToHBase(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) {
+    private static void writeDatasetToHBase(Map<String, String> properties, Dataset<Row> dataset) {
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
 
         String catalog = "{\n" +
                 "\"table\":{\"namespace\":\"default\", \"name\":\"" + properties.get("sparkHBaseTableName") + "\"},\n" +
