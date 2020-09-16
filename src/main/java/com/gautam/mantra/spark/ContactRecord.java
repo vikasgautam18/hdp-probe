@@ -8,8 +8,8 @@ public class ContactRecord {
     private String personalName;
     private String personalPhone;
 
-    public ContactRecord(String rowKey, String officeAddress, String officePhone, String personalName, String personalPhone) {
-        this.rowkey = rowKey;
+    public ContactRecord(String rowkey, String officeAddress, String officePhone, String personalName, String personalPhone) {
+        this.rowkey = rowkey;
         this.officeAddress = officeAddress;
         this.officePhone = officePhone;
         this.personalName = personalName;
