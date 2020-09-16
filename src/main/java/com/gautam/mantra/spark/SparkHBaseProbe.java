@@ -51,27 +51,9 @@ public class SparkHBaseProbe {
     }
 
     private static void writeDatasetToHBase(Map<String, String> properties, SparkSession spark, Dataset<Row> dataset) {
-//        Configuration conf = HBaseConfiguration.create();
-//        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
-//        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
-//        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
-//        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
-
-        //String newLine = System.getProperty("line.separator");
-
-        /*String catalog = new StringBuilder().append("{")
-                .append(newLine)
-                .append("\"table\":{\"namespace\":\"default\", \"name\":\"events\"},").append(newLine)
-                .append("\"rowkey\":\"eventId\",").append(newLine)
-                .append("\"columns\":{").append(newLine)
-                .append("\"rowkey\":{\"cf\":\"rowkey\", \"col\":\"eventId\", \"type\":\"string\"},").append(newLine)
-                .append("\"eventTs\":{\"cf\":\"cf\", \"col\":\"eventTs\", \"type\":\"timestamp\"},").append(newLine)
-                .append("}").append(newLine)
-                .append("}")
-                .toString().trim();*/
 
         String catalog = "{\n" +
-                "\"table\":{\"namespace\":\"default\", \"name\":\"Contacts\"},\n" +
+                "\"table\":{\"namespace\":\"default\", \"name\":\"" + properties.get("sparkHBaseTableName") + "\"},\n" +
                 "\"rowkey\":\"key\",\n" +
                 "\"columns\":{\n" +
                 "\"rowkey\":{\"cf\":\"rowkey\", \"col\":\"key\", \"type\":\"string\"},\n" +
@@ -82,25 +64,11 @@ public class SparkHBaseProbe {
                 "}\n" +
                 "}";
 
-        System.out.println(catalog);
-
         Map<String, String> optionsMap = new HashMap<>();
         optionsMap.put(HBaseTableCatalog.tableCatalog(), catalog);
         optionsMap.put(HBaseTableCatalog.newTable(), "5");
 
-        /*ContactRecord contactRecord = new ContactRecord("16896", "46 Ellis St.",
-                "674-666-0110", "John Jackson","230-555-0194");
-
-        List<ContactRecord> contactRecordList = new ArrayList<>();
-        contactRecordList.add(contactRecord);
-
-        Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);*/
-        Dataset<Row> data = generateDataSet(spark, Integer.parseInt(properties.get("sparkHBaseNumRecords")));
-
-        data.show();
-        data.printSchema();
-
-        data.withColumnRenamed("rowKey", "rowkey").write()
+        dataset.withColumnRenamed("rowKey", "rowkey").write()
                 .options(optionsMap)
                 .format("org.apache.spark.sql.execution.datasources.hbase")
                 .save();
@@ -116,8 +84,8 @@ public class SparkHBaseProbe {
         List<ContactRecord> dataList = new ArrayList<>();
 
         for (int i=1; i <= numRows; i++){
-            dataList.add(new ContactRecord(String.valueOf(i), String.valueOf(i) + " Ellis St.",
-                    "674-666-0110", "John Jackson","230-555-0194"));
+            dataList.add(new ContactRecord(String.valueOf(i), i + " Ellis St.",
+                    "674-666-" + i, "John Jackson","230-555-" + i));
         }
 
         for (ContactRecord e: dataList) {
@@ -126,44 +94,4 @@ public class SparkHBaseProbe {
 
         return spark.createDataFrame(dataList, ContactRecord.class);
     }
-
-    /*
-spark-shell --jars $(echo /usr/hdp/3.1.0.0-78/hbase/lib/*.jar | tr ' ' ',')
-case class ContactRecord(
-    rowkey: String,
-    officeAddress: String,
-    officePhone: String,
-    personalName: String,
-    personalPhone: String
-    )
-
-import org.apache.spark.sql.{SQLContext, _}
-import org.apache.spark.sql.execution.datasources.hbase._
-import org.apache.spark.{SparkConf, SparkContext}
-import spark.sqlContext.implicits._
-
-def catalog = s"""{
-    |"table":{"namespace":"default", "name":"Contacts"},
-    |"rowkey":"key",
-    |"columns":{
-    |"rowkey":{"cf":"rowkey", "col":"key", "type":"string"},
-    |"officeAddress":{"cf":"Office", "col":"Address", "type":"string"},
-    |"officePhone":{"cf":"Office", "col":"Phone", "type":"string"},
-    |"personalName":{"cf":"Personal", "col":"Name", "type":"string"},
-    |"personalPhone":{"cf":"Personal", "col":"Phone", "type":"string"}
-    |}
-|}""".stripMargin
-
-val newContact = ContactRecord("16891", "40 Ellis St.", "674-555-0110", "John Jackson","230-555-0194")
-
-var newData = new Array[ContactRecord](1)
-newData(0) = newContact
-
-sc.parallelize(newData)
-.toDF
-.write
-.options(Map(HBaseTableCatalog.tableCatalog -> catalog, HBaseTableCatalog.newTable -> "5"))
-.format("org.apache.spark.sql.execution.datasources.hbase")
-.save()
-     */
 }
