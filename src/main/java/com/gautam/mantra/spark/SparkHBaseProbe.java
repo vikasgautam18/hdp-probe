@@ -3,8 +3,6 @@ package com.gautam.mantra.spark;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.spark.api.java.JavaRDD;
-import org.apache.spark.api.java.JavaSparkContext;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
@@ -92,16 +90,15 @@ public class SparkHBaseProbe {
                 "674-555-0110", "John Jackson","230-555-0194");
 
         List<ContactRecord> contactRecordList = Arrays.asList(contactRecord);
-        JavaSparkContext sc = new JavaSparkContext(spark.sparkContext().conf());
+        Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);
 
-        JavaRDD<ContactRecord> rdd = sc.parallelize(contactRecordList);
+        data.show();
+        data.printSchema();
 
-        spark.createDataFrame(rdd, ContactRecord.class)
-        .write()
-        .options(tempMap)
-        .format("org.apache.spark.sql.execution.datasources.hbase")
-        .save();
-
+        data.write()
+                .options(tempMap)
+                .format("org.apache.spark.sql.execution.datasources.hbase")
+                .save();
     }
 
     /**
