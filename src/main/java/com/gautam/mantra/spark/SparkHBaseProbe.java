@@ -14,7 +14,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Timestamp;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple spark job to generate some event data and write it to spark sql
@@ -89,7 +92,7 @@ public class SparkHBaseProbe {
         ContactRecord contactRecord = new ContactRecord("16896", "46 Ellis St.",
                 "674-666-0110", "John Jackson","230-555-0194");
 
-        List<ContactRecord> contactRecordList = Arrays.asList();
+        List<ContactRecord> contactRecordList = new ArrayList<>();
         contactRecordList.add(contactRecord);
 
         Dataset<Row> data = spark.createDataFrame(contactRecordList, ContactRecord.class);
