@@ -330,10 +330,10 @@ public class ProbeSpark {
             } else
             {
                 //table exists - empty it
-                connection.getAdmin()
-                        .disableTable(TableName.valueOf(properties.get("sparkHBaseTableName")));
-                connection.getAdmin()
-                        .truncateTable(TableName.valueOf(properties.get("sparkHBaseTableName")), false);
+                TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
+                connection.getAdmin().disableTable(tableName);
+                connection.getAdmin().truncateTable(tableName, false);
+                connection.getAdmin().enableTable(tableName);
             }
         } catch (IOException e) {
             e.printStackTrace();
