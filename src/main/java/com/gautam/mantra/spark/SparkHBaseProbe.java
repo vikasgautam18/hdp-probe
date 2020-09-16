@@ -75,6 +75,10 @@ public class SparkHBaseProbe {
         Map<String, String> optionsMap = new HashMap<>();
         optionsMap.put(HBaseTableCatalog.tableCatalog(), catalog);
         optionsMap.put(HBaseTableCatalog.newTable(), "5");
+        optionsMap.put(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        optionsMap.put(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        optionsMap.put(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        optionsMap.put(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
 
         dataset.withColumnRenamed("rowKey", "rowkey").write()
                 .options(optionsMap)
