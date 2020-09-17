@@ -56,6 +56,7 @@ coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 mapredSiteLocation: /etc/hadoop/3.1.0.0-78/0/mapred-site.xml
 yarnSiteLocation: /etc/hadoop/3.1.0.0-78/0/yarn-site.xml
+hbaseSiteLocation: /etc/hbase/3.1.0.0-78/0/hbase-site.xml
 hadoopHomeDir: /usr/hdp/3.1.0.0-78/hadoop
 hadoopConfDir: /usr/hdp/3.1.0.0-78/hadoop/conf
 yarnConfDir: /usr/hdp/3.1.0.0-78/hadoop-yarn/conf

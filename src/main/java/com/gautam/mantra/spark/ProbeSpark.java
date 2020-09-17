@@ -328,14 +328,11 @@ public class ProbeSpark {
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Office"))
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Personal"))
                         .build());
-            } /*else
+            } else
             {
                 //table exists - empty it
-
-                connection.getAdmin().disableTable(tableName);
                 connection.getAdmin().truncateTable(tableName, false);
-                connection.getAdmin().enableTable(tableName);
-            }*/
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -352,10 +349,7 @@ public class ProbeSpark {
         sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
         sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
         sparkConf.set("spark.executor.extraClassPath", properties.get("spark.executor.extraClassPath"));
-        sparkConf.set("spark.yarn.dist.files", "/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
-        //sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
-        //sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
-        //sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.hive.warehouse.dir"));
+        sparkConf.set("spark.yarn.dist.files", properties.get("hbaseSiteLocation"));
 
         final String[] args = new String[]{
                 "--jar",
