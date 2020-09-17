@@ -8,10 +8,7 @@ import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hbase.HBaseConfiguration;
 import org.apache.hadoop.hbase.HConstants;
 import org.apache.hadoop.hbase.TableName;
-import org.apache.hadoop.hbase.client.ColumnFamilyDescriptorBuilder;
-import org.apache.hadoop.hbase.client.Connection;
-import org.apache.hadoop.hbase.client.ConnectionFactory;
-import org.apache.hadoop.hbase.client.TableDescriptorBuilder;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -328,14 +325,19 @@ public class ProbeSpark {
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Office"))
                         .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Personal"))
                         .build());
+
+                connection.close();
             } else
             {
                 //table exists - empty it
+                connection.getAdmin().disableTable(tableName);
                 connection.getAdmin().truncateTable(tableName, false);
+                connection.close();
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
 
         System.setProperty("hdp.version", "3.1.0.0-78");
 
@@ -382,21 +384,37 @@ public class ProbeSpark {
      * @return returns true if the job was successful, false otherwise
      */
     private boolean verifySparkHBaseJobResult(Map<String, String> properties) {
+        TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
 
-        Configuration conf= new Configuration();
-        conf.set("fs.defaultFS", properties.get("hdfsPath"));
-        conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
-        conf.set("fs.file.impl", org.apache.hadoop.fs.LocalFileSystem.class.getName());
+        // check if the table exists
+        try {
+            Connection connection = ConnectionFactory.createConnection(conf);
+            if(connection.getAdmin().tableExists(tableName)){
+                // find the count of records
+                Table table = connection.getTable(tableName);
+                Scan scan = new Scan();
+                scan.addFamily("Office".getBytes());
 
-        try{
-            FileSystem fs = FileSystem.get(URI.create(properties.get("hdfsPath")), conf);
-            if(fs.exists(new Path(properties.get("sparkHiveExportFile")))){
-                FSDataInputStream inputStream = fs.open(new Path(properties.get("sparkHiveExportFile")));
-                String content = IOUtils.toString(inputStream, StandardCharsets.UTF_8);
-                return countLines(content) == Integer.parseInt(properties.get("sparkHiveNumRecords"));
-            }
-            else {
-                logger.error("File does not exist !");
+                ResultScanner results = table.getScanner(scan);
+
+                int rowCount = 0;
+                if(results != null){
+                    for (Result result = results.next(); result != null; result = results.next())
+                        rowCount++;
+                }
+                table.close();
+
+                // return if they match the desired count
+                return rowCount == Integer.parseInt(properties.get("sparkHBaseNumRecords"));
+            } else
+            {
+                //table does not exist
+                logger.info("Table does not exist.. Something went wrong! ");
                 return false;
             }
         } catch (IOException e) {
