@@ -56,18 +56,23 @@ coreSiteLocation: /etc/hadoop/3.1.0.0-78/0/core-site.xml
 hdfsSiteLocation: /etc/hadoop/3.1.0.0-78/0/hdfs-site.xml
 mapredSiteLocation: /etc/hadoop/3.1.0.0-78/0/mapred-site.xml
 yarnSiteLocation: /etc/hadoop/3.1.0.0-78/0/yarn-site.xml
+hbaseSiteLocation: /etc/hbase/3.1.0.0-78/0/hbase-site.xml
 hadoopHomeDir: /usr/hdp/3.1.0.0-78/hadoop
 hadoopConfDir: /usr/hdp/3.1.0.0-78/hadoop/conf
 yarnConfDir: /usr/hdp/3.1.0.0-78/hadoop-yarn/conf
 
-spark.driver.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
-spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
-spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark2hive.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
+spark.driver.extraLibraryPath: "/etc/spark2/3.1.0.0-78/0/:/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
+spark.driver.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*:/etc/spark2/3.1.0.0-78/0/*"
+spark.driver.extraJavaOptions: "-Dhdp.version=3.1.0.0-78 -Dspark.probe.cluster.yml=/data/hdp-probe/conf/cluster-conf.yml"
 
 spark.sql.warehouse.dir: "/apps/spark/warehouse"
 spark.hive.warehouse.dir: "/warehouse/tablespace/managed/hive"
 spark.sql.hive.metastore.version: "3.0"
 spark.sql.hive.metastore.jars: "/usr/hdp/current/spark2-client/standalone-metastore/*"
 spark.yarn.am.extraJavaOptions: "-Dhdp.version=3.1.0.0-78"
-spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*"
-spark.executor.extraLibraryPath: "/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
+spark.executor.extraClassPath: "/usr/hdp/3.1.0.0-78/spark2/jars/*:/etc/spark2/3.1.0.0-78/0/*"
+spark.executor.extraLibraryPath: "/etc/spark2/3.1.0.0-78/0/:/usr/hdp/current/hadoop-client/lib/native:/usr/hdp/current/hadoop-client/lib/native/Linux-amd64-64"
+
+sparkHBaseAppName: spark-hbase-probe
+sparkHBaseNumRecords: "1000"
+sparkHBaseTableName: Contacts

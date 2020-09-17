@@ -54,6 +54,20 @@ public class ProbeMain {
         probeSparkHDFS(properties);
         probeSparkSQL(properties);
         probeSparkHive(properties);
+        probeSparkHBase(properties);
+
+    }
+
+    private static void probeSparkHBase(Map<String, String> properties) {
+        ProbeSpark spark = new ProbeSpark();
+        boolean isJobSuccessful = spark.submitSparkHBaseJob(properties);
+
+        if(!isJobSuccessful){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+
+        logger.info("Spark HBase tests are successful.. ");
     }
 
     private static void probeSparkSQL(Map<String, String> properties) {

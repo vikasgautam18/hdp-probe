@@ -5,6 +5,10 @@ import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FSDataInputStream;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
+import org.apache.hadoop.hbase.HBaseConfiguration;
+import org.apache.hadoop.hbase.HConstants;
+import org.apache.hadoop.hbase.TableName;
+import org.apache.hadoop.hbase.client.*;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.FinalApplicationStatus;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -80,8 +84,8 @@ public class ProbeSpark {
         sparkConf.setAppName(properties.get("sparkHDFSAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
 
-        sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78 -Dspark2hdfs.cluster.yml="+ properties.get("clusterPropsFile"));
-        sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
 
         final String[] args = new String[]{
                 "--jar",
@@ -292,6 +296,125 @@ public class ProbeSpark {
             }
             else {
                 logger.error("File does not exist !");
+                return false;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * This method submits a spark job to YARN
+     * @param properties the cluster configuration
+     * @return True if the job was successful, false otherwise
+     */
+    public boolean submitSparkHBaseJob(Map<String, String> properties){
+        TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+        try {
+            Connection connection = ConnectionFactory.createConnection(conf);
+            if(!connection.getAdmin().tableExists(tableName)){
+                //table does not exist. create it
+                connection.getAdmin().createTable(TableDescriptorBuilder
+                        .newBuilder(tableName)
+                        .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Office"))
+                        .setColumnFamily(ColumnFamilyDescriptorBuilder.of("Personal"))
+                        .build());
+
+                connection.close();
+            } else
+            {
+                //table exists - empty it
+                connection.getAdmin().disableTable(tableName);
+                connection.getAdmin().truncateTable(tableName, false);
+                connection.close();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        System.setProperty("hdp.version", "3.1.0.0-78");
+
+        SparkConf sparkConf = new SparkConf();
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("sparkHBaseAppName"));
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
+        sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
+        sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
+        sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
+        sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
+        sparkConf.set("spark.executor.extraClassPath", properties.get("spark.executor.extraClassPath"));
+        sparkConf.set("spark.yarn.dist.files", properties.get("hbaseSiteLocation"));
+
+        final String[] args = new String[]{
+                "--jar",
+                properties.get("sparkHivejar"),
+                "--class",
+                "com.gautam.mantra.spark.SparkHBaseProbe"
+        };
+
+        ClientArguments clientArguments = new ClientArguments(args);
+        Client client = new Client(clientArguments, sparkConf);
+
+        logger.info("submitting spark hbase application to YARN :: ");
+
+        ApplicationId applicationId = client.submitApplication();
+
+        logger.info("application id is ::" + applicationId.toString());
+
+        Tuple2<YarnApplicationState, FinalApplicationStatus> result =
+                client.monitorApplication(applicationId, false,
+                        Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
+
+        logger.info("final status of spark hbase probe job :: " + result._2.toString());
+
+        return result._2.toString().equals("SUCCEEDED") && verifySparkHBaseJobResult(properties);
+    }
+
+    /**
+     * this method verifies the result of spark-hive spark job
+     * @param properties the cluster configuration
+     * @return returns true if the job was successful, false otherwise
+     */
+    private boolean verifySparkHBaseJobResult(Map<String, String> properties) {
+        TableName tableName = TableName.valueOf(properties.get("sparkHBaseTableName"));
+        Configuration conf = HBaseConfiguration.create();
+        conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
+        conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+
+        // check if the table exists
+        try {
+            Connection connection = ConnectionFactory.createConnection(conf);
+            if(connection.getAdmin().tableExists(tableName)){
+                // find the count of records
+                Table table = connection.getTable(tableName);
+                Scan scan = new Scan();
+                scan.addFamily("Office".getBytes());
+
+                ResultScanner results = table.getScanner(scan);
+
+                int rowCount = 0;
+                if(results != null){
+                    for (Result result = results.next(); result != null; result = results.next())
+                        rowCount++;
+                }
+                table.close();
+
+                // return if they match the desired count
+                return rowCount == Integer.parseInt(properties.get("sparkHBaseNumRecords"));
+            } else
+            {
+                //table does not exist
+                logger.info("Table does not exist.. Something went wrong! ");
                 return false;
             }
         } catch (IOException e) {
