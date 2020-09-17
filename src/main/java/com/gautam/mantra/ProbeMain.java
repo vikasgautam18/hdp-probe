@@ -50,10 +50,10 @@ public class ProbeMain {
         probeHive(properties);
 
         // probeSpark
-        probeSparkYARN(properties);
-        probeSparkHDFS(properties);
-        probeSparkSQL(properties);
-        probeSparkHive(properties);
+        //probeSparkYARN(properties);
+        //probeSparkHDFS(properties);
+        //probeSparkSQL(properties);
+        //probeSparkHive(properties);
         probeSparkHBase(properties);
 
     }

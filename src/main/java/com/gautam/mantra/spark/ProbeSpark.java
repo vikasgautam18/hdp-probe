@@ -346,12 +346,13 @@ public class ProbeSpark {
         sparkConf.setMaster(properties.get("spark2Master"));
         sparkConf.setAppName(properties.get("sparkHBaseAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
-        //sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
-        //sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
+        sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
+        sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
         sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
         sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
         sparkConf.set("spark.driver.extraClassPath", properties.get("spark.driver.extraClassPath"));
         sparkConf.set("spark.executor.extraClassPath", properties.get("spark.executor.extraClassPath"));
+        sparkConf.set("spark.yarn.dist.files", "/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
         //sparkConf.set("spark.sql.hive.metastore.jars", properties.get("spark.sql.hive.metastore.jars"));
         //sparkConf.set("spark.sql.hive.metastore.version", properties.get("spark.sql.hive.metastore.version"));
         //sparkConf.set("spark.sql.warehouse.dir", properties.get("spark.hive.warehouse.dir"));
