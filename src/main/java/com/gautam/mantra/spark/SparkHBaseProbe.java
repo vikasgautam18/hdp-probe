@@ -49,7 +49,7 @@ public class SparkHBaseProbe {
         spark.stop();
     }
 
-    private static void writeDatasetToHBase(Map<String, String> properties, Dataset<Row> dataset) {
+    public static void writeDatasetToHBase(Map<String, String> properties, Dataset<Row> dataset) {
         String catalog = "{\n" +
                 "\"table\":{\"namespace\":\"default\", \"name\":\"" + properties.get("sparkHBaseTableName") + "\"},\n" +
                 "\"rowkey\":\"key\",\n" +
