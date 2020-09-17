@@ -375,7 +375,7 @@ public class ProbeSpark {
 
         logger.info("final status of spark hbase probe job :: " + result._2.toString());
 
-        return result._2.toString().equals("SUCCEEDED");
+        return result._2.toString().equals("SUCCEEDED") && verifySparkHBaseJobResult(properties);
     }
 
     /**
