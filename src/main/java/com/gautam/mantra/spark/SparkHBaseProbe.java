@@ -46,6 +46,7 @@ public class SparkHBaseProbe {
                 .appName(properties.get("sparkHBaseAppName"))
                 .getOrCreate();
 
+        spark.sparkContext().addFile("/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHBaseNumRecords")));
         dataset.show(10, false);

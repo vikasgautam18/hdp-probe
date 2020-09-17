@@ -344,7 +344,7 @@ public class ProbeSpark {
 
         SparkConf sparkConf = new SparkConf();
         sparkConf.setMaster(properties.get("spark2Master"));
-        sparkConf.setAppName(properties.get("sparkHiveAppName"));
+        sparkConf.setAppName(properties.get("sparkHBaseAppName"));
         sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
         //sparkConf.set("spark.driver.extraLibraryPath", properties.get("spark.driver.extraLibraryPath"));
         //sparkConf.set("spark.executor.extraLibraryPath", properties.get("spark.executor.extraLibraryPath"));
