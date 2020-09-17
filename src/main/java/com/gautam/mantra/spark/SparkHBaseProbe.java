@@ -1,9 +1,6 @@
 package com.gautam.mantra.spark;
 
 import com.gautam.mantra.commons.Utilities;
-import org.apache.hadoop.conf.Configuration;
-import org.apache.hadoop.hbase.HBaseConfiguration;
-import org.apache.hadoop.hbase.HConstants;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
@@ -44,10 +41,10 @@ public class SparkHBaseProbe {
 
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHBaseAppName"))
-                .config("spark.yarn.dist.files", "/etc/hbase/3.1.0.0-78/0/hbase-site.xml")
+                //.config("spark.yarn.dist.files", "/etc/hbase/3.1.0.0-78/0/hbase-site.xml")
                 .getOrCreate();
 
-        spark.sparkContext().addFile("/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
+        //spark.sparkContext().addFile("/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
 
         Dataset<Row> dataset = generateDataSet(spark, Integer.parseInt(properties.get("sparkHBaseNumRecords")));
         dataset.show(10, false);
@@ -56,11 +53,11 @@ public class SparkHBaseProbe {
     }
 
     private static void writeDatasetToHBase(Map<String, String> properties, Dataset<Row> dataset) {
-        Configuration conf = HBaseConfiguration.create();
+        /*Configuration conf = HBaseConfiguration.create();
         conf.set(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
         conf.set(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
         conf.set(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
-        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+        conf.set(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));*/
 
         String catalog = "{\n" +
                 "\"table\":{\"namespace\":\"default\", \"name\":\"" + properties.get("sparkHBaseTableName") + "\"},\n" +
@@ -77,10 +74,10 @@ public class SparkHBaseProbe {
         Map<String, String> optionsMap = new HashMap<>();
         optionsMap.put(HBaseTableCatalog.tableCatalog(), catalog);
         optionsMap.put(HBaseTableCatalog.newTable(), "5");
-        optionsMap.put(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
+        /*optionsMap.put(HConstants.ZOOKEEPER_QUORUM, properties.get("zkQuorum"));
         optionsMap.put(HConstants.ZOOKEEPER_CLIENT_PORT, properties.get("zkPort"));
         optionsMap.put(HConstants.HBASE_DIR, properties.get("hbaseDataDir"));
-        optionsMap.put(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));
+        optionsMap.put(HConstants.ZOOKEEPER_ZNODE_PARENT, properties.get("hbaseZnodeParent"));*/
 
         dataset.withColumnRenamed("rowKey", "rowkey").write()
                 .options(optionsMap)
