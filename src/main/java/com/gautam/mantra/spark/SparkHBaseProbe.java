@@ -44,6 +44,7 @@ public class SparkHBaseProbe {
 
         SparkSession spark = SparkSession.builder()
                 .appName(properties.get("sparkHBaseAppName"))
+                .config("spark.yarn.dist.files", "/etc/hbase/3.1.0.0-78/0/hbase-site.xml")
                 .getOrCreate();
 
         spark.sparkContext().addFile("/etc/hbase/3.1.0.0-78/0/hbase-site.xml");
