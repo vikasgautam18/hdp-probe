@@ -15,7 +15,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-class SparkSQLProbeTest {
+class SparkHiveProbeTest {
 
     static SparkSession spark;
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -27,7 +27,7 @@ class SparkSQLProbeTest {
     static void setUp() {
         logger.info("starting up Spark session.. ");
         spark  = SparkSession.builder()
-                .appName("TestSparkHDFS")
+                .appName("TestSparkHive")
                 .master("local")
                 .config("job.local.dir", "/tmp/")
                 .getOrCreate();
@@ -47,17 +47,17 @@ class SparkSQLProbeTest {
 
     @Test
     void writeDatasetToSparkSQL() {
-        Dataset<Row> dataset = SparkSQLProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
+        Dataset<Row> dataset = SparkHiveProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show(10, false);
         // write to HDFS
-        SparkSQLProbe.writeDatasetToSparkSQL(properties, spark, dataset);
+        SparkHiveProbe.writeDatasetToHive(properties, spark, dataset);
         String finalTableName = properties.get("sparkHiveDB") + "." + properties.get("sparkHiveTable");
         assert spark.sql("select * from " + finalTableName).count() == Integer.parseInt(properties.get("sparkHiveNumRecords"));
     }
 
     @Test
     void generateDataSet() {
-        Dataset<Row> dataset = SparkSQLProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
+        Dataset<Row> dataset = SparkHiveProbe.generateDataSet(spark, Integer.parseInt(properties.get("sparkHiveNumRecords")));
         dataset.show();
         dataset.printSchema();
 
