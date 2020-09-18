@@ -1,5 +1,6 @@
 package com.gautam.mantra.spark;
 
+import com.gautam.mantra.commons.Event;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.*;

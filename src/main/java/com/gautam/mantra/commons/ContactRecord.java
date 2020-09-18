@@ -1,4 +1,4 @@
-package com.gautam.mantra.spark;
+package com.gautam.mantra.commons;
 
 public class ContactRecord {
 
