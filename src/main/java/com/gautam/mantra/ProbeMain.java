@@ -63,8 +63,21 @@ public class ProbeMain {
 
     private static void probeKafka(Map<String, String> properties) {
         ProbeKafka kafka = new ProbeKafka(properties);
+        if(kafka.isReachable()){
+            logger.info("Kafka service is reachable");
+            if(kafka.createTopic(properties.get("kafka.probe.topic"))){
+                logger.info("Topic creation successful... ");
+                kafka.describeTopic(properties.get("kafka.probe.topic"));
+            } else {
+                logger.error("Topic creation failed, exiting.. ");
+                System.exit(1);
+            }
+        } else {
+            logger.error("Kafka service is not reachable, exiting... ");
+            System.exit(1);
+        }
 
-        kafka.isReachable();
+        logger.info("Kafka tests successful... !!");
     }
 
     private static void probeSparkHBase(Map<String, String> properties) {

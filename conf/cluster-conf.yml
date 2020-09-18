@@ -78,3 +78,4 @@ sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: Contacts
 
 kafka.bootstrap.servers: "localhost:6667"
+kafka.probe.records: "1000"
