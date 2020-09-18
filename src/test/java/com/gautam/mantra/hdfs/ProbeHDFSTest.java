@@ -1,6 +1,9 @@
 package com.gautam.mantra.hdfs;
 
+import com.gautam.mantra.commons.Event;
 import com.gautam.mantra.commons.Utilities;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
@@ -15,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.Map;
 
 class ProbeHDFSTest {
@@ -100,5 +104,15 @@ class ProbeHDFSTest {
         hdfs.createFolder(properties);
         hdfs.createFile(properties);
         assert hdfs.updatePermissions(properties);
+    }
+
+    @Test
+    void testEvents() {
+        Event event = new Event("e1", new Timestamp(System.currentTimeMillis()));
+        System.out.println(event.toJSON());
+        JsonObject jobj = new Gson().fromJson(event.toJSON(), JsonObject.class);
+        assert jobj.has("eventId");
+        assert jobj.has("eventTs");
+        assert jobj.get("eventId").getAsString().equals("e1");
     }
 }

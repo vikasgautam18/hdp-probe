@@ -1,6 +1,8 @@
 package com.gautam.mantra.commons;
 
 
+import com.google.gson.Gson;
+
 import java.sql.Timestamp;
 
 public class Event {
@@ -46,5 +48,10 @@ public class Event {
                 "eventId='" + eventId + '\'' +
                 ", eventTs=" + eventTs +
                 '}';
+    }
+
+    public String toJSON() {
+        Gson gson = new Gson();
+        return gson.toJson(this);
     }
 }
