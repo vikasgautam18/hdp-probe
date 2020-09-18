@@ -51,16 +51,17 @@ public class ProbeMain {
         probeHive(properties);
 
         // probeSpark
-        probeSparkYARN(properties);
-        probeSparkHDFS(properties);
-        probeSparkSQL(properties);
-        probeSparkHive(properties);
-        probeSparkHBase(properties);
+        probeSpark(properties);
 
+        //probeKafka
         probeKafka(properties);
 
     }
 
+    /**
+     * Verifies Kafka service and basic functionality
+     * @param properties The cluster properties
+     */
     private static void probeKafka(Map<String, String> properties) {
         ProbeKafka kafka = new ProbeKafka(properties);
         if(kafka.isReachable()){
@@ -86,63 +87,46 @@ public class ProbeMain {
         logger.info("Kafka tests successful... !!");
     }
 
-    private static void probeSparkHBase(Map<String, String> properties) {
+    /**
+     * Verifies spark functionality and basic functionalities including:
+     * Spark - HDFS integration
+     * SPark - SQL functionality
+     * Spark - Hive integration
+     * Spark - HBase integration
+     * @param properties The cluster properties
+     */
+    private static void probeSpark(Map<String, String> properties) {
         ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkHBaseJob(properties);
 
-        if(!isJobSuccessful){
+        if(!spark.submitPiExampleJob(properties)){
             logger.error("Spark job submission failed, exiting ...");
             System.exit(1);
         }
-
-        logger.info("Spark HBase tests are successful.. ");
-    }
-
-    private static void probeSparkSQL(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkSQLJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
-        logger.info("Spark Hive tests are successful.. ");
-    }
-    private static void probeSparkHive(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkHiveJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
-        logger.info("Spark Hive tests are successful.. ");
-    }
-
-    private static void probeSparkHDFS(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitHDFSJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
-        logger.info("Spark HDFS tests are successful.. ");
-    }
-
-    private static void probeSparkYARN(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitPiExampleJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
         logger.info("Spark pi example job submission is successful.. ");
+
+        if(!spark.submitHDFSJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark HDFS tests are successful.. ");
+
+        if(!spark.submitSparkHiveJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark Hive tests are successful.. ");
+
+        if(!spark.submitSparkSQLJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark SQL tests are successful.. ");
+
+        if(!spark.submitSparkHBaseJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark HBase tests are successful.. ");
     }
 
     /**
