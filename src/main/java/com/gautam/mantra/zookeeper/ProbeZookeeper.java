@@ -15,28 +15,28 @@ import java.util.Map;
 public class ProbeZookeeper implements ProbeService {
 
     ZKConnection zkConnection = new ZKConnection();
+    private Map<String, String> properties;
     private static ZooKeeper zooKeeper;
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
     public ProbeZookeeper(Map<String, String> properties) {
-        initialize(properties);
+        this.properties = properties;
+        initialize();
     }
 
     /**
      * Finds out if the ZK cluster is reachable
-     * @param properties Cluster configuration as properties
      * @return true if reachable, false otherwise
      */
     @Override
-    public Boolean isReachable(Map<String, String> properties) {
+    public Boolean isReachable() {
         return zooKeeper.getState().isAlive();
     }
 
     /**
      * This method initializes the Zookeeper connection
-     * @param properties Cluster configuration as properties
      */
-    private void initialize(Map<String, String> properties) {
+    private void initialize() {
         try {
 
             zooKeeper = zkConnection.connect(properties.get("zkHost"));

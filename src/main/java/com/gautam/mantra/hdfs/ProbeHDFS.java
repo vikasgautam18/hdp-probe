@@ -19,13 +19,17 @@ import java.util.Map;
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
+    private Map<String, String> props;
+
+    public ProbeHDFS(Map<String, String> props){
+        this.props = props;
+    }
 
     /**
      * This method verifies if HDFS is reachable
-     * @param props cluster properties loaded from config file
      * @return True if HDFS is reachable False otherwise
      */
-    public Boolean isReachable(Map<String, String> props) {
+    public Boolean isReachable() {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -43,10 +47,9 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method verifies if HDFS folder creation from Java API is working as expected
-     * @param props Cluster configuration as properties
      * @return True if creating folder works as expected, False otherwise
      */
-    public Boolean createFolder(Map<String, String> props) {
+    public Boolean createFolder() {
 
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
@@ -58,7 +61,7 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
             if(fs.exists(new Path (props.get("testHDFSFolder")))){
                 logger.info("HDFS test folder already exists: Deleting it first");
-                if (deleteFolder(props)){
+                if (deleteFolder()){
                     logger.info("HDFS test folder successfully deleted !");
                 }
                 else {
@@ -76,11 +79,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method creates a new file in HDFS and writes some data into it
-     * @param props Cluster configuration as properties
      * @return True if creating file works, false otherwise
      */
     @Override
-    public Boolean createFile(Map<String, String> props) {
+    public Boolean createFile() {
 
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
@@ -104,10 +106,9 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method copies a file from local FS to HDFS
-     * @param props Cluster configuration as properties
      * @return True if the copying worked, false otherwise
      */
-    public Boolean copyFileFromLocalFS(Map<String, String> props){
+    public Boolean copyFileFromLocalFS(){
 
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
@@ -128,11 +129,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * this method reads a file from HDFS
-     * @param props Cluster configuration as properties
      * @return True if the file is read correctly, false otherwise
      */
     @Override
-    public Boolean readFile(Map<String, String> props) {
+    public Boolean readFile() {
 
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
@@ -158,11 +158,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method deletes a file from HDFS
-     * @param props Cluster configuration as properties
      * @return True of the deletion was successful, false otherwise
      */
     @Override
-    public Boolean deleteFile(Map<String, String> props) {
+    public Boolean deleteFile() {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -186,11 +185,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method deletes a folder from HDFS
-     * @param props Cluster configuration as properties
      * @return True if the deletion was successful, false otherwise
      */
     @Override
-    public Boolean deleteFolder(Map<String, String> props) {
+    public Boolean deleteFolder() {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -214,11 +212,10 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method updates the permissions of a file/folder
-     * @param props Cluster configuration as properties
      * @return True of the update was successful, false otherwise
      */
     @Override
-    public Boolean updatePermissions(Map<String, String> props) {
+    public Boolean updatePermissions() {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
@@ -243,10 +240,9 @@ public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     /**
      * This method cleans up all the test data created before
-     * @param props Cluster configuration as properties
      */
     @Override
-    public void cleanup(Map<String, String> props) {
+    public void cleanup() {
         Configuration conf= new Configuration();
         conf.set("fs.defaultFS", props.get("hdfsPath"));
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());

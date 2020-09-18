@@ -76,3 +76,5 @@ spark.executor.extraLibraryPath: "/etc/spark2/3.1.0.0-78/0/:/usr/hdp/current/had
 sparkHBaseAppName: spark-hbase-probe
 sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: Contacts
+
+kafka.bootstrap.servers: "localhost:6667"

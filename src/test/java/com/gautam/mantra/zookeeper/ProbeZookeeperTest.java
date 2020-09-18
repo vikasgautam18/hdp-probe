@@ -56,7 +56,7 @@ class ProbeZookeeperTest {
 
     @Test
     void isReachable() {
-        assert probeZookeeper.isReachable(properties);
+        assert probeZookeeper.isReachable();
     }
 
     @Test

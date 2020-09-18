@@ -4,6 +4,7 @@ import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
+import com.gautam.mantra.kafka.ProbeKafka;
 import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
@@ -56,6 +57,14 @@ public class ProbeMain {
         probeSparkHive(properties);
         probeSparkHBase(properties);
 
+        probeKafka(properties);
+
+    }
+
+    private static void probeKafka(Map<String, String> properties) {
+        ProbeKafka kafka = new ProbeKafka(properties);
+
+        kafka.isReachable();
     }
 
     private static void probeSparkHBase(Map<String, String> properties) {
@@ -123,8 +132,8 @@ public class ProbeMain {
      */
     private static void probeHDFS(Map<String, String> properties) {
         // begin probe - HDFS first
-        ProbeHDFS hdfs = new ProbeHDFS();
-        Boolean isReachable = hdfs.isReachable(properties);
+        ProbeHDFS hdfs = new ProbeHDFS(properties);
+        Boolean isReachable = hdfs.isReachable();
 
         // is HDFS reachable
         if(!isReachable)
@@ -132,13 +141,13 @@ public class ProbeMain {
         else {
             logger.info("HDFS is reachable");
 
-            Boolean isCreateFolderWorking = hdfs.createFolder(properties);
+            Boolean isCreateFolderWorking = hdfs.createFolder();
             // is folder creation possible
             if(isCreateFolderWorking){
                 logger.info("HDFS test folder successfully created !");
 
                 //is file creation possible
-                Boolean isCreateFileWorking = hdfs.createFile(properties);
+                Boolean isCreateFileWorking = hdfs.createFile();
                 if(isCreateFileWorking)
                     logger.info("HDFS test file successfully created !");
                 else {
@@ -147,7 +156,7 @@ public class ProbeMain {
                 }
 
                 //is file copying possible
-                if(hdfs.copyFileFromLocalFS(properties))
+                if(hdfs.copyFileFromLocalFS())
                     logger.info("HDFS copyFromLocal successful !");
                 else {
                     logger.error("HDFS copy from local failed exiting ...");
@@ -155,7 +164,7 @@ public class ProbeMain {
                 }
 
                 //is file read possible
-                if(hdfs.readFile(properties))
+                if(hdfs.readFile())
                     logger.info("HDFS read file successful !");
                 else {
                     logger.error("HDFS read file failed exiting ...");
@@ -163,7 +172,7 @@ public class ProbeMain {
                 }
 
                 // is file permission update possible
-                if(hdfs.updatePermissions(properties)){
+                if(hdfs.updatePermissions()){
                     logger.info("HDFS file permission updates successful !");
                 } else {
                     logger.error("HDFS ile permission updates failed exiting ...");
@@ -171,7 +180,7 @@ public class ProbeMain {
                 }
 
                 //is file deletion possible
-                if(hdfs.deleteFile(properties))
+                if(hdfs.deleteFile())
                     logger.info("HDFS delete file successful !");
                 else {
                     logger.error("HDFS delete file failed exiting ...");
@@ -180,7 +189,7 @@ public class ProbeMain {
 
                 // clean up
                 logger.info("tests complete.. clean up in progress .. !");
-                hdfs.cleanup(properties);
+                hdfs.cleanup();
                 logger.info("clean-up complete.. ");
             }
             else {
@@ -197,7 +206,7 @@ public class ProbeMain {
     private static void zookeeperProbe(Map<String, String> properties) {
         // zookeeper tests begin
         ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
-        if(zookeeper.isReachable(properties))
+        if(zookeeper.isReachable())
             logger.info("Zookeeper is reachable...");
         else {
             logger.error("Zookeeper is not reachable, exiting.. ");
