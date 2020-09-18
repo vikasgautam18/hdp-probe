@@ -68,6 +68,12 @@ public class ProbeMain {
             if(kafka.createTopic(properties.get("kafka.probe.topic"))){
                 logger.info("Topic creation successful... ");
                 kafka.describeTopic(properties.get("kafka.probe.topic"));
+                if(kafka.deleteTopic(properties.get("kafka.probe.topic"))){
+                    logger.info("Topic deletion successful..");
+                } else {
+                    logger.error("Topic deletion fails, exiting... ");
+                    System.exit(1);
+                }
             } else {
                 logger.error("Topic creation failed, exiting.. ");
                 System.exit(1);

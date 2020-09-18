@@ -2,9 +2,7 @@ package com.gautam.mantra.kafka;
 
 import com.gautam.mantra.commons.Event;
 import com.gautam.mantra.commons.ProbeService;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
-import org.apache.kafka.clients.admin.NewTopic;
+import org.apache.kafka.clients.admin.*;
 
 import java.sql.Timestamp;
 import java.util.*;
@@ -31,8 +29,9 @@ public class ProbeKafka implements ProbeService {
     public Boolean createTopic(String topicName) {
         NewTopic newTopic = new NewTopic(topicName, 1, (short) 1);
         try(final AdminClient adminClient = getAdminClient()){
-            adminClient.createTopics(Collections.singleton(newTopic));
-        } catch (Exception e) {
+            final CreateTopicsResult result = adminClient.createTopics(Collections.singleton(newTopic));
+            result.values().get(topicName).get();
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return topicExists(topicName);
@@ -62,9 +61,12 @@ public class ProbeKafka implements ProbeService {
 
     public boolean deleteTopic(String topicName){
         try(final AdminClient adminClient = getAdminClient()){
-            adminClient.deleteTopics(Collections.singleton(topicName));
+            final DeleteTopicsResult result = adminClient.deleteTopics(Collections.singleton(topicName));
+            result.values().get(topicName).get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
         }
-        return topicExists(topicName);
+        return !topicExists(topicName);
     }
 
     // write records to a topic
