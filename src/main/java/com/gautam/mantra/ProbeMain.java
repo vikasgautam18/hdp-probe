@@ -51,11 +51,11 @@ public class ProbeMain {
         // Hive tests
         probeHive(properties);
 
-        // probeSpark
-        //probeSpark(properties);
-
         //probeKafka
         probeKafka(properties);
+
+        // probeSpark
+        probeSpark(properties);
 
     }
 
