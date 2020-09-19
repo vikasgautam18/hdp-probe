@@ -20,6 +20,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -69,6 +70,15 @@ public class ProbeMain {
             if(kafka.createTopic(properties.get("kafka.probe.topic"))){
                 logger.info("Topic creation successful... ");
                 kafka.describeTopic(properties.get("kafka.probe.topic"));
+
+                List<String> dataset = kafka.generateEventDataset();
+                if(kafka.publishToTopic(properties.get("kafka.probe.topic"), dataset)){
+                    logger.info("data published to Kafka successfully.. ");
+                } else {
+                    logger.info("Error publishing data to Kafka.. Exiting");
+                    System.exit(1);
+                }
+
                 if(kafka.deleteTopic(properties.get("kafka.probe.topic"))){
                     logger.info("Topic deletion successful..");
                 } else {
