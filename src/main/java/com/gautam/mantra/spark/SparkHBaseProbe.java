@@ -1,5 +1,6 @@
 package com.gautam.mantra.spark;
 
+import com.gautam.mantra.commons.ContactRecord;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;

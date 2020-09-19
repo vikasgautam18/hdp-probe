@@ -1,6 +1,9 @@
 package com.gautam.mantra.hdfs;
 
+import com.gautam.mantra.commons.Event;
 import com.gautam.mantra.commons.Utilities;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.FileUtil;
 import org.apache.hadoop.hdfs.MiniDFSCluster;
@@ -15,6 +18,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
+import java.sql.Timestamp;
 import java.util.Map;
 
 class ProbeHDFSTest {
@@ -22,7 +26,7 @@ class ProbeHDFSTest {
     static MiniDFSCluster.Builder builder;
     static final Configuration conf = new Configuration();
     static Map<String, String> properties;
-    static final ProbeHDFS hdfs = new ProbeHDFS();
+    static ProbeHDFS hdfs;
     static final Utilities utilities = new Utilities();
 
     public static final Yaml yaml = new Yaml();
@@ -33,6 +37,7 @@ class ProbeHDFSTest {
         InputStream inputStream = ProbeHDFSTest.class.getClassLoader().getResourceAsStream("cluster-conf.yml");
         properties = yaml.load(inputStream);
         utilities.printProperties(properties);
+        hdfs = new ProbeHDFS(properties);
 
         File baseDir = new File("./target/hdfs/" + ProbeHDFSTest.class.getSimpleName()).getAbsoluteFile();
         FileUtil.fullyDelete(baseDir);
@@ -54,51 +59,61 @@ class ProbeHDFSTest {
     @AfterAll
     static void tearDown() {
         builder.checkExitOnShutdown(true);
-        hdfs.cleanup(properties);
+        hdfs.cleanup();
         hdfsCluster.shutdown();
     }
 
     @Test
     void isReachable() {
-        assert hdfs.isReachable(properties);
+        assert hdfs.isReachable();
     }
 
     @Test
     void createFolder() {
-        assert hdfs.createFolder(properties);
+        assert hdfs.createFolder();
     }
 
     @Test
     void createFile() {
-        assert hdfs.createFile(properties);
+        assert hdfs.createFile();
     }
 
     @Test
     void copyFileFromLocalFS() {
-        assert hdfs.copyFileFromLocalFS(properties);
+        assert hdfs.copyFileFromLocalFS();
     }
 
     @Test
     void readFile() {
-        hdfs.createFolder(properties);
-        hdfs.createFile(properties);
-        assert hdfs.readFile(properties);
+        hdfs.createFolder();
+        hdfs.createFile();
+        assert hdfs.readFile();
     }
 
     @Test
     void deleteFile() {
-        assert hdfs.deleteFile(properties);
+        assert hdfs.deleteFile();
     }
 
     @Test
     void deleteFolder() {
-        assert hdfs.deleteFolder(properties);
+        assert hdfs.deleteFolder();
     }
 
     @Test
     void updatePermissions() {
-        hdfs.createFolder(properties);
-        hdfs.createFile(properties);
-        assert hdfs.updatePermissions(properties);
+        hdfs.createFolder();
+        hdfs.createFile();
+        assert hdfs.updatePermissions();
+    }
+
+    @Test
+    void testEvents() {
+        Event event = new Event("e1", new Timestamp(System.currentTimeMillis()));
+        System.out.println(event.toJSON());
+        JsonObject jobj = new Gson().fromJson(event.toJSON(), JsonObject.class);
+        assert jobj.has("eventId");
+        assert jobj.has("eventTs");
+        assert jobj.get("eventId").getAsString().equals("e1");
     }
 }

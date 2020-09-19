@@ -4,6 +4,7 @@ import com.gautam.mantra.commons.Utilities;
 import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
+import com.gautam.mantra.kafka.ProbeKafka;
 import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
@@ -19,6 +20,7 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.sql.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -49,72 +51,92 @@ public class ProbeMain {
         // Hive tests
         probeHive(properties);
 
+        //probeKafka
+        probeKafka(properties);
+
         // probeSpark
-        probeSparkYARN(properties);
-        probeSparkHDFS(properties);
-        probeSparkSQL(properties);
-        probeSparkHive(properties);
-        probeSparkHBase(properties);
+        probeSpark(properties);
 
     }
 
-    private static void probeSparkHBase(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkHBaseJob(properties);
+    /**
+     * Verifies Kafka service and basic functionality
+     * @param properties The cluster properties
+     */
+    private static void probeKafka(Map<String, String> properties) {
+        ProbeKafka kafka = new ProbeKafka(properties);
+        if(kafka.isReachable()){
+            logger.info("Kafka service is reachable");
+            if(kafka.createTopic(properties.get("kafka.probe.topic"))){
+                logger.info("Topic creation successful... ");
+                kafka.describeTopic(properties.get("kafka.probe.topic"));
 
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
+                List<String> dataset = kafka.generateEventDataset();
+                if(kafka.publishToTopic(properties.get("kafka.probe.topic"), dataset)){
+                    logger.info("data published to Kafka successfully.. ");
+                } else {
+                    logger.info("Error publishing data to Kafka.. Exiting");
+                    System.exit(1);
+                }
+
+                if(kafka.deleteTopic(properties.get("kafka.probe.topic"))){
+                    logger.info("Topic deletion successful..");
+                } else {
+                    logger.error("Topic deletion fails, exiting... ");
+                    System.exit(1);
+                }
+            } else {
+                logger.error("Topic creation failed, exiting.. ");
+                System.exit(1);
+            }
+        } else {
+            logger.error("Kafka service is not reachable, exiting... ");
             System.exit(1);
         }
 
-        logger.info("Spark HBase tests are successful.. ");
+        logger.info("Kafka tests successful... !!");
     }
 
-    private static void probeSparkSQL(Map<String, String> properties) {
+    /**
+     * Verifies spark functionality and basic functionalities including:
+     * Spark - HDFS integration
+     * SPark - SQL functionality
+     * Spark - Hive integration
+     * Spark - HBase integration
+     * @param properties The cluster properties
+     */
+    private static void probeSpark(Map<String, String> properties) {
         ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkSQLJob(properties);
 
-        if(!isJobSuccessful){
+        if(!spark.submitPiExampleJob(properties)){
             logger.error("Spark job submission failed, exiting ...");
             System.exit(1);
         }
-
-        logger.info("Spark Hive tests are successful.. ");
-    }
-    private static void probeSparkHive(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitSparkHiveJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
-        logger.info("Spark Hive tests are successful.. ");
-    }
-
-    private static void probeSparkHDFS(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitHDFSJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
-        logger.info("Spark HDFS tests are successful.. ");
-    }
-
-    private static void probeSparkYARN(Map<String, String> properties) {
-        ProbeSpark spark = new ProbeSpark();
-        boolean isJobSuccessful = spark.submitPiExampleJob(properties);
-
-        if(!isJobSuccessful){
-            logger.error("Spark job submission failed, exiting ...");
-            System.exit(1);
-        }
-
         logger.info("Spark pi example job submission is successful.. ");
+
+        if(!spark.submitHDFSJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark HDFS tests are successful.. ");
+
+        if(!spark.submitSparkHiveJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark Hive tests are successful.. ");
+
+        if(!spark.submitSparkSQLJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark SQL tests are successful.. ");
+
+        if(!spark.submitSparkHBaseJob(properties)){
+            logger.error("Spark job submission failed, exiting ...");
+            System.exit(1);
+        }
+        logger.info("Spark HBase tests are successful.. ");
     }
 
     /**
@@ -123,8 +145,8 @@ public class ProbeMain {
      */
     private static void probeHDFS(Map<String, String> properties) {
         // begin probe - HDFS first
-        ProbeHDFS hdfs = new ProbeHDFS();
-        Boolean isReachable = hdfs.isReachable(properties);
+        ProbeHDFS hdfs = new ProbeHDFS(properties);
+        Boolean isReachable = hdfs.isReachable();
 
         // is HDFS reachable
         if(!isReachable)
@@ -132,13 +154,13 @@ public class ProbeMain {
         else {
             logger.info("HDFS is reachable");
 
-            Boolean isCreateFolderWorking = hdfs.createFolder(properties);
+            Boolean isCreateFolderWorking = hdfs.createFolder();
             // is folder creation possible
             if(isCreateFolderWorking){
                 logger.info("HDFS test folder successfully created !");
 
                 //is file creation possible
-                Boolean isCreateFileWorking = hdfs.createFile(properties);
+                Boolean isCreateFileWorking = hdfs.createFile();
                 if(isCreateFileWorking)
                     logger.info("HDFS test file successfully created !");
                 else {
@@ -147,7 +169,7 @@ public class ProbeMain {
                 }
 
                 //is file copying possible
-                if(hdfs.copyFileFromLocalFS(properties))
+                if(hdfs.copyFileFromLocalFS())
                     logger.info("HDFS copyFromLocal successful !");
                 else {
                     logger.error("HDFS copy from local failed exiting ...");
@@ -155,7 +177,7 @@ public class ProbeMain {
                 }
 
                 //is file read possible
-                if(hdfs.readFile(properties))
+                if(hdfs.readFile())
                     logger.info("HDFS read file successful !");
                 else {
                     logger.error("HDFS read file failed exiting ...");
@@ -163,7 +185,7 @@ public class ProbeMain {
                 }
 
                 // is file permission update possible
-                if(hdfs.updatePermissions(properties)){
+                if(hdfs.updatePermissions()){
                     logger.info("HDFS file permission updates successful !");
                 } else {
                     logger.error("HDFS ile permission updates failed exiting ...");
@@ -171,7 +193,7 @@ public class ProbeMain {
                 }
 
                 //is file deletion possible
-                if(hdfs.deleteFile(properties))
+                if(hdfs.deleteFile())
                     logger.info("HDFS delete file successful !");
                 else {
                     logger.error("HDFS delete file failed exiting ...");
@@ -180,7 +202,7 @@ public class ProbeMain {
 
                 // clean up
                 logger.info("tests complete.. clean up in progress .. !");
-                hdfs.cleanup(properties);
+                hdfs.cleanup();
                 logger.info("clean-up complete.. ");
             }
             else {
@@ -197,7 +219,7 @@ public class ProbeMain {
     private static void zookeeperProbe(Map<String, String> properties) {
         // zookeeper tests begin
         ProbeZookeeper zookeeper = new ProbeZookeeper(properties);
-        if(zookeeper.isReachable(properties))
+        if(zookeeper.isReachable())
             logger.info("Zookeeper is reachable...");
         else {
             logger.error("Zookeeper is not reachable, exiting.. ");
