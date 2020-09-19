@@ -167,7 +167,7 @@ public class ProbeKafka implements ProbeService {
             }
             else {
                 recordCount = recordCount + records.count();
-                System.out.printf("recordCount :: %d", recordCount);
+                logger.info(String.format("recordCount :: %d", recordCount));
             }
         }
 
