@@ -107,6 +107,12 @@ public class ProbeKafka implements ProbeService {
         return !topicExists(topicName);
     }
 
+    /**
+     * This method publishes data to a given kafka topic and verifies if the data was indeed written
+     * @param topicName the topic to be writtent o
+     * @param dataset the data to be published
+     * @return True if the data is published successfully, false otherwise
+     */
     public boolean publishToTopic(String topicName, List<String> dataset){
         boolean publishResult;
         Properties props = new Properties();
@@ -139,7 +145,12 @@ public class ProbeKafka implements ProbeService {
     }
 
 
-    // TODO: read from topic
+    /**
+     * This method reads data from a topic and timesout if no data arrived after 3 consecutive polls of 10 seconds each
+     * @param topicName the topic to read from
+     *
+     * @return True if the data was read successfully, false otherwise
+     */
     public boolean readFromTopic(String topicName){
         Properties props = new Properties();
         props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
@@ -175,7 +186,6 @@ public class ProbeKafka implements ProbeService {
 
         return (recordCount == Integer.parseInt(properties.get("kafka.probe.records")));
     }
-
 
     /**
      * a wrapper method to get admin client
