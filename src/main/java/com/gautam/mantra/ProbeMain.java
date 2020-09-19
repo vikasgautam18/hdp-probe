@@ -52,7 +52,7 @@ public class ProbeMain {
         probeHive(properties);
 
         // probeSpark
-        probeSpark(properties);
+        //probeSpark(properties);
 
         //probeKafka
         probeKafka(properties);

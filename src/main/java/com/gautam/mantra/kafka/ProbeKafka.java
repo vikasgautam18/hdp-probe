@@ -142,7 +142,8 @@ public class ProbeKafka implements ProbeService {
     // TODO: read from topic
     public boolean readFromTopic(String topicName){
         Properties props = new Properties();
-        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                properties.get(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG));
         props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
         props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.setProperty(ConsumerConfig.GROUP_ID_CONFIG,

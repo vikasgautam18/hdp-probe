@@ -81,4 +81,4 @@ bootstrap.servers: "localhost:6667"
 kafka.probe.records: "1000"
 kafka.probe.topic: kafka_probe_test
 acks: "1"
-compression.type: zstd
+compression.type: snappy
