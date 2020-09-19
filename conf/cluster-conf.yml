@@ -77,6 +77,8 @@ sparkHBaseAppName: spark-hbase-probe
 sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: Contacts
 
-kafka.bootstrap.servers: "localhost:6667"
+bootstrap.servers: "localhost:6667"
 kafka.probe.records: "1000"
 kafka.probe.topic: kafka_probe_test
+acks: "1"
+compression.type: zstd

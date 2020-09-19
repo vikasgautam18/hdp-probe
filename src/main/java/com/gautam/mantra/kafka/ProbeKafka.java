@@ -3,11 +3,22 @@ package com.gautam.mantra.kafka;
 import com.gautam.mantra.commons.Event;
 import com.gautam.mantra.commons.ProbeService;
 import org.apache.kafka.clients.admin.*;
+import org.apache.kafka.clients.consumer.ConsumerConfig;
+import org.apache.kafka.clients.consumer.ConsumerRecords;
+import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.producer.KafkaProducer;
+import org.apache.kafka.clients.producer.ProducerConfig;
+import org.apache.kafka.clients.producer.ProducerRecord;
+import org.apache.kafka.common.serialization.LongDeserializer;
+import org.apache.kafka.common.serialization.LongSerializer;
+import org.apache.kafka.common.serialization.StringDeserializer;
+import org.apache.kafka.common.serialization.StringSerializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandles;
 import java.sql.Timestamp;
+import java.time.Duration;
 import java.util.*;
 import java.util.concurrent.ExecutionException;
 
@@ -96,8 +107,74 @@ public class ProbeKafka implements ProbeService {
         return !topicExists(topicName);
     }
 
-    // TODO: write records to a topic
+    public boolean publishToTopic(String topicName, List<String> dataset){
+        boolean publishResult;
+        Properties props = new Properties();
+        props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
+                properties.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));
+        props.setProperty(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, LongSerializer.class.getName());
+        props.setProperty(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer.class.getName());
+        props.setProperty(ProducerConfig.ACKS_CONFIG, properties.get(ProducerConfig.ACKS_CONFIG));
+        props.setProperty(ProducerConfig.COMPRESSION_TYPE_CONFIG,
+                properties.get(ProducerConfig.COMPRESSION_TYPE_CONFIG));
+
+        // Producer Instance
+        KafkaProducer<Long, String> producer = new KafkaProducer<>(props);
+
+        dataset.forEach(data -> {
+            ProducerRecord<Long, String> record = new ProducerRecord<>(topicName, new Date().getTime(), data);
+            producer.send(record, (recordMetadata, e) -> {
+                if(e != null){
+                    logger.error("Error producing record:: ", e);
+                } else {
+                    logger.debug(String.format("Message was successfully produced to offset %s on partition %s at timestamp %s",
+                            recordMetadata.offset(), recordMetadata.partition(), recordMetadata.timestamp()));
+                }
+            });
+        });
+
+        producer.close();
+
+        return readFromTopic(topicName);
+    }
+
+
     // TODO: read from topic
+    public boolean readFromTopic(String topicName){
+        Properties props = new Properties();
+        props.setProperty(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG);
+        props.setProperty(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, LongDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        props.setProperty(ConsumerConfig.GROUP_ID_CONFIG,
+                String.join("group-", String.valueOf(System.currentTimeMillis())));
+        props.setProperty(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
+
+        // create consumer
+        KafkaConsumer<Long, String> consumer = new KafkaConsumer<>(props);
+        consumer.subscribe(Collections.singleton(topicName));
+
+        int numPolls = 3;
+        int recordCount = 0;
+        while(true){
+            ConsumerRecords<Long, String> records = consumer.poll(Duration.ofSeconds(10));
+            if(records.isEmpty() && numPolls > 0){
+                logger.info(String.format("numPolls:: %d", numPolls));
+                numPolls--;
+            } else if (numPolls == 0){
+                logger.info(String.format("numPolls:: %d", numPolls));
+                break;
+            }
+            else {
+                recordCount = recordCount + records.count();
+                System.out.printf("recordCount :: %d", recordCount);
+            }
+        }
+
+        consumer.close();
+
+        return (recordCount == Integer.parseInt(properties.get("kafka.probe.records")));
+    }
+
 
     /**
      * a wrapper method to get admin client
@@ -105,7 +182,8 @@ public class ProbeKafka implements ProbeService {
      */
     public AdminClient getAdminClient() {
         Properties props = new Properties();
-        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, properties.get("kafka.bootstrap.servers"));
+        props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
+                properties.get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         return AdminClient.create(props);
     }
 
