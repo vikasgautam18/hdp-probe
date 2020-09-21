@@ -66,10 +66,11 @@ public class ProbeMain {
 
     private static void probeZeppelin(Map<String, String> properties) {
         ProbeZeppelin zeppelin = new ProbeZeppelin(properties);
-        zeppelin.storeSessionCookie();
-        logger.info("jsession cookie collected, proceeding to invoke zeppelin notebook "
-                + properties.get("zeppelin.notebook.id"));
-
+        if(zeppelin.probeZeppelinNote()){
+            logger.info("Zeppelin tests successful !!");
+        } else {
+            logger.error("Zeppelin tests have failed... ");
+        }
     }
 
     /**

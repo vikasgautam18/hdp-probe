@@ -28,7 +28,7 @@ public class ProbeZeppelin {
         this.properties = properties;
     }
 
-    public boolean storeSessionCookie(){
+    public boolean probeZeppelinNote(){
         boolean returnValue = false;
         Configuration conf= new Configuration();
         conf.set("fs.hdfs.impl", org.apache.hadoop.hdfs.DistributedFileSystem.class.getName());
