@@ -162,15 +162,16 @@ public class ProbeZeppelin {
             BufferedReader bufferedReader;
 
             if(connection.getResponseCode() == 200){
-                result = true;
+
                 bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
                 String line;
                 while((line = bufferedReader.readLine()) != null){
-                    logger.info(line);
+                    logger.debug(line);
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode node = mapper.readTree(line);
 
-                    System.out.println(node.get("body").get("paragraphs").get(0).get("results").get("code").asText());
+                    result = node.get("body").get("paragraphs")
+                            .get(0).get("results").get("code").asText().equals("SUCCESS");
                 }
             } else {
                 bufferedReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
