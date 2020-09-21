@@ -23,7 +23,7 @@ import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 public class ProbeKafka implements ProbeService {
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
     public static final Logger logger =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
@@ -114,7 +114,6 @@ public class ProbeKafka implements ProbeService {
      * @return True if the data is published successfully, false otherwise
      */
     public boolean publishToTopic(String topicName, List<String> dataset){
-        boolean publishResult;
         Properties props = new Properties();
         props.setProperty(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG,
                 properties.get(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG));

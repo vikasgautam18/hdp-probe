@@ -19,7 +19,7 @@ import java.util.Map;
 public class ProbeHDFS implements ProbeFileSystem, ProbeService {
 
     public static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
-    private Map<String, String> props;
+    private final Map<String, String> props;
 
     public ProbeHDFS(Map<String, String> props){
         this.props = props;
