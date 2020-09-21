@@ -20,6 +20,7 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.sql.*;
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,6 +78,11 @@ public class ProbeMain {
             System.exit(1);
         }
 
+        try {
+            Thread.sleep(Duration.ofSeconds(10).toMillis());
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         zeppelin.verifyNote(properties.get("zeppelin.notebook.url"), properties.get("zeppelin.notebook.id"));
     }
 
