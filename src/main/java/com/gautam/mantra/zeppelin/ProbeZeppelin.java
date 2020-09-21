@@ -187,7 +187,7 @@ public class ProbeZeppelin {
                 }
             }
 
-            logger.info(String.format("POST to %s resulted with a response code :: %d and message :: %s",
+            logger.info(String.format("GET to %s resulted with a response code :: %d and message :: %s",
                     connection, connection.getResponseCode(), connection.getResponseMessage()));
             connection.disconnect();
 
