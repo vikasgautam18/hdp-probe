@@ -83,7 +83,7 @@ kafka.probe.topic: kafka_probe_test
 acks: "1"
 compression.type: snappy
 
-zeppelin.jceks: /user/vikgautammbb/zeppelin-login.jceks
+zeppelin.jceks: jceks://hdfs@localhost:8020/user/vikgautammbb/zeppelin-login.jceks
 zeppelin.password.alias: zeppelin.password.alias
 zeppelin.login.url: http://localhost:9995/api/login
 zeppelin.login.username: admin
