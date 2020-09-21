@@ -12,13 +12,14 @@ import java.io.*;
 import java.lang.invoke.MethodHandles;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
 public class ProbeZeppelin {
 
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
     private static final CookieManager cookieManager = new CookieManager();
     public static final Logger logger =
             LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -79,7 +80,21 @@ public class ProbeZeppelin {
                     connection, connection.getResponseCode(), connection.getResponseMessage()));
             logger.info("JSESSION Cookie in use:: " + cookieManager.getCookieStore().getCookies().get(0).toString());
 
-        } catch (IOException e) {
+            if(invokeZeppelinNote(properties.get("zeppelin.notebook.job.url"),
+                    properties.get("zeppelin.notebook.id"))) {
+                logger.info("Zeppelin notebook successfully executed...");
+            } else {
+                logger.info("Zeppelin notebook execution failed, exiting.. ");
+                System.exit(1);
+            }
+
+            Thread.sleep(Duration.ofSeconds(10).toMillis());
+
+            verifyNote(properties.get("zeppelin.notebook.url"), properties.get("zeppelin.notebook.id"));
+
+            connection.disconnect();
+
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
         return returnValue;
@@ -179,8 +194,4 @@ public class ProbeZeppelin {
         return query.toString();
     }
 
-    public boolean verifyResult(){
-
-        return false;
-    }
 }

@@ -20,7 +20,6 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.sql.*;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -70,20 +69,7 @@ public class ProbeMain {
         zeppelin.storeSessionCookie();
         logger.info("jsession cookie collected, proceeding to invoke zeppelin notebook "
                 + properties.get("zeppelin.notebook.id"));
-        if(zeppelin.invokeZeppelinNote(properties.get("zeppelin.notebook.job.url"),
-                properties.get("zeppelin.notebook.id"))) {
-            logger.info("Zeppelin notebook successfully executed...");
-        } else {
-            logger.info("Zeppelin notebook execution failed, exiting.. ");
-            System.exit(1);
-        }
 
-        try {
-            Thread.sleep(Duration.ofSeconds(10).toMillis());
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        zeppelin.verifyNote(properties.get("zeppelin.notebook.url"), properties.get("zeppelin.notebook.id"));
     }
 
     /**

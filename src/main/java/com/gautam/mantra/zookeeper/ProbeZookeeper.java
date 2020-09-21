@@ -14,8 +14,8 @@ import java.util.Map;
 
 public class ProbeZookeeper implements ProbeService {
 
-    ZKConnection zkConnection = new ZKConnection();
-    private Map<String, String> properties;
+    final ZKConnection zkConnection = new ZKConnection();
+    private final Map<String, String> properties;
     private static ZooKeeper zooKeeper;
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
 
