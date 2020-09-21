@@ -82,3 +82,9 @@ kafka.probe.records: "1000"
 kafka.probe.topic: kafka_probe_test
 acks: "1"
 compression.type: snappy
+
+zeppelin.jceks: /user/vikgautammbb/zeppelin-login.jceks
+zeppelin.password.alias: zeppelin-login
+zeppelin.login.url: http://localhost:9995/login
+zeppelin.login.username: admin
+zeppelin.notebook.id: 2FKXWR2QA

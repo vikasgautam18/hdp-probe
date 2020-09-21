@@ -6,6 +6,7 @@ import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.kafka.ProbeKafka;
 import com.gautam.mantra.spark.ProbeSpark;
+import com.gautam.mantra.zeppelin.ProbeZeppelin;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.hbase.HBaseConfiguration;
@@ -54,9 +55,19 @@ public class ProbeMain {
         //probeKafka
         probeKafka(properties);
 
+        //probeZeppelin
+
+        probeZeppelin(properties);
+
         // probeSpark
         probeSpark(properties);
 
+    }
+
+    private static void probeZeppelin(Map<String, String> properties) {
+        ProbeZeppelin zeppelin = new ProbeZeppelin(properties);
+
+        zeppelin.storeSessionCookie();
     }
 
     /**
