@@ -35,8 +35,8 @@ public class ProbeZeppelin {
         * hits the Zeppelin login URL,
         * collects the jsession cookie
         * invokes a predefined notebook
-        * parses result and
-     * @return
+        * parses result and verifies if the paragraph was successful
+     * @return true if success, false otherwise
      */
     public boolean probeZeppelinNote(){
         boolean returnValue = false;
@@ -112,9 +112,9 @@ public class ProbeZeppelin {
 
     /**
      * This method invokes a zeppelin notebook
-     * @param zeppelinURL
-     * @param noteId
-     * @return
+     * @param zeppelinURL the base url
+     * @param noteId the note id
+     * @return true if the invocation was success, false otherwise
      */
     public boolean invokeZeppelinNote(String zeppelinURL, String noteId){
         boolean result = false;
@@ -143,6 +143,12 @@ public class ProbeZeppelin {
         return result;
     }
 
+    /**
+     * This method parses result and verifies successful execution of a notebook
+     * @param zeppelinURL the base url
+     * @param noteId the note id
+     * @return true if the execution was success, false otherwise
+     */
     public boolean verifyNote(String zeppelinURL, String noteId){
         boolean result = false;
         CookieHandler.setDefault(cookieManager);
