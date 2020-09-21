@@ -1,5 +1,7 @@
 package com.gautam.mantra.zeppelin;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.security.alias.CredentialProvider;
 import org.apache.hadoop.security.alias.CredentialProviderFactory;
@@ -28,6 +30,14 @@ public class ProbeZeppelin {
         this.properties = properties;
     }
 
+    /**
+     * this method performs the below activities:
+        * hits the Zeppelin login URL,
+        * collects the jsession cookie
+        * invokes a predefined notebook
+        * parses result and
+     * @return
+     */
     public boolean probeZeppelinNote(){
         boolean returnValue = false;
         Configuration conf= new Configuration();
@@ -157,6 +167,10 @@ public class ProbeZeppelin {
                 String line;
                 while((line = bufferedReader.readLine()) != null){
                     logger.info(line);
+                    ObjectMapper mapper = new ObjectMapper();
+                    JsonNode node = mapper.readTree(line);
+
+                    System.out.println(node.get("body").get("paragraphs").get("results").get("code").asText());
                 }
             } else {
                 bufferedReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
