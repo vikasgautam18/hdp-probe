@@ -66,8 +66,18 @@ public class ProbeMain {
 
     private static void probeZeppelin(Map<String, String> properties) {
         ProbeZeppelin zeppelin = new ProbeZeppelin(properties);
-
         zeppelin.storeSessionCookie();
+        logger.info("jsession cookie collected, proceeding to invoke zeppelin notebook "
+                + properties.get("zeppelin.notebook.id"));
+        if(zeppelin.invokeZeppelinNote(properties.get("zeppelin.notebook.job.url"),
+                properties.get("zeppelin.notebook.id"))) {
+            logger.info("Zeppelin notebook successfully executed...");
+        } else {
+            logger.info("Zeppelin notebook execution failed, exiting.. ");
+            System.exit(1);
+        }
+
+        zeppelin.verifyNote(properties.get("zeppelin.notebook.url"), properties.get("zeppelin.notebook.id"));
     }
 
     /**

@@ -86,5 +86,7 @@ compression.type: snappy
 zeppelin.jceks: jceks://hdfs@localhost:8020/user/vikgautammbb/zeppelin-login.jceks
 zeppelin.password.alias: zeppelin.password.alias
 zeppelin.login.url: http://localhost:9995/api/login
+zeppelin.notebook.job.url: http://localhost:9995/api/notebook/job
+zeppelin.notebook.url: http://localhost:9995/api/notebook
 zeppelin.login.username: admin
 zeppelin.notebook.id: 2FKXWR2QA

@@ -118,7 +118,48 @@ public class ProbeZeppelin {
         return result;
     }
 
-    //TODO: verify results
+    public boolean verifyNote(String zeppelinURL, String noteId){
+        boolean result = false;
+        CookieHandler.setDefault(cookieManager);
+        try {
+            URL url = new URL(zeppelinURL + "/" + noteId);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+
+            connection.setRequestProperty("Cookie", cookieManager.getCookieStore().getCookies().get(0).toString());
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            connection.connect();
+
+            BufferedReader bufferedReader;
+
+            if(connection.getResponseCode() == 200){
+                result = true;
+                bufferedReader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String line;
+                while((line = bufferedReader.readLine()) != null){
+                    logger.info(line);
+                }
+            } else {
+                bufferedReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
+                String line;
+                while((line = bufferedReader.readLine()) != null){
+                    logger.info(line);
+                }
+            }
+
+            logger.info(String.format("POST to %s resulted with a response code :: %d and message :: %s",
+                    connection, connection.getResponseCode(), connection.getResponseMessage()));
+            connection.disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
         StringBuilder query = new StringBuilder();
