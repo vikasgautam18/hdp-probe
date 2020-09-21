@@ -85,6 +85,41 @@ public class ProbeZeppelin {
         return returnValue;
     }
 
+    /**
+     * This method invokes a zeppelin notebook
+     * @param zeppelinURL
+     * @param noteId
+     * @return
+     */
+    public boolean invokeZeppelinNote(String zeppelinURL, String noteId){
+        boolean result = false;
+        CookieHandler.setDefault(cookieManager);
+        try{
+            URL url = new URL(zeppelinURL + "/" + noteId);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("POST");
+            connection.setReadTimeout(10000);
+            connection.setConnectTimeout(15000);
+
+            connection.setRequestProperty("Cookie", cookieManager.getCookieStore().getCookies().get(0).toString());
+            connection.setRequestProperty("Accept", "application/json");
+            connection.setRequestProperty("Content-Type", "application/json");
+
+            connection.connect();
+
+            logger.info(String.format("POST to %s resulted with a response code :: %d and message :: %s",
+                    connection, connection.getResponseCode(), connection.getResponseMessage()));
+            result = connection.getResponseCode() == 200;
+            connection.disconnect();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //TODO: verify results
+
     private String getQuery(List<NameValuePair> params) throws UnsupportedEncodingException {
         StringBuilder query = new StringBuilder();
         boolean first = true;
