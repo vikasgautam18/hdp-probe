@@ -170,7 +170,7 @@ public class ProbeZeppelin {
                     ObjectMapper mapper = new ObjectMapper();
                     JsonNode node = mapper.readTree(line);
 
-                    System.out.println(node.get("body").get("paragraphs").get("results").get("code").asText());
+                    System.out.println(node.get("body").get("paragraphs").get(0).get("results").get("code").asText());
                 }
             } else {
                 bufferedReader = new BufferedReader(new InputStreamReader(connection.getErrorStream()));
