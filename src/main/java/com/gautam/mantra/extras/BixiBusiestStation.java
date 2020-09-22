@@ -32,7 +32,7 @@ public class BixiBusiestStation {
 
     public static void main(String[] args) {
 
-        if(args.length < 1){
+        if(args.length != 0){
             System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.extras.cluster.yml=conf/cluster-conf.yml\" " +
                     "--class com.gautam.mantra.extras.BixiBusiestStation target/hdp-probe.jar");
         }
