@@ -15,6 +15,8 @@ import java.io.InputStream;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
+import static org.apache.spark.sql.functions.desc;
+
 public class BixiBusiestStation {
     /**
      * Download the dataset below:
@@ -50,12 +52,21 @@ public class BixiBusiestStation {
                     .appName(properties.get(APP_NAME)).getOrCreate();
 
             // dataframe of Stations
-            Dataset<Row> stations = spark.read().csv(BIXI_DATASET_PATH + "/" + BIXI_STATION );
+            Dataset<Row> stations = spark.read().format("csv").option("header", "true")
+                    .load(BIXI_DATASET_PATH + "/" + BIXI_STATION );
             stations.show(10);
 
             // dataframe of Trips
+            Dataset<Row> trips = spark.read()
+                    .format("csv").option("header", "true").load(BIXI_DATASET_PATH + "/trips/*");
+
+            trips.show(10);
 
             // group trips by station code
+            trips.printSchema();
+
+            trips.groupBy("start_station_code")
+                    .count().sort(desc("count")).show();
 
             // find station code with highest number of trips
 
