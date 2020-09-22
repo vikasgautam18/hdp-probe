@@ -74,11 +74,11 @@ public class BixiBusiestStation {
                     .count().sort(desc("count")).first().getAs("start_station_code");
 
             // find station code with highest number of trips
-            stations.filter("Code=" + station_code).show();
-
-            // lookup station name with station code
+            String station_name = stations.filter("Code=" + station_code).first().getAs("name");
 
             // print result
+
+            System.out.printf("The busiest station in 2019 was ::%s%n", station_name);
 
             spark.close();
         } catch (FileNotFoundException e) {
