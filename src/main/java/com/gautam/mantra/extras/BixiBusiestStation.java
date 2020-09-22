@@ -70,10 +70,11 @@ public class BixiBusiestStation {
             // group trips by station code
             trips.printSchema();
 
-            trips.groupBy("start_station_code")
-                    .count().sort(desc("count")).show();
+            String station_code = trips.groupBy("start_station_code")
+                    .count().sort(desc("count")).first().getAs("start_station_code");
 
             // find station code with highest number of trips
+            stations.filter("Code=" + station_code).show();
 
             // lookup station name with station code
 
