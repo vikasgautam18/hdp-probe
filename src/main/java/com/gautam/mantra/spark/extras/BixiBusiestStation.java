@@ -16,13 +16,14 @@ import java.util.Map;
 
 import static org.apache.spark.sql.functions.desc;
 
+
+/**
+ * Download the dataset below:
+ * https://sitewebbixi.s3.amazonaws.com/uploads/docs/biximontrealrentals2019-33ea73.zip
+ *
+ * Goal is to find the busiest station which is the station with most number of trips starting from
+ */
 public class BixiBusiestStation {
-    /**
-     * Download the dataset below:
-     * https://sitewebbixi.s3.amazonaws.com/uploads/docs/biximontrealrentals2019-33ea73.zip
-     *
-     * Goal is to find the busiest station
-     */
 
     public static final Yaml yaml = new Yaml();
     private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
@@ -31,7 +32,6 @@ public class BixiBusiestStation {
     private static final String BIXI_STATION = "bixi.station.file.name";
 
     public static void main(String[] args) {
-
         if(args.length != 0){
             System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.probe.cluster.yml=conf/cluster-conf.yml\" " +
                     "--class com.gautam.mantra.spark.extras.BixiBusiestStation target/hdp-probe.jar");
@@ -53,39 +53,50 @@ public class BixiBusiestStation {
                     .appName(properties.get(APP_NAME)).getOrCreate();
 
             // dataframe of Stations
-            Dataset<Row> stations = spark.read().format("csv").option("header", "true")
-                    .load(properties.get(BIXI_DATASET_PATH) + "/" + properties.get(BIXI_STATION ));
-
-            System.out.println("schema of Stations dataset::");
-            stations.printSchema();
-
-            System.out.println("Stations dataset sneak peek:: ");
-            stations.show(10);
+            Dataset<Row> stations = getStationDataset(spark,
+                    properties.get(BIXI_DATASET_PATH) + "/" + properties.get(BIXI_STATION));
 
             // dataframe of Trips
-            Dataset<Row> trips = spark.read()
-                    .format("csv").option("header", "true").load(properties.get(BIXI_DATASET_PATH ) + "/trips/*");
+            Dataset<Row> trips = getTripsDataset(spark, properties.get(BIXI_DATASET_PATH ) + "/trips/*");
 
-            System.out.println("Trips data sneak peek");
-            trips.show(10);
-
-            // group trips by station code
-            System.out.println("Schema of trip dataset");
-            trips.printSchema();
-
-            String station_code = trips.groupBy("start_station_code")
-                    .count().sort(desc("count")).first().getAs("start_station_code");
-
-            // find station code with highest number of trips
-            String station_name = stations.filter("Code=" + station_code).first().getAs("name");
-
-            // print result
-
-            System.out.printf("The busiest station in 2019 was ::%s%n", station_name);
+            System.out.printf("The busiest station in 2019 was ::%s%n", findBusiestStation(stations, trips));
 
             spark.close();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static String findBusiestStation(Dataset<Row> stations, Dataset<Row> trips) {
+        String station_code = trips.groupBy("start_station_code")
+                .count().sort(desc("count")).first().getAs("start_station_code");
+
+        // find station code with highest number of trips
+        return stations.filter("Code=" + station_code).first().getAs("name");
+    }
+
+    public static Dataset<Row> getTripsDataset(SparkSession spark, String path) {
+        Dataset<Row> trips = spark.read()
+                .format("csv").option("header", "true").load(path);
+
+        System.out.println("Trips data sneak peek");
+        trips.show(10);
+
+        // group trips by station code
+        System.out.println("Schema of trip dataset");
+        trips.printSchema();
+        return trips;
+    }
+
+    public static Dataset<Row> getStationDataset(SparkSession spark, String path) {
+        Dataset<Row> stations = spark.read().format("csv").option("header", "true")
+                .load(path);
+
+        System.out.println("schema of Stations dataset::");
+        stations.printSchema();
+
+        System.out.println("Stations dataset sneak peek:: ");
+        stations.show(10);
+        return stations;
     }
 }

@@ -58,4 +58,9 @@ sparkHBaseAppName: spark-hbase-probe
 sparkHBaseNumRecords: "1000"
 sparkHBaseTableName: Contacts
 
+execute.extras.flag: "true"
+bixi.dataset.path: ./src/test/resources/
+bixi.busiest.station: app_bixi_busiest_statition_2019
+bixi.station.file.name: Stations_2019.csv
+
 
