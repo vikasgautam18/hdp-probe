@@ -1,4 +1,4 @@
-package com.gautam.mantra.extras;
+package com.gautam.mantra.spark.extras;
 
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
@@ -25,7 +25,7 @@ public class BixiBusiestStation {
      */
 
     public static final Yaml yaml = new Yaml();
-    private static final String CLUSTER_CONFIG = "spark.extras.cluster.yml";
+    private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
     private static final String APP_NAME = "bixi.busiest.station";
     private static final String BIXI_DATASET_PATH = "bixi.dataset.path";
     private static final String BIXI_STATION = "bixi.station.file.name";
@@ -33,8 +33,8 @@ public class BixiBusiestStation {
     public static void main(String[] args) {
 
         if(args.length != 0){
-            System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.extras.cluster.yml=conf/cluster-conf.yml\" " +
-                    "--class com.gautam.mantra.extras.BixiBusiestStation target/hdp-probe.jar");
+            System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.probe.cluster.yml=conf/cluster-conf.yml\" " +
+                    "--class com.gautam.mantra.spark.extras.BixiBusiestStation target/hdp-probe.jar");
         }
         Logger.getRootLogger().setLevel(Level.ERROR);
 

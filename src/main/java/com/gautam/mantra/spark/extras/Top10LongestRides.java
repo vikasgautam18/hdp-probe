@@ -1,10 +1,10 @@
-package com.gautam.mantra.extras;
+package com.gautam.mantra.spark.extras;
 
-public class AverageRideDurationPerMonth {
+public class Top10LongestRides {
     /**
      * Download the dataset below:
      * https://sitewebbixi.s3.amazonaws.com/uploads/docs/biximontrealrentals2019-33ea73.zip
      *
-     * Goal is to find average ride duration per month for 2019
+     * Goal is to find top 10 longest rides for 2019
      */
 }
