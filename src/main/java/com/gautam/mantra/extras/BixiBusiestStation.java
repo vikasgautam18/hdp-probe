@@ -55,15 +55,22 @@ public class BixiBusiestStation {
             // dataframe of Stations
             Dataset<Row> stations = spark.read().format("csv").option("header", "true")
                     .load(properties.get(BIXI_DATASET_PATH) + "/" + properties.get(BIXI_STATION ));
+
+            System.out.println("schema of Stations dataset::");
+            stations.printSchema();
+
+            System.out.println("Stations dataset sneak peek:: ");
             stations.show(10);
 
             // dataframe of Trips
             Dataset<Row> trips = spark.read()
                     .format("csv").option("header", "true").load(properties.get(BIXI_DATASET_PATH ) + "/trips/*");
 
+            System.out.println("Trips data sneak peek");
             trips.show(10);
 
             // group trips by station code
+            System.out.println("Schema of trip dataset");
             trips.printSchema();
 
             String station_code = trips.groupBy("start_station_code")
