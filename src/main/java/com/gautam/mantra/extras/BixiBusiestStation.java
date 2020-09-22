@@ -32,6 +32,11 @@ public class BixiBusiestStation {
     private static final String BIXI_STATION = "bixi.station.file.name";
 
     public static void main(String[] args) {
+
+        if(args.length < 1){
+            System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.extras.cluster.yml=conf/cluster-conf.yml\" " +
+                    "--class com.gautam.mantra.extras.BixiBusiestStation target/hdp-probe.jar");
+        }
         Logger.getLogger("org").setLevel(Level.ERROR);
 
         Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -53,12 +58,12 @@ public class BixiBusiestStation {
 
             // dataframe of Stations
             Dataset<Row> stations = spark.read().format("csv").option("header", "true")
-                    .load(BIXI_DATASET_PATH + "/" + BIXI_STATION );
+                    .load(properties.get(BIXI_DATASET_PATH) + "/" + properties.get(BIXI_STATION ));
             stations.show(10);
 
             // dataframe of Trips
             Dataset<Row> trips = spark.read()
-                    .format("csv").option("header", "true").load(BIXI_DATASET_PATH + "/trips/*");
+                    .format("csv").option("header", "true").load(properties.get(BIXI_DATASET_PATH ) + "/trips/*");
 
             trips.show(10);
 
