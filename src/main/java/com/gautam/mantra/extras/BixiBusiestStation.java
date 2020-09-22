@@ -12,7 +12,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
 import static org.apache.spark.sql.functions.desc;
@@ -37,11 +36,8 @@ public class BixiBusiestStation {
             System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.extras.cluster.yml=conf/cluster-conf.yml\" " +
                     "--class com.gautam.mantra.extras.BixiBusiestStation target/hdp-probe.jar");
         }
-        Logger.getLogger("org").setLevel(Level.ERROR);
+        Logger.getRootLogger().setLevel(Level.ERROR);
 
-        Logger logger = Logger.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
-
-        logger.info("Begin main method... ");
         // load properties
         InputStream inputStream;
         try {
