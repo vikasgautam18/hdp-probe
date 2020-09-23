@@ -93,6 +93,15 @@ public class ProbeMain {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.monthly.averages")));
         }
+
+        if(extras.submitAverageTripsPerDayOfMonthJob()) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("bixi.day0fmonth.averages")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("bixi.day0fmonth.averages")));
+        }
+
     }
 
     private static void probeZeppelin(Map<String, String> properties) {
