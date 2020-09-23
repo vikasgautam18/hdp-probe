@@ -69,8 +69,8 @@ public class Top10LongestRides implements Serializable {
 
     public static void printTrip(Row row) {
         System.out.printf(" Trip starting from '%s' to '%s' of duration %s seconds.%n",
-                stationMap.get(row.getAs("start_station_code")),
-                stationMap.get(row.getAs("end_station_code")),
+                stationMap.get(row.getAs("start_station_code").toString()),
+                stationMap.get(row.getAs("end_station_code").toString()),
                 row.getAs("duration_sec"));
     }
 
