@@ -16,8 +16,6 @@ import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-import static org.apache.spark.sql.functions.desc;
-
 class AverageRideDurationPerMonthTest implements Serializable {
     static SparkSession spark;
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
@@ -49,15 +47,6 @@ class AverageRideDurationPerMonthTest implements Serializable {
     static void tearDown() {
         spark.stop();
         logger.info("stopped Spark session.. ");
-    }
-
-
-    @Test
-    void getStationDatasetTest(){
-        Dataset<Row> stations = AverageRideDurationPerMonth.getStationDataset(spark,
-                properties.get("bixi.dataset.path") + "/" + properties.get("bixi.station.file.name"));
-        assert stations.count() == 7;
-        assert stations.orderBy(desc("Code")).first().getAs("Code").equals("5005");
     }
 
     @Test

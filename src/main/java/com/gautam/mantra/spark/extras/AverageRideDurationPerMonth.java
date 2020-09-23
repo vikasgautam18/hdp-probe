@@ -52,10 +52,6 @@ public class AverageRideDurationPerMonth implements Serializable {
             SparkSession spark = SparkSession.builder()
                     .appName(properties.get(APP_NAME)).getOrCreate();
 
-            // dataframe of Stations
-            Dataset<Row> stations = getStationDataset(spark,
-                    properties.get(BIXI_DATASET_PATH) + "/" + properties.get(BIXI_STATION));
-
             // dataframe of Trips
             Dataset<Row> trips = getTripsDataset(spark, properties.get(BIXI_DATASET_PATH ) + "/trips/*");
 
@@ -90,17 +86,5 @@ public class AverageRideDurationPerMonth implements Serializable {
         System.out.println("Schema of trip dataset");
         trips.printSchema();
         return trips.withColumn("duration_sec", trips.col("duration_sec").cast(DataTypes.IntegerType));
-    }
-
-    public static Dataset<Row> getStationDataset(SparkSession spark, String path) {
-        Dataset<Row> stations = spark.read().format("csv").option("header", "true")
-                .load(path);
-
-        System.out.println("schema of Stations dataset::");
-        stations.printSchema();
-
-        System.out.println("Stations dataset sneak peek:: ");
-        stations.show(10);
-        return stations;
     }
 }
