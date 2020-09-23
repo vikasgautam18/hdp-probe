@@ -25,7 +25,6 @@ class Top10LongestRidesTest implements Serializable {
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();
-    public Map<String, String> stationMap;
 
     @BeforeAll
     static void setUp() {
@@ -80,16 +79,15 @@ class Top10LongestRidesTest implements Serializable {
         Dataset<Row> trips = Top10LongestRides.getTripsDataset(spark,
                 properties.get("bixi.dataset.path" ) + "/trips/*");
 
-        List<Row> longestTrips = Top10LongestRides.getTop10LongestTrips(trips, spark);
+        List<Row> longestTrips = Top10LongestRides.getTop10LongestTrips(trips);
 
         longestTrips.forEach(Top10LongestRides::printTrip);
 
         assert longestTrips.size() == 10;
-        assert longestTrips.get(0).getAs("start_station_name").equals("St-Charles / Grant");
-        assert longestTrips.get(0).getAs("end_station_name").equals("St-Charles Main");
+        assert Top10LongestRides.stationMap.get(longestTrips.get(0).getAs("start_station_code")).equals("St-Charles / Grant");
+        assert Top10LongestRides.stationMap.get(longestTrips.get(0).getAs("end_station_code")).equals("St-Charles Main");
         assert longestTrips.get(0).getAs("duration_sec").equals("964");
 
     }
-
 
 }

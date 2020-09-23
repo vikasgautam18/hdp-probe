@@ -1,12 +1,11 @@
 package com.gautam.mantra.spark.extras;
 
 import com.gautam.mantra.commons.Utilities;
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.api.java.UDF1;
-import org.apache.spark.sql.functions;
-import org.apache.spark.sql.types.DataTypes;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -29,9 +28,11 @@ public class Top10LongestRides implements Serializable {
     private static final String APP_NAME = "bixi.busiest.station";
     private static final String BIXI_DATASET_PATH = "bixi.dataset.path";
     private static final String BIXI_STATION = "bixi.station.file.name";
-    public static Map<String, String> stationMap;
+    public static HashMap<String, String> stationMap;
 
     public static void main(String[] args) {
+        Logger.getRootLogger().setLevel(Level.ERROR);
+
         if(args.length != 0){
             System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.probe.cluster.yml=conf/cluster-conf.yml\" " +
                     "--class com.gautam.mantra.spark.extras.Top10LongestRides target/hdp-probe.jar");
@@ -60,7 +61,7 @@ public class Top10LongestRides implements Serializable {
             populateStationMap(stations);
 
             System.out.println("Top 10 longest trips are:: ");
-            getTop10LongestTrips(trips, spark).forEach(Top10LongestRides::printTrip);
+            getTop10LongestTrips(trips).forEach(Top10LongestRides::printTrip);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
@@ -68,8 +69,8 @@ public class Top10LongestRides implements Serializable {
 
     public static void printTrip(Row row) {
         System.out.printf(" Trip starting from '%s' to '%s' of duration %s seconds.%n",
-                row.getAs("start_station_name"),
-                row.getAs("end_station_name"),
+                stationMap.get(row.getAs("start_station_code")),
+                stationMap.get(row.getAs("end_station_code")),
                 row.getAs("duration_sec"));
     }
 
@@ -81,18 +82,11 @@ public class Top10LongestRides implements Serializable {
                 .forEach(row -> stationMap.put(row.getAs("Code"), row.getAs("name")));
     }
 
-    public static List<Row> getTop10LongestTrips(Dataset<Row> trips, SparkSession spark) {
-        spark.udf().register("lookUpStationName", lookUpStationName(), DataTypes.StringType);
-        return trips.withColumn("start_station_name",
-                functions.callUDF("lookUpStationName", trips.col("start_station_code")))
-                .withColumn("end_station_name",
-                        functions.callUDF("lookUpStationName", trips.col("end_station_code")))
-                .select("start_station_name", "end_station_name", "duration_sec")
-                .orderBy(desc("duration_sec")).takeAsList(10);
-    }
-
-    public static UDF1<String, String> lookUpStationName(){
-        return (stationCode) -> stationMap.get(stationCode);
+    public static List<Row> getTop10LongestTrips(Dataset<Row> trips) {
+        return trips
+                .orderBy(desc("duration_sec"))
+                .select("start_station_code", "end_station_code", "duration_sec")
+                .takeAsList(10);
     }
 
     public static Dataset<Row> getTripsDataset(SparkSession spark, String path) {
