@@ -21,7 +21,7 @@ import static org.apache.spark.sql.functions.desc;
  * Download the dataset below:
  * https://sitewebbixi.s3.amazonaws.com/uploads/docs/biximontrealrentals2019-33ea73.zip
  *
- * Goal is to find the busiest station which is the station with most number of trips starting from
+ * Goal is to find the busiest station which is the station with most number of trips originating from
  */
 public class BixiBusiestStation {
 
