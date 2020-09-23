@@ -14,12 +14,11 @@ import org.yaml.snakeyaml.Yaml;
 import java.io.InputStream;
 import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
-import java.util.List;
 import java.util.Map;
 
 import static org.apache.spark.sql.functions.desc;
 
-class Top10LongestRidesTest implements Serializable {
+class AverageRideDurationPerMonthTest implements Serializable {
     static SparkSession spark;
     private static final Logger logger = LoggerFactory.getLogger(MethodHandles.lookup().lookupClass().getCanonicalName());
     static Map<String, String> properties;
@@ -55,7 +54,7 @@ class Top10LongestRidesTest implements Serializable {
 
     @Test
     void getStationDatasetTest(){
-        Dataset<Row> stations = Top10LongestRides.getStationDataset(spark,
+        Dataset<Row> stations = AverageRideDurationPerMonth.getStationDataset(spark,
                 properties.get("bixi.dataset.path") + "/" + properties.get("bixi.station.file.name"));
         assert stations.count() == 7;
         assert stations.orderBy(desc("Code")).first().getAs("Code").equals("5005");
@@ -63,34 +62,20 @@ class Top10LongestRidesTest implements Serializable {
 
     @Test
     void getTripsDatasetTest(){
-        Dataset<Row> trips = Top10LongestRides.getTripsDataset(spark,
+        Dataset<Row> trips = AverageRideDurationPerMonth.getTripsDataset(spark,
                 properties.get("bixi.dataset.path" ) + "/trips/*");
 
         assert trips.count() == 50;
     }
 
     @Test
-    void getTop10TripsTest(){
-        Dataset<Row> stations = Top10LongestRides.getStationDataset(spark,
-                properties.get("bixi.dataset.path") + "/" + properties.get("bixi.station.file.name"));
-
-        Top10LongestRides.populateStationMap(stations);
-
-        Dataset<Row> trips = Top10LongestRides.getTripsDataset(spark,
+    void getAverage(){
+        Dataset<Row> trips = AverageRideDurationPerMonth.getTripsDataset(spark,
                 properties.get("bixi.dataset.path" ) + "/trips/*");
 
-        List<Row> longestTrips = Top10LongestRides.getTop10LongestTrips(trips);
-
-        longestTrips.forEach(Top10LongestRides::printTrip);
-
-        assert longestTrips.size() == 10;
-        assert Top10LongestRides.stationMap.get(
-                longestTrips.get(0).getAs("start_station_code").toString())
-                .equals("St-Charles / St-Jean");
-        assert Top10LongestRides.stationMap.get(
-                longestTrips.get(0).getAs("end_station_code").toString())
-                .equals("St-Charles / Grant");
-        assert Integer.parseInt(longestTrips.get(0).getAs("duration_sec").toString()) == 2763;
+        Dataset<Row> result = AverageRideDurationPerMonth.getMonthlyAverages(trips);
+        assert result.collectAsList().get(0).getAs("month").toString().equals("07");
+        assert result.collectAsList().get(0).getAs("num_trips").toString().equals("50");
 
     }
 }

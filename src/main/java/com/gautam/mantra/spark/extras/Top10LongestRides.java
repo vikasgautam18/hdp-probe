@@ -63,6 +63,8 @@ public class Top10LongestRides implements Serializable {
 
             System.out.println("Top 10 longest trips are:: ");
             getTop10LongestTrips(trips).forEach(Top10LongestRides::printTrip);
+
+            spark.stop();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
