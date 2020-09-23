@@ -95,3 +95,5 @@ execute.extras.flag: "true"
 bixi.dataset.path: /user/vikgautammbb/bixi-data/
 bixi.busiest.station: app_bixi_busiest_statition_2019
 bixi.station.file.name: Stations_2019.csv
+
+bixi.longest.trips:  app_bixi_10_longest_trips_2019

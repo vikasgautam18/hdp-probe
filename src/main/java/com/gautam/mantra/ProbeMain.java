@@ -74,8 +74,16 @@ public class ProbeMain {
             logger.info(String.format("Spark job '%s' successfully completed",
                     properties.get("bixi.busiest.station")));
         } else {
-            logger.error(String.format("An issue occured while executing spark job '%s' ",
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.busiest.station")));
+        }
+
+        if(extras.submitTop10LongestTripsJob()) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("bixi.longest.trips")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("bixi.longest.trips")));
         }
     }
 

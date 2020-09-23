@@ -20,6 +20,7 @@ public class RunExtras {
     public RunExtras (Map<String, String> properties){
         this.properties = properties;
     }
+
     /**
      * This method submits a spark job to YARN
      * @return True if the job was successful, false otherwise
@@ -57,6 +58,47 @@ public class RunExtras {
 
         logger.info(String.format("final status of spark job :: %s :: %s",
                 properties.get("bixi.busiest.station"), result._2.toString()));
+
+        return result._2.toString().equals("SUCCEEDED");
+    }
+
+    /**
+     * This method submits a spark job to YARN
+     * @return True if the job was successful, false otherwise
+     */
+    public boolean submitTop10LongestTripsJob(){
+        System.setProperty("hdp.version", "3.1.0.0-78");
+
+        SparkConf sparkConf = new SparkConf();
+        sparkConf.setMaster(properties.get("spark2Master"));
+        sparkConf.setAppName(properties.get("bixi.longest.trips"));
+        sparkConf.set("spark.submit.deployMode", properties.get("spark2DeployMode"));
+
+        sparkConf.set("spark.driver.extraJavaOptions", properties.get("spark.driver.extraJavaOptions"));
+        sparkConf.set("spark.yarn.am.extraJavaOptions", properties.get("spark.yarn.am.extraJavaOptions"));
+
+        final String[] args = new String[]{
+                "--jar",
+                properties.get("sparkHDFSjar"),
+                "--class",
+                "com.gautam.mantra.spark.extras.Top10LongestRides"
+        };
+
+        ClientArguments clientArguments = new ClientArguments(args);
+        Client client = new Client(clientArguments, sparkConf);
+
+        logger.info("submitting spark application to YARN :: " + properties.get("bixi.longest.trips"));
+
+        ApplicationId applicationId = client.submitApplication();
+
+        logger.info("application id is ::" + applicationId.toString());
+
+        Tuple2<YarnApplicationState, FinalApplicationStatus> result =
+                client.monitorApplication(applicationId, false,
+                        Boolean.parseBoolean(properties.get("spark2YarnJobStatus")), 3000L);
+
+        logger.info(String.format("final status of spark job :: %s :: %s",
+                properties.get("bixi.longest.trips"), result._2.toString()));
 
         return result._2.toString().equals("SUCCEEDED");
     }
