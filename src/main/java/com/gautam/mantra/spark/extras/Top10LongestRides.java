@@ -9,10 +9,7 @@ import org.apache.spark.sql.functions;
 import org.apache.spark.sql.types.DataTypes;
 import org.yaml.snakeyaml.Yaml;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
+import java.io.*;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +22,7 @@ import static org.apache.spark.sql.functions.desc;
  *
  * Goal is to find top 10 longest rides for 2019
  */
-public class Top10LongestRides {
+public class Top10LongestRides implements Serializable {
 
     public static final Yaml yaml = new Yaml();
     private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
