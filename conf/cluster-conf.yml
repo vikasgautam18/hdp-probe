@@ -98,3 +98,4 @@ bixi.station.file.name: Stations_2019.csv
 
 bixi.longest.trips:  app_bixi_10_longest_trips_2019
 bixi.monthly.averages:  app_bixi_monthly_average_2019
+bixi.day0fmonth.averages:  app_bixi_day_of_month_average_2019

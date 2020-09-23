@@ -19,13 +19,13 @@ import static org.apache.spark.sql.functions.asc;
  * Download the dataset below:
  * https://sitewebbixi.s3.amazonaws.com/uploads/docs/biximontrealrentals2019-33ea73.zip
  *
- * Goal is to find average ride duration (seconds) per month for 2019
+ * Goal is to find average trip length per day of a month for 2019
  */
-public class AverageRideDurationPerMonth implements Serializable {
+public class AverageTripsPerDayOfMonth implements Serializable {
 
     public static final Yaml yaml = new Yaml();
     private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
-    private static final String APP_NAME = "bixi.monthly.averages";
+    private static final String APP_NAME = "bixi.day0fmonth.averages";
     private static final String BIXI_DATASET_PATH = "bixi.dataset.path";
 
     public static void main(String[] args) {
@@ -33,7 +33,7 @@ public class AverageRideDurationPerMonth implements Serializable {
 
         if(args.length != 0){
             System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.probe.cluster.yml=conf/cluster-conf.yml\" " +
-                    "--class com.gautam.mantra.spark.extras.AverageRideDurationPerMonth target/hdp-probe.jar");
+                    "--class com.gautam.mantra.spark.extras.AverageTripsPerDayOfMonth target/hdp-probe.jar");
         }
 
         InputStream inputStream;
@@ -52,8 +52,8 @@ public class AverageRideDurationPerMonth implements Serializable {
             // dataframe of Trips
             Dataset<Row> trips = getTripsDataset(spark, properties.get(BIXI_DATASET_PATH ) + "/trips/*");
 
-            System.out.println("Monthly averages are:: ");
-            getMonthlyAverages(trips).show(12);
+            System.out.println("Average trip duration per day of month are:: ");
+            getDayOfMonthAverages(trips).show(50);
 
             spark.stop();
         } catch (FileNotFoundException e) {
@@ -61,17 +61,17 @@ public class AverageRideDurationPerMonth implements Serializable {
         }
     }
 
-    public static Dataset<Row> getMonthlyAverages(Dataset<Row> trips) {
+    public static Dataset<Row> getDayOfMonthAverages(Dataset<Row> trips) {
         Dataset<Row> tripWithTimestamp =
                 trips.withColumn("start_date_1", trips.col("start_date").cast(DataTypes.TimestampType))
-                .withColumn("duration_sec", functions.col("duration_sec").cast(DataTypes.IntegerType));
+                        .withColumn("duration_sec", functions.col("duration_sec").cast(DataTypes.IntegerType));
 
         return tripWithTimestamp
-                .withColumn("month",
-                        functions.date_format(tripWithTimestamp.col("start_date_1"), "MM"))
-                .groupBy("month")
+                .withColumn("day",
+                        functions.date_format(tripWithTimestamp.col("start_date_1"), "dd"))
+                .groupBy("day")
                 .agg(functions.avg("duration_sec").as("avg_trip_seconds"))
-                .orderBy(asc("avg_trip_seconds"));
+                .orderBy(asc("day"));
     }
 
     public static Dataset<Row> getTripsDataset(SparkSession spark, String path) {
@@ -85,4 +85,5 @@ public class AverageRideDurationPerMonth implements Serializable {
         trips.printSchema();
         return trips.withColumn("duration_sec", trips.col("duration_sec").cast(DataTypes.IntegerType));
     }
+
 }
