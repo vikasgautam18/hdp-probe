@@ -90,3 +90,11 @@ zeppelin.notebook.job.url: http://localhost:9995/api/notebook/job
 zeppelin.notebook.url: http://localhost:9995/api/notebook
 zeppelin.login.username: admin
 zeppelin.notebook.id: 2FKXWR2QA
+
+execute.extras.flag: "true"
+bixi.dataset.path: /user/vikgautammbb/bixi-data/
+bixi.busiest.station: app_bixi_busiest_statition_2019
+bixi.station.file.name: Stations_2019.csv
+
+bixi.longest.trips:  app_bixi_10_longest_trips_2019
+bixi.monthly.averages:  app_bixi_monthly_average_2019

@@ -6,6 +6,7 @@ import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.kafka.ProbeKafka;
 import com.gautam.mantra.spark.ProbeSpark;
+import com.gautam.mantra.spark.extras.RunExtras;
 import com.gautam.mantra.zeppelin.ProbeZeppelin;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
@@ -62,6 +63,36 @@ public class ProbeMain {
         // probeSpark
         probeSpark(properties);
 
+        if(Boolean.parseBoolean(properties.get("execute.extras.flag"))){
+            probeExtras(properties);
+        }
+    }
+
+    private static void probeExtras(Map<String, String> properties) {
+        RunExtras extras = new RunExtras(properties);
+        if(extras.submitBixiBusiestStationJob()) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("bixi.busiest.station")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("bixi.busiest.station")));
+        }
+
+        if(extras.submitTop10LongestTripsJob()) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("bixi.longest.trips")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("bixi.longest.trips")));
+        }
+
+        if(extras.submitMonthlyAverageJob()) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("bixi.monthly.averages")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("bixi.monthly.averages")));
+        }
     }
 
     private static void probeZeppelin(Map<String, String> properties) {
