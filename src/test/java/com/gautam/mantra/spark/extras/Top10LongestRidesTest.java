@@ -84,9 +84,13 @@ class Top10LongestRidesTest implements Serializable {
         longestTrips.forEach(Top10LongestRides::printTrip);
 
         assert longestTrips.size() == 10;
-        assert Top10LongestRides.stationMap.get(longestTrips.get(0).getAs("start_station_code")).equals("St-Charles / Grant");
-        assert Top10LongestRides.stationMap.get(longestTrips.get(0).getAs("end_station_code")).equals("St-Charles Main");
-        assert longestTrips.get(0).getAs("duration_sec").equals("964");
+        assert Top10LongestRides.stationMap.get(
+                longestTrips.get(0).getAs("start_station_code").toString())
+                .equals("St-Charles / St-Jean");
+        assert Top10LongestRides.stationMap.get(
+                longestTrips.get(0).getAs("end_station_code").toString())
+                .equals("St-Charles / Grant");
+        assert Integer.parseInt(longestTrips.get(0).getAs("duration_sec").toString()) == 2763;
 
     }
 

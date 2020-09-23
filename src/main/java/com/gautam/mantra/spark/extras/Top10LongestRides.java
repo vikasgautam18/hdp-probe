@@ -6,6 +6,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.types.DataTypes;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.*;
@@ -98,7 +99,7 @@ public class Top10LongestRides implements Serializable {
 
         System.out.println("Schema of trip dataset");
         trips.printSchema();
-        return trips;
+        return trips.withColumn("duration_sec", trips.col("duration_sec").cast(DataTypes.IntegerType));
     }
 
     public static Dataset<Row> getStationDataset(SparkSession spark, String path) {
