@@ -63,8 +63,9 @@ class AverageRideDurationPerMonthTest implements Serializable {
                 properties.get("bixi.dataset.path" ) + "/trips/*");
 
         Dataset<Row> result = AverageRideDurationPerMonth.getMonthlyAverages(trips);
+        result.show();
         assert result.collectAsList().get(0).getAs("month").toString().equals("07");
-        assert result.collectAsList().get(0).getAs("num_trips").toString().equals("50");
+        assert result.collectAsList().get(0).getAs("avg_trip_seconds").toString().equals("828.62");
 
     }
 }

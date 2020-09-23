@@ -66,14 +66,15 @@ public class AverageRideDurationPerMonth implements Serializable {
 
     public static Dataset<Row> getMonthlyAverages(Dataset<Row> trips) {
         Dataset<Row> tripWithTimestamp =
-                trips.withColumn("start_date_1", trips.col("start_date").cast(DataTypes.TimestampType));
+                trips.withColumn("start_date_1", trips.col("start_date").cast(DataTypes.TimestampType))
+                .withColumn("duration_sec", functions.col("duration_sec").cast(DataTypes.IntegerType));
 
         return tripWithTimestamp
                 .withColumn("month",
                         functions.date_format(tripWithTimestamp.col("start_date_1"), "MM"))
                 .groupBy("month")
-                .agg(functions.count("start_date_1").as("num_trips"))
-                .orderBy(asc("month"));
+                .agg(functions.avg("duration_sec").as("avg_trip_seconds"))
+                .orderBy(asc("avg_trip_seconds"));
     }
 
     public static Dataset<Row> getTripsDataset(SparkSession spark, String path) {
