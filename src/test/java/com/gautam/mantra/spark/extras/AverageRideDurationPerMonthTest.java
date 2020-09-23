@@ -29,7 +29,7 @@ class AverageRideDurationPerMonthTest implements Serializable {
     static void setUp() {
         logger.info("starting up Spark session.. ");
         spark  = SparkSession.builder()
-                .appName("Top10LongestRides")
+                .appName("AverageRideDurationPerMonth")
                 .master("local")
                 .config("job.local.dir", "/tmp/")
                 .getOrCreate();
