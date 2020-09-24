@@ -9,6 +9,7 @@ import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
 import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.functions;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -23,7 +24,8 @@ import java.util.Map;
  *
  * Goal:
  * 1. Find out how many orders, how many products and how many sellers are in the data.
- * 2. How many products have been sold at least once? Which is the product contained in more orders?
+ * 2. How many products have been sold at least once?
+ * 3. Which is the most ordered product?
  */
 
 public class ShopAnalysisPart1 {
@@ -69,8 +71,13 @@ public class ShopAnalysisPart1 {
                     .parquet(properties.get(PRODUCT_IN_PATH)).as(Encoders.bean(Product.class));
             System.out.printf("The count of product dataset is :: %s%n", products.count());
 
-            System.out.println(sales.select("product_id").distinct().count());
+            System.out.println("the number of products which have been sold atleast once:: "
+                    + sales.select("product_id").distinct().count());
 
+            sales.groupBy(sales.col("product_id"))
+                    .agg(functions.count(sales.col("product_id")).as("count_sold"))
+                    .orderBy("count_sold")
+                    .show();
             spark.close();
 
         } catch (FileNotFoundException e) {
