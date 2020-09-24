@@ -1,7 +1,5 @@
 package com.gautam.mantra.commons;
 
-import java.util.Date;
-
 public class Sales {
 
     private String order_id;
@@ -9,13 +7,13 @@ public class Sales {
     private String seller_id;
     private Integer num_pieces_sold;
     private String bill_raw_text;
-    private Date date;
+    private String date;
 
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(String date) {
         this.date = date;
     }
 
