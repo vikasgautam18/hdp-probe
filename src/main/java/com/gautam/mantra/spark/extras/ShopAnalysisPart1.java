@@ -25,6 +25,7 @@ import static org.apache.spark.sql.functions.desc;
  * 1. Find out how many orders, how many products and how many sellers are in the data.
  * 2. How many products have been sold at least once?
  * 3. Which is the most ordered product?
+ * 4. How many distinct products have been sold in each day?
  */
 
 public class ShopAnalysisPart1 {
@@ -71,13 +72,9 @@ public class ShopAnalysisPart1 {
             System.out.printf("The count of product dataset is :: %s%n", products.count());
 
             System.out.println("The number of products which have been sold atleast once:: "
-                    + sales.select("product_id").distinct().count());
+                    + getProductsSoldAtleastOnce(sales));
 
-            Row row = sales.groupBy(sales.col("product_id"))
-                    .agg(functions.count(sales.col("product_id")).as("count_sold"))
-                    .orderBy(desc("count_sold"))
-                    .takeAsList(1).get(0);
-
+            Row row = getMostPopularProduct(sales);
             System.out.printf("The product with Id '%s' is the most popular one with over %s items sold%n",
                     row.getAs("product_id"), row.getAs("count_sold"));
 
@@ -86,5 +83,16 @@ public class ShopAnalysisPart1 {
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+    }
+
+    public static long getProductsSoldAtleastOnce(Dataset<Sales> sales) {
+        return sales.select("product_id").distinct().count();
+    }
+
+    public static Row getMostPopularProduct(Dataset<Sales> sales) {
+        return sales.groupBy(sales.col("product_id"))
+                .agg(functions.count(sales.col("product_id")).as("count_sold"))
+                .orderBy(desc("count_sold"))
+                .takeAsList(1).get(0);
     }
 }
