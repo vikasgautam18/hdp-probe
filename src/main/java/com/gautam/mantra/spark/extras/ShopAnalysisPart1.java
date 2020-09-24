@@ -1,11 +1,10 @@
 package com.gautam.mantra.spark.extras;
 
-import com.gautam.mantra.commons.Sales;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.Row;
 import org.apache.spark.sql.SparkSession;
 import org.yaml.snakeyaml.Yaml;
 
@@ -55,8 +54,9 @@ public class ShopAnalysisPart1 {
                     .appName(properties.get(APP_NAME)).getOrCreate();
 
             // 1. Find out how many orders, how many products and how many sellers are in the dataset
-            Dataset<Sales> sales = spark.read()
-                    .parquet(properties.get(SALES_IN_PATH)).as(Encoders.bean(Sales.class));
+//            Dataset<Sales> sales = spark.read()
+//                    .parquet(properties.get(SALES_IN_PATH)).as(Encoders.bean(Sales.class));
+            Dataset<Row> sales = spark.read().parquet(properties.get(SALES_IN_PATH));
             sales.show();
             System.out.printf("The count of sales dataset is :: %s%n", sales.count());
 
