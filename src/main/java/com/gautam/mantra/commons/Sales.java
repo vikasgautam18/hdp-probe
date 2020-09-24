@@ -9,7 +9,15 @@ public class Sales {
     private String seller_id;
     private Integer num_pieces_sold;
     private String bill_raw_text;
-    private Date order_date;
+    private Date date;
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
+    }
 
     public String getOrder_id() {
         return order_id;
@@ -51,14 +59,6 @@ public class Sales {
         this.bill_raw_text = bill_raw_text;
     }
 
-    public Date getOrder_date() {
-        return order_date;
-    }
-
-    public void setOrder_date(Date order_date) {
-        this.order_date = order_date;
-    }
-
     @Override
     public String toString() {
         return "Sales{" +
@@ -67,7 +67,7 @@ public class Sales {
                 ", seller_id='" + seller_id + '\'' +
                 ", num_pieces_sold=" + num_pieces_sold +
                 ", bill_raw_text='" + bill_raw_text + '\'' +
-                ", order_date=" + order_date +
+                ", order_date=" + date +
                 '}';
     }
 }
