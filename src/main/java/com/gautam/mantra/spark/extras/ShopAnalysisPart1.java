@@ -70,7 +70,7 @@ public class ShopAnalysisPart1 {
                     .parquet(properties.get(PRODUCT_IN_PATH)).as(Encoders.bean(Product.class));
             System.out.printf("The count of product dataset is :: %s%n", products.count());
 
-            System.out.println("the number of products which have been sold atleast once:: "
+            System.out.println("The number of products which have been sold atleast once:: "
                     + sales.select("product_id").distinct().count());
 
             Row row = sales.groupBy(sales.col("product_id"))
@@ -78,7 +78,7 @@ public class ShopAnalysisPart1 {
                     .orderBy(desc("count_sold"))
                     .takeAsList(1).get(0);
 
-            System.out.printf("The product with Id '%s' is the most popular one with over %s%n items sold",
+            System.out.printf("The product with Id '%s' is the most popular one with over %s items sold%n",
                     row.getAs("product_id"), row.getAs("count_sold"));
 
             spark.close();
