@@ -1,6 +1,8 @@
 package com.gautam.mantra.spark.extras;
 
+import com.gautam.mantra.commons.Product;
 import com.gautam.mantra.commons.Sales;
+import com.gautam.mantra.commons.Seller;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
@@ -57,9 +59,15 @@ public class ShopAnalysisPart1 {
             // 1. Find out how many orders, how many products and how many sellers are in the dataset
             Dataset<Sales> sales = spark.read()
                     .parquet(properties.get(SALES_IN_PATH)).as(Encoders.bean(Sales.class));
-//            Dataset<Row> sales = spark.read().parquet(properties.get(SALES_IN_PATH));
-            sales.show();
             System.out.printf("The count of sales dataset is :: %s%n", sales.count());
+
+            Dataset<Seller> sellers = spark.read()
+                    .parquet(properties.get(SELLER_IN_PATH)).as(Encoders.bean(Seller.class));
+            System.out.printf("The count of sellers dataset is :: %s%n", sellers.count());
+
+            Dataset<Product> products = spark.read()
+                    .parquet(properties.get(PRODUCT_IN_PATH)).as(Encoders.bean(Product.class));
+            System.out.printf("The count of product dataset is :: %s%n", products.count());
 
             spark.close();
 
