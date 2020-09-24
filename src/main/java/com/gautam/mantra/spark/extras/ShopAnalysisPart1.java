@@ -69,6 +69,8 @@ public class ShopAnalysisPart1 {
                     .parquet(properties.get(PRODUCT_IN_PATH)).as(Encoders.bean(Product.class));
             System.out.printf("The count of product dataset is :: %s%n", products.count());
 
+            System.out.println(sales.select("product_id").distinct().count());
+
             spark.close();
 
         } catch (FileNotFoundException e) {
