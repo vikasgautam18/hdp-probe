@@ -17,8 +17,7 @@ public class SalesAnalysis {
     public final String PRODUCT_IN_PATH = "product.dataset.hdfs.path";
     private Map<String, String> properties;
 
-    SparkSession spark = SparkSession.builder()
-            .appName(properties.get(APP_NAME)).getOrCreate();
+    private SparkSession spark;
 
     public SalesAnalysis (Map<String, String> properties){
         this.properties = properties;
@@ -36,6 +35,9 @@ public class SalesAnalysis {
     }
 
     public void process(){
+        spark = SparkSession.builder()
+                .appName(properties.get(APP_NAME)).getOrCreate();
+
         Dataset<Sales> sales = readSalesDataset(properties.get(SALES_IN_PATH));
         System.out.printf("The count of sales dataset is :: %s%n", sales.count());
 
