@@ -4,6 +4,7 @@ import com.gautam.mantra.commons.Product;
 import com.gautam.mantra.commons.Sales;
 import com.gautam.mantra.commons.Seller;
 import org.apache.spark.sql.*;
+import org.apache.spark.sql.types.DataTypes;
 
 import java.util.Map;
 
@@ -11,11 +12,7 @@ import static org.apache.spark.sql.functions.desc;
 
 public class SalesAnalysis {
 
-    private final String APP_NAME = "shop.data.analysis1.application";
-    public final String SALES_IN_PATH = "sales.dataset.hdfs.path";
-    public final String SELLER_IN_PATH = "seller.dataset.hdfs.path";
-    public final String PRODUCT_IN_PATH = "product.dataset.hdfs.path";
-    private Map<String, String> properties;
+    private final Map<String, String> properties;
 
     private SparkSession spark;
 
@@ -35,16 +32,17 @@ public class SalesAnalysis {
     }
 
     public void process(){
+        String APP_NAME = properties.get("shop.data.analysis1.application");
         spark = SparkSession.builder()
-                .appName(properties.get(APP_NAME)).getOrCreate();
+                .appName(APP_NAME).getOrCreate();
 
-        Dataset<Sales> sales = readSalesDataset(properties.get(SALES_IN_PATH));
+        Dataset<Sales> sales = readSalesDataset(properties.get("sales.dataset.hdfs.path"));
         System.out.printf("The count of sales dataset is :: %s%n", sales.count());
 
-        Dataset<Seller> sellers = readSellerDataset(properties.get(SELLER_IN_PATH));
+        Dataset<Seller> sellers = readSellerDataset(properties.get("seller.dataset.hdfs.path"));
         System.out.printf("The count of sellers dataset is :: %s%n", sellers.count());
 
-        Dataset<Product> products = readProductDataset(properties.get(PRODUCT_IN_PATH));
+        Dataset<Product> products = readProductDataset(properties.get("product.dataset.hdfs.path"));
         System.out.printf("The count of product dataset is :: %s%n", products.count());
 
         System.out.println("The number of products which have been sold atleast once:: "
@@ -54,7 +52,15 @@ public class SalesAnalysis {
         System.out.printf("The product with Id '%s' is the most popular one with over %s items sold%n",
                 row.getAs("product_id"), row.getAs("count_sold"));
 
+        Dataset<Row> distinctProductsPerDay = getDistinctProductsSoldPerDay(sales);
+        distinctProductsPerDay.show();
+
         spark.close();
+    }
+
+    private Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
+        return sales.withColumn("date_modified", functions.col("date").cast(DataTypes.DateType))
+                .groupBy("date_modified").agg(functions.countDistinct("product_id"));
     }
 
     public Dataset<Product> readProductDataset(String path) {
