@@ -18,6 +18,8 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
 
+import static org.apache.spark.sql.functions.desc;
+
 /**
  * Generate dataset using below:
  * https://gist.github.com/aialenti/cfd4e213ebf2ef6e20b195c8fb45382c
@@ -76,7 +78,7 @@ public class ShopAnalysisPart1 {
 
             sales.groupBy(sales.col("product_id"))
                     .agg(functions.count(sales.col("product_id")).as("count_sold"))
-                    .orderBy("count_sold")
+                    .orderBy(desc("count_sold"))
                     .show();
             spark.close();
 
