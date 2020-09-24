@@ -6,10 +6,7 @@ import com.gautam.mantra.commons.Seller;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.SparkSession;
-import org.apache.spark.sql.functions;
+import org.apache.spark.sql.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -76,10 +73,14 @@ public class ShopAnalysisPart1 {
             System.out.println("the number of products which have been sold atleast once:: "
                     + sales.select("product_id").distinct().count());
 
-            sales.groupBy(sales.col("product_id"))
+            Row row = sales.groupBy(sales.col("product_id"))
                     .agg(functions.count(sales.col("product_id")).as("count_sold"))
                     .orderBy(desc("count_sold"))
-                    .show();
+                    .takeAsList(1).get(0);
+
+            System.out.printf("The product with Id '%s' is the most popular one with over %s%n items sold",
+                    row.getAs("product_id"), row.getAs("count_sold"));
+
             spark.close();
 
         } catch (FileNotFoundException e) {
