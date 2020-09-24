@@ -56,7 +56,7 @@ public class ShopAnalysisPart1 {
 
             // 1. Find out how many orders, how many products and how many sellers are in the dataset
             Dataset<Sales> sales = spark.read()
-                    .parquet(properties.get("SALES_IN_PATH")).as(Encoders.bean(Sales.class));
+                    .parquet(properties.get(SALES_IN_PATH)).as(Encoders.bean(Sales.class));
             sales.show();
             System.out.printf("The count of sales dataset is :: %s%n", sales.count());
 
