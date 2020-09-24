@@ -7,6 +7,7 @@ import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.kafka.ProbeKafka;
 import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.spark.extras.RunExtras;
+import com.gautam.mantra.spark.extras.ShopAnalysisPart1;
 import com.gautam.mantra.zeppelin.ProbeZeppelin;
 import com.gautam.mantra.zookeeper.ProbeZookeeper;
 import org.apache.hadoop.conf.Configuration;
@@ -100,6 +101,14 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.day0fmonth.averages")));
+        }
+
+        if(extras.submitGenericJob(properties.get("shop.data.analysis1.application"), ShopAnalysisPart1.class.getName())) {
+            logger.info(String.format("Spark job '%s' successfully completed",
+                    properties.get("shop.data.analysis1.application")));
+        } else {
+            logger.error(String.format("An issue occurred while executing spark job '%s' ",
+                    properties.get("shop.data.analysis1.application")));
         }
 
     }

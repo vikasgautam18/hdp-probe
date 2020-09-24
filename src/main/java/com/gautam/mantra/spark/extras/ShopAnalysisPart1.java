@@ -33,7 +33,7 @@ import static org.apache.spark.sql.functions.desc;
 public class ShopAnalysisPart1 {
 
     private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
-    private static final String APP_NAME = "shop.data.application";
+    private static final String APP_NAME = "shop.data.analysis1.application";
     public static final Yaml yaml = new Yaml();
     public static final String SALES_IN_PATH = "sales.dataset.hdfs.path";
     public static final String SELLER_IN_PATH = "seller.dataset.hdfs.path";
