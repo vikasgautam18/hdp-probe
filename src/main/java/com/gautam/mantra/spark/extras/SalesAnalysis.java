@@ -58,7 +58,7 @@ public class SalesAnalysis {
         spark.close();
     }
 
-    private Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
+    public Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
         return sales.withColumn("date_modified", functions.col("date").cast(DataTypes.DateType))
                 .groupBy("date_modified").agg(functions.countDistinct("product_id"));
     }

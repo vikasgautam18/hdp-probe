@@ -1,6 +1,8 @@
 package com.gautam.mantra.spark.extras;
 
 import com.gautam.mantra.commons.Product;
+import com.gautam.mantra.commons.Sales;
+import com.gautam.mantra.commons.Seller;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.spark.sql.Dataset;
 import org.apache.spark.sql.Encoders;
@@ -25,6 +27,9 @@ class SalesAnalysisTest {
     static Map<String, String> properties;
     public static final Yaml yaml = new Yaml();
     static final Utilities utilities = new Utilities();
+    static Dataset<Product> productDataset;
+    static Dataset<Sales> salesDataset;
+    static Dataset<Seller> sellerDataset;
 
     @BeforeAll
     static void setUp() {
@@ -41,6 +46,10 @@ class SalesAnalysisTest {
                 MethodHandles.lookup().lookupClass().getClassLoader().getResourceAsStream("cluster-conf.yml");
         properties = yaml.load(inputStream);
         utilities.printProperties(properties);
+
+        productDataset = readProductDataset();
+        sellerDataset = readSellerDataset();
+        salesDataset = readSalesDataset();
     }
 
     @AfterAll
@@ -50,43 +59,58 @@ class SalesAnalysisTest {
     }
 
     @Test
-    void getProductsSoldAtleastOnce() {
-    }
-
-    @Test
-    void getMostPopularProduct() {
-    }
-
-    @Test
     void process() {
-        Dataset<Row> csvData = spark
-                .read()
+
+        SalesAnalysis salesAnalysis = new SalesAnalysis(properties);
+
+        productDataset.show();
+        salesDataset.show();
+        sellerDataset.show();
+
+        long result = salesAnalysis.getProductsSoldAtleastOnce(salesDataset);
+        System.out.println("The number of products which have been sold atleast once:: "
+                + result);
+
+        assert productDataset.count() == 14;
+        assert salesDataset.count() == 13;
+        assert sellerDataset.count() == 10;
+        assert result == 3;
+
+        Row row = salesAnalysis.getMostPopularProduct(salesDataset);
+        System.out.printf("The product with Id '%s' is the most popular one with over %s items sold%n",
+                row.getAs("product_id"), row.getAs("count_sold"));
+
+        assert  row.getAs("product_id").equals("0");
+        assert  Long.parseLong(row.getAs("count_sold").toString()) == 11L;
+
+        Dataset<Row> distinctProductsPerDay = salesAnalysis.getDistinctProductsSoldPerDay(salesDataset);
+        distinctProductsPerDay.show();
+
+        assert distinctProductsPerDay.count() == 7;
+
+    }
+
+
+    private static Dataset<Product> readProductDataset() {
+        return spark.read()
+            .option("header", "true")
+            .csv("./src/test/resources/shop-data/products.csv")
+            .as(Encoders.bean(Product.class));
+    }
+
+
+    private static Dataset<Seller> readSellerDataset() {
+        return spark.read()
+            .option("header", "true")
+            .csv("./src/test/resources/shop-data/sellers.csv")
+            .as(Encoders.bean(Seller.class));
+    }
+
+
+    private static Dataset<Sales> readSalesDataset() {
+        return spark.read()
                 .option("header", "true")
-                .csv("./src/test/resources/shop-data/products.csv");
-
-        csvData.show();
-
-        csvData.write().parquet("./src/test/resources/shop-data/products.parquet");
-
-        Dataset<Product> parquetData = spark
-                .read()
-                .option("spark.sql.parquet.mergeSchema", "true")
-                .parquet("./src/test/resources/shop-data/products.parquet")
-                .as(Encoders.bean(Product.class));
-
-        parquetData.show();
-
-    }
-
-    @Test
-    void readProductDataset() {
-    }
-
-    @Test
-    void readSellerDataset() {
-    }
-
-    @Test
-    void readSalesDataset() {
+                .csv("./src/test/resources/shop-data/sales.csv")
+                .as(Encoders.bean(Sales.class));
     }
 }
