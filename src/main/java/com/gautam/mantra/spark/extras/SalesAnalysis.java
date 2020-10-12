@@ -8,6 +8,7 @@ import org.apache.spark.sql.types.DataTypes;
 
 import java.util.Map;
 
+import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.desc;
 
 public class SalesAnalysis {
@@ -61,7 +62,8 @@ public class SalesAnalysis {
     }
 
     private void getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
-        sales.join(products, sales.col("product_id").equalTo(products.col("product_id")))
+        sales.joinWith(products, sales.col("product_id").equalTo(products.col("product_id")))
+                .withColumn("revenue", functions.col("num_pieces_sold").$times(col("price")))
         .show(10);
     }
 
