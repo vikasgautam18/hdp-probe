@@ -20,6 +20,7 @@ import java.util.Map;
  * 2. How many products have been sold at least once?
  * 3. Which is the most ordered product?
  * 4. How many distinct products have been sold in each day?
+ * 5. What is the average revenue of the orders?
  */
 
 public class ShopAnalysisPart1 {

@@ -55,7 +55,14 @@ public class SalesAnalysis {
         Dataset<Row> distinctProductsPerDay = getDistinctProductsSoldPerDay(sales);
         distinctProductsPerDay.show();
 
+        getAverageRevenueOfOrders(sales, products);
+
         spark.close();
+    }
+
+    private void getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
+        sales.join(products, sales.col("product_id").equalTo(products.col("product_id")))
+        .show(10);
     }
 
     public Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
