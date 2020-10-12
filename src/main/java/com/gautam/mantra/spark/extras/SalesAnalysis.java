@@ -62,6 +62,7 @@ public class SalesAnalysis {
 
     private void getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
         sales.join(products, sales.col("product_id").equalTo(products.col("product_id")))
+                .repartition(100)
         .show(10);
     }
 
