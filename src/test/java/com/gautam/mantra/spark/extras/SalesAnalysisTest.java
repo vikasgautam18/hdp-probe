@@ -16,10 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.InputStream;
+import java.io.Serializable;
 import java.lang.invoke.MethodHandles;
 import java.util.Map;
 
-class SalesAnalysisTest {
+public class SalesAnalysisTest implements Serializable {
 
     static SparkSession spark;
     private static final Logger logger =
@@ -88,9 +89,11 @@ class SalesAnalysisTest {
 
         assert distinctProductsPerDay.count() == 7;
 
-        Double revenue = salesAnalysis.getAverageRevenueOfOrders(salesDataset, productDataset).first().getDouble(0);
+        double revenue = salesAnalysis.getAverageRevenueOfOrders(salesDataset, productDataset).first().getDouble(0);
 
         assert revenue == 1658.3846153846155;
+
+        salesAnalysis.getAverageContribution(salesDataset, sellerDataset);
 
     }
 

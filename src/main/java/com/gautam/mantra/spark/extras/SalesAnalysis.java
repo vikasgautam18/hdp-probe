@@ -6,12 +6,13 @@ import com.gautam.mantra.commons.Seller;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 
+import java.io.Serializable;
 import java.util.Map;
 
 import static org.apache.spark.sql.functions.col;
 import static org.apache.spark.sql.functions.desc;
 
-public class SalesAnalysis {
+public class SalesAnalysis implements Serializable {
 
     private final Map<String, String> properties;
 
@@ -59,7 +60,16 @@ public class SalesAnalysis {
         System.out.println("The revenue of orders ::" +
                 getAverageRevenueOfOrders(sales, products).first().getDouble(0));
 
+        getAverageContribution(sales, sellers);
+
         spark.close();
+    }
+
+    public void getAverageContribution(Dataset<Sales> sales, Dataset<Seller> sellers){
+        sellers.show();
+
+        sales.show();
+
     }
 
     public Dataset<Row> getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
@@ -68,7 +78,6 @@ public class SalesAnalysis {
         Dataset<Row> revenues = joined.withColumn("revenue",
                 functions.col("num_pieces_sold").$times(col("price")))
                 .select("revenue");
-
 
         return revenues.select(functions.mean(revenues.col("revenue")));
     }
