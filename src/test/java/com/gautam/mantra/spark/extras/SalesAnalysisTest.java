@@ -88,6 +88,10 @@ class SalesAnalysisTest {
 
         assert distinctProductsPerDay.count() == 7;
 
+        Double revenue = salesAnalysis.getAverageRevenueOfOrders(salesDataset, productDataset).first().getDouble(0);
+
+        assert revenue == 1658.3846153846155;
+
     }
 
 

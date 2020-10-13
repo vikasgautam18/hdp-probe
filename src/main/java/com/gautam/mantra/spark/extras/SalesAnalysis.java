@@ -56,21 +56,20 @@ public class SalesAnalysis {
         Dataset<Row> distinctProductsPerDay = getDistinctProductsSoldPerDay(sales);
         distinctProductsPerDay.show();
 
-        getAverageRevenueOfOrders(sales, products);
+        System.out.println("The revenue of orders ::" + getAverageRevenueOfOrders(sales, products));
 
         spark.close();
     }
 
-    private void getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
+    public Dataset<Row> getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
         Dataset<Row> joined = sales.join(products,
                 sales.col("product_id").equalTo(products.col("product_id")));
-
-        System.out.println("The revenue of orders ::");
-        joined.withColumn("revenue",
+        Dataset<Row> revenues = joined.withColumn("revenue",
                 functions.col("num_pieces_sold").$times(col("price")))
-                .select("order_id", "revenue")
-                .orderBy(col("revenue").desc())
-        .show(100);
+                .select("revenue");
+
+
+        return revenues.select(functions.mean(revenues.col("revenue")));
     }
 
     public Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
