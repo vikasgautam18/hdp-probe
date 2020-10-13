@@ -56,7 +56,8 @@ public class SalesAnalysis {
         Dataset<Row> distinctProductsPerDay = getDistinctProductsSoldPerDay(sales);
         distinctProductsPerDay.show();
 
-        System.out.println("The revenue of orders ::" + getAverageRevenueOfOrders(sales, products));
+        System.out.println("The revenue of orders ::" +
+                getAverageRevenueOfOrders(sales, products).first().getDouble(0));
 
         spark.close();
     }
