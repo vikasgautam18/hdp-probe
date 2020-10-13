@@ -66,8 +66,9 @@ public class SalesAnalysis {
                 sales.col("product_id").equalTo(products.col("product_id")));
 
         System.out.println("The revenue of orders ::");
-        joined.select("order_id").withColumn("revenue",
+        joined.withColumn("revenue",
                 functions.col("num_pieces_sold").$times(col("price")))
+                .select("order_id", "revenue")
                 .orderBy(col("revenue").desc())
         .show(100);
     }
