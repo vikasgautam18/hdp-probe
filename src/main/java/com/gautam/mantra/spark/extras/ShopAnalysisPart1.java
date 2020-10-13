@@ -39,8 +39,11 @@ public class ShopAnalysisPart1 {
 
     public static void main(String[] args) {
         if(args.length != 0){
-            System.out.println("USAGE: spark-submit --driver-java-options \"-Dspark.probe.cluster.yml=conf/cluster-conf.yml\" " +
-                    "--class com.gautam.mantra.spark.extras.ShopAnalysisPart1 target/hdp-probe.jar");
+            System.out.println("USAGE: spark-submit --master yarn --deploy-mode cluster " +
+                    "--driver-java-options \"-Dspark.probe.cluster.yml=cluster-conf.yml\" " +
+                    "--files conf/cluster-conf.yml#cluster-conf.yml " +
+                    "--class com.gautam.mantra.spark.extras.ShopAnalysisPart1 " +
+                    "target/hdp-probe.jar");
         }
         Logger.getRootLogger().setLevel(Level.ERROR);
         InputStream inputStream;
