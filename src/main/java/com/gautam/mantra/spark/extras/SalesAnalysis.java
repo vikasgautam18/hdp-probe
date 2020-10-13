@@ -65,9 +65,11 @@ public class SalesAnalysis {
         Dataset<Row> joined = sales.join(products,
                 sales.col("product_id").equalTo(products.col("product_id")));
 
-                joined.withColumn("revenue",
-                        functions.col("num_pieces_sold").$times(col("price")))
-        .show(10);
+        System.out.println("The revenue of orders ::");
+        joined.select("order_id").withColumn("revenue",
+                functions.col("num_pieces_sold").$times(col("price")))
+                .orderBy(col("revenue").desc())
+        .show(100);
     }
 
     public Dataset<Row> getDistinctProductsSoldPerDay(Dataset<Sales> sales) {
