@@ -1,12 +1,8 @@
 package com.gautam.mantra.spark.extras;
 
-import com.gautam.mantra.commons.Product;
-import com.gautam.mantra.commons.Sales;
-import com.gautam.mantra.commons.Seller;
 import com.gautam.mantra.commons.Utilities;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
-import org.apache.spark.sql.*;
 import org.yaml.snakeyaml.Yaml;
 
 import java.io.File;
@@ -14,8 +10,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Map;
-
-import static org.apache.spark.sql.functions.desc;
 
 /**
  * Generate dataset using below:
@@ -25,16 +19,23 @@ import static org.apache.spark.sql.functions.desc;
  * 1. Find out how many orders, how many products and how many sellers are in the data.
  * 2. How many products have been sold at least once?
  * 3. Which is the most ordered product?
+ * 4. How many distinct products have been sold in each day?
+ * 5. What is the average revenue of the orders?
+ * 6. For each seller, what is the average % contribution of an order to the seller's daily quota?
+ * 7. Who are the second most selling and the least selling persons (sellers) for each product?
+ *    Who are those for product with `product_id = 0`
+ * 8. Create a new column called "hashed_bill" defined as follows:
+ *      - if the order_id is even: apply MD5 hashing iteratively to the bill_raw_text field,
+ *          once for each 'A' (capital 'A') present in the text. E.g. if the bill text is 'nbAAnllA',
+ *          you would apply hashing three times iteratively (only if the order number is even)
+ *      - if the order_id is odd: apply SHA256 hashing to the bill text
+ *    Finally, check if there are any duplicate on the new column
  */
 
 public class ShopAnalysisPart1 {
 
     private static final String CLUSTER_CONFIG = "spark.probe.cluster.yml";
-    private static final String APP_NAME = "shop.data.analysis1.application";
     public static final Yaml yaml = new Yaml();
-    public static final String SALES_IN_PATH = "sales.dataset.hdfs.path";
-    public static final String SELLER_IN_PATH = "seller.dataset.hdfs.path";
-    public static final String PRODUCT_IN_PATH = "product.dataset.hdfs.path";
 
     public static void main(String[] args) {
         if(args.length != 0){
@@ -42,8 +43,6 @@ public class ShopAnalysisPart1 {
                     "--class com.gautam.mantra.spark.extras.ShopAnalysisPart1 target/hdp-probe.jar");
         }
         Logger.getRootLogger().setLevel(Level.ERROR);
-
-        // load properties
         InputStream inputStream;
         try {
             inputStream = new FileInputStream(
@@ -54,35 +53,8 @@ public class ShopAnalysisPart1 {
             // print all loaded properties to console
             utilities.printProperties(properties);
 
-            SparkSession spark = SparkSession.builder()
-                    .appName(properties.get(APP_NAME)).getOrCreate();
-
-            // 1. Find out how many orders, how many products and how many sellers are in the dataset
-            Dataset<Sales> sales = spark.read()
-                    .parquet(properties.get(SALES_IN_PATH)).as(Encoders.bean(Sales.class));
-            System.out.printf("The count of sales dataset is :: %s%n", sales.count());
-
-            Dataset<Seller> sellers = spark.read()
-                    .parquet(properties.get(SELLER_IN_PATH)).as(Encoders.bean(Seller.class));
-            System.out.printf("The count of sellers dataset is :: %s%n", sellers.count());
-
-            Dataset<Product> products = spark.read()
-                    .parquet(properties.get(PRODUCT_IN_PATH)).as(Encoders.bean(Product.class));
-            System.out.printf("The count of product dataset is :: %s%n", products.count());
-
-            System.out.println("The number of products which have been sold atleast once:: "
-                    + sales.select("product_id").distinct().count());
-
-            Row row = sales.groupBy(sales.col("product_id"))
-                    .agg(functions.count(sales.col("product_id")).as("count_sold"))
-                    .orderBy(desc("count_sold"))
-                    .takeAsList(1).get(0);
-
-            System.out.printf("The product with Id '%s' is the most popular one with over %s items sold%n",
-                    row.getAs("product_id"), row.getAs("count_sold"));
-
-            spark.close();
-
+            SalesAnalysis salesAnalysis = new SalesAnalysis(properties);
+            salesAnalysis.process();
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
