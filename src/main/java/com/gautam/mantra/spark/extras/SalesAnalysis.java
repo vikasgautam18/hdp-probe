@@ -3,6 +3,7 @@ package com.gautam.mantra.spark.extras;
 import com.gautam.mantra.commons.Product;
 import com.gautam.mantra.commons.Sales;
 import com.gautam.mantra.commons.Seller;
+import org.apache.spark.api.java.function.VoidFunction;
 import org.apache.spark.sql.*;
 import org.apache.spark.sql.types.DataTypes;
 
@@ -67,9 +68,9 @@ public class SalesAnalysis implements Serializable {
 
     public void getAverageContribution(Dataset<Sales> sales, Dataset<Seller> sellers){
         sellers.show();
-
         sales.show();
 
+        sellers.toDF().javaRDD().foreach((VoidFunction<Row>) row -> System.out.println(row.getString(0)));
     }
 
     public Dataset<Row> getAverageRevenueOfOrders(Dataset<Sales> sales, Dataset<Product> products) {
