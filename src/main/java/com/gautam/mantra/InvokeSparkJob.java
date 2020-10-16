@@ -14,7 +14,8 @@ public class InvokeSparkJob {
                 .setSparkHome("/usr/hdp/3.1.0.0-78/spark2")
                 .setAppResource("/usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar")
                 .setMainClass("org.apache.spark.examples.SparkPi")
-                .setMaster("local[*]")
+                //.setMaster("local[*]")
+                .setMaster("yarn").setDeployMode("cluster")
                 .startApplication();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
