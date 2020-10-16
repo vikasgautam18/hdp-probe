@@ -11,9 +11,10 @@ public class InvokeSparkJob {
     public static void main(String[] args) throws IOException, InterruptedException {
         SparkLauncher sparkLauncher = new SparkLauncher();
         SparkAppHandle handle = sparkLauncher
+                .setSparkHome("/usr/hdp/3.1.0.0-78/spark2")
                 .setAppResource("/usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar")
                 .setMainClass("org.apache.spark.examples.SparkPi")
-                .setMaster("yarn-cluster")
+                .setMaster("local[*]")
                 .startApplication();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
