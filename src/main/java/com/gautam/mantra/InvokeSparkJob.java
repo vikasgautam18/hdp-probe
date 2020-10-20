@@ -1,8 +1,6 @@
 package com.gautam.mantra;
 
 
-import org.apache.hadoop.yarn.api.records.ApplicationId;
-import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
@@ -17,8 +15,8 @@ import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
 public class InvokeSparkJob {
-    public static void main(String[] args) throws IOException, YarnException {
-        //withSparkLauncher();
+    public static void main(String[] args) throws IOException, YarnException, InterruptedException {
+        withSparkLauncher();
 
         YarnConfiguration yarnConfiguration = new YarnConfiguration();
         YarnClient client = YarnClient.createYarnClient();
@@ -28,16 +26,16 @@ public class InvokeSparkJob {
 
         System.out.println(client.getApplications().size());
 
-        ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0003"));
+        //ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0003"));
 
-        System.out.println(report.getYarnApplicationState().name());
+        /*System.out.println(report.getYarnApplicationState().name());
         if (!report.getApplicationTags().isEmpty()) {
             report.getApplicationTags().forEach(System.out::println);
-        }
+        }*/
 
         client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
                 EnumSet.of(YarnApplicationState.FINISHED),
-                new HashSet<>(Collections.singleton("sparkPi")))
+                new HashSet<>(Collections.singleton("sparkpi")))
         .forEach(applicationReport -> System.out.println(applicationReport.getName()));
     }
 
@@ -50,7 +48,7 @@ public class InvokeSparkJob {
                 .setMainClass("org.apache.spark.examples.SparkPi")
                 //.setMaster("local[*]")
                 .setMaster("yarn").setDeployMode("cluster")
-                .setConf("spark.yarn.tags", "sparkPi")
+                .setConf("spark.yarn.tags", "sparkpi")
                 .startApplication();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
