@@ -1,6 +1,8 @@
 package com.gautam.mantra.commons;
 
-public class Seller {
+import java.io.Serializable;
+
+public class Seller implements Serializable {
 
     private String seller_id;
     private String seller_name;
