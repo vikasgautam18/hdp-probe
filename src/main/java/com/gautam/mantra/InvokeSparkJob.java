@@ -33,7 +33,7 @@ public class InvokeSparkJob {
         client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
                 EnumSet.of(YarnApplicationState.FINISHED),
                 new HashSet<>(Collections.singleton("SparkPi")))
-        .forEach(applicationReport -> System.out.println(applicationReport.getName());
+        .forEach(applicationReport -> System.out.println(applicationReport.getName()));
     }
 
     public static void withSparkLauncher() throws IOException, InterruptedException {
