@@ -1,6 +1,7 @@
 package com.gautam.mantra;
 
 
+import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -21,6 +22,9 @@ public class InvokeSparkJob {
         client.start();
 
         System.out.println(client.getApplications().size());
+
+        System.out.println(client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0001"))
+                .getYarnApplicationState().name());
     }
 
     public static void withSparkLauncher() throws IOException, InterruptedException {
