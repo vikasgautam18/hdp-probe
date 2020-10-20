@@ -28,13 +28,11 @@ public class InvokeSparkJob {
 
         System.out.println(client.getApplications().size());
 
-        ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1602861337306_0003"));
+        ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0002"));
 
         System.out.println(report.getYarnApplicationState().name());
         if (!report.getApplicationTags().isEmpty()) {
-            report.getApplicationTags().forEach(tag -> {
-                System.out.println(tag);
-            });
+            report.getApplicationTags().forEach(System.out::println);
         }
 
         client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
