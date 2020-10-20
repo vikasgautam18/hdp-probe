@@ -2,6 +2,7 @@ package com.gautam.mantra;
 
 
 import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
@@ -9,6 +10,9 @@ import org.apache.spark.launcher.SparkAppHandle;
 import org.apache.spark.launcher.SparkLauncher;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.concurrent.CountDownLatch;
 
 public class InvokeSparkJob {
@@ -25,6 +29,11 @@ public class InvokeSparkJob {
 
         System.out.println(client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0001"))
                 .getYarnApplicationState().name());
+
+        client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
+                EnumSet.of(YarnApplicationState.FINISHED),
+                new HashSet<>(Collections.singleton("SparkPi")))
+        .forEach(applicationReport -> System.out.println(applicationReport.getName());
     }
 
     public static void withSparkLauncher() throws IOException, InterruptedException {
