@@ -37,7 +37,7 @@ public class InvokeSparkJob {
 
         client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
                 EnumSet.of(YarnApplicationState.FINISHED),
-                new HashSet<>(Collections.singleton("SparkPi")))
+                new HashSet<>(Collections.singleton("sparkPi")))
         .forEach(applicationReport -> System.out.println(applicationReport.getName()));
     }
 
