@@ -1,6 +1,8 @@
 package com.gautam.mantra;
 
 
+import org.apache.hadoop.yarn.api.records.ApplicationId;
+import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
 import org.apache.hadoop.yarn.client.api.YarnClient;
 import org.apache.hadoop.yarn.conf.YarnConfiguration;
@@ -26,12 +28,13 @@ public class InvokeSparkJob {
 
         System.out.println(client.getApplications().size());
 
-        //ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0003"));
+        ApplicationReport report =
+                client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0003"));
 
-        /*System.out.println(report.getYarnApplicationState().name());
+        System.out.println(report.getYarnApplicationState().name());
         if (!report.getApplicationTags().isEmpty()) {
             report.getApplicationTags().forEach(System.out::println);
-        }*/
+        }
 
         client.getApplications(new HashSet<>(Collections.singleton("SPARK")),
                 EnumSet.of(YarnApplicationState.FINISHED),
