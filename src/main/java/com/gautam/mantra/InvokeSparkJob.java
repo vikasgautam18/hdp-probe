@@ -28,7 +28,7 @@ public class InvokeSparkJob {
 
         System.out.println(client.getApplications().size());
 
-        ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0002"));
+        ApplicationReport report = client.getApplicationReport(ApplicationId.fromString("application_1603215043575_0003"));
 
         System.out.println(report.getYarnApplicationState().name());
         if (!report.getApplicationTags().isEmpty()) {
