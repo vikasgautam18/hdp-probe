@@ -45,6 +45,7 @@ public class ProbeSpark {
 
         sparkConf.set("spark.driver.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
         sparkConf.set("spark.yarn.am.extraJavaOptions", "-Dhdp.version=3.1.0.0-78");
+        sparkConf.set("spark.yarn.tags", "sparkPi");
 
         final String[] args = new String[]{
                 "--jar",
