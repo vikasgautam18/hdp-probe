@@ -50,6 +50,7 @@ public class InvokeSparkJob {
                 .setMainClass("org.apache.spark.examples.SparkPi")
                 //.setMaster("local[*]")
                 .setMaster("yarn").setDeployMode("cluster")
+                .setConf("spark.yarn.tags", "sparkPi")
                 .startApplication();
 
         CountDownLatch countDownLatch = new CountDownLatch(1);
