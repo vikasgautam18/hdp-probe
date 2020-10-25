@@ -70,6 +70,8 @@ public class SalesAnalysis implements Serializable {
         sellers.show();
         sales.show();
 
+        sales.groupBy("seller_id", "date").agg(functions.sum("num_pieces_sold")).show();
+
         sellers.toDF().javaRDD().foreach((VoidFunction<Row>) row -> System.out.println(row.getString(0)));
     }
 
