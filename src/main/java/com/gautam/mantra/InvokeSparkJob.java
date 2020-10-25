@@ -1,6 +1,7 @@
 package com.gautam.mantra;
 
 
+import com.gautam.mantra.commons.Utilities;
 import org.apache.hadoop.yarn.api.records.ApplicationId;
 import org.apache.hadoop.yarn.api.records.ApplicationReport;
 import org.apache.hadoop.yarn.api.records.YarnApplicationState;
@@ -9,18 +10,37 @@ import org.apache.hadoop.yarn.conf.YarnConfiguration;
 import org.apache.hadoop.yarn.exceptions.YarnException;
 import org.apache.spark.launcher.SparkAppHandle;
 import org.apache.spark.launcher.SparkLauncher;
+import org.yaml.snakeyaml.Yaml;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 public class InvokeSparkJob {
+    public static final Yaml yaml = new Yaml();
+
     public static void main(String[] args) throws IOException, YarnException, InterruptedException {
+
+        InputStream inputStream = new FileInputStream(
+                new File(System.getProperty("spark.probe.cluster.yml")));
+        Utilities utilities = new Utilities();
+
+        Map<String, String> properties = yaml.load(inputStream);
+        // print all loaded properties to console
+        utilities.printProperties(properties);
+
+        System.out.println("**********************************************************************************");
+
         withSparkLauncher();
 
         YarnConfiguration yarnConfiguration = new YarnConfiguration();
+
         YarnClient client = YarnClient.createYarnClient();
         client.init(yarnConfiguration);
 
@@ -49,7 +69,6 @@ public class InvokeSparkJob {
                 .setSparkHome("/usr/hdp/3.1.0.0-78/spark2")
                 .setAppResource("/usr/hdp/3.1.0.0-78/spark2/examples/jars/spark-examples_2.11-2.3.2.3.1.0.0-78.jar")
                 .setMainClass("org.apache.spark.examples.SparkPi")
-                //.setMaster("local[*]")
                 .setMaster("yarn").setDeployMode("cluster")
                 .setConf("spark.yarn.tags", "sparkpi")
                 .startApplication();
