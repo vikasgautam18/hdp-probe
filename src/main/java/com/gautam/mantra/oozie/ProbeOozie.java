@@ -43,10 +43,10 @@ public class ProbeOozie implements ProbeService {
 
         try {
             String jobId = wc.run(conf);
-            System.out.println(jobId);
+            logger.info("Oozie application id is :: "+ jobId);
 
             while (wc.getJobInfo(jobId).getStatus() == WorkflowJob.Status.RUNNING) {
-                System.out.println("Workflow job running ...");
+                logger.info("Workflow job running ...");
                 Thread.sleep(10 * 1000);
             }
 
