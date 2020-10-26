@@ -96,6 +96,7 @@ oozie.app.path: hdfs://localhost:8020/user/vikgautammbb/examples/apps/map-reduce
 oozie.app.namenode: hdfs://localhost:8020
 oozie.app.jobtracker: localhost:8050
 oozie.app.queue.name: default
+oozie.app.examples.root: examples
 
 execute.extras.flag: "true"
 bixi.dataset.path: /user/vikgautammbb/bixi-data/
