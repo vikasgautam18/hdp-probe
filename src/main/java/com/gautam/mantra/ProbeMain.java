@@ -59,14 +59,14 @@ public class ProbeMain {
         probeOozie(properties);
 
         //probeKafka
-        //probeKafka(properties);
+        probeKafka(properties);
 
         //probeZeppelin
 
-        //probeZeppelin(properties);
+        probeZeppelin(properties);
 
         // probeSpark
-        //probeSpark(properties);
+        probeSpark(properties);
 
         if(Boolean.parseBoolean(properties.get("execute.extras.flag"))){
             probeExtras(properties);
@@ -78,7 +78,12 @@ public class ProbeMain {
 
         if(oozie.isReachable()){
             logger.info("Oozie is reachable, proceeding with tests");
-            oozie.invokeWorkflow();
+            if(oozie.invokeWorkflow()) {
+                logger.info("Oozie tests successful.. ");
+            } else {
+                logger.error("Oozie tests failed.. exiting");
+                System.exit(1);
+            }
         } else {
             logger.error("Oozie is not reachable");
         }

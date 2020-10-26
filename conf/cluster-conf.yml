@@ -99,7 +99,7 @@ oozie.app.queue.name: default
 oozie.app.examples.root: examples
 oozie.app.output.dir: map-reduce
 
-execute.extras.flag: "false"
+execute.extras.flag: "true"
 bixi.dataset.path: /user/vikgautammbb/bixi-data/
 bixi.busiest.station: app_bixi_busiest_statition_2019
 bixi.station.file.name: Stations_2019.csv
