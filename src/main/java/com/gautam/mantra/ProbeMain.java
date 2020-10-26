@@ -5,6 +5,7 @@ import com.gautam.mantra.hbase.ProbeHBase;
 import com.gautam.mantra.hdfs.ProbeHDFS;
 import com.gautam.mantra.hive.ProbeHive;
 import com.gautam.mantra.kafka.ProbeKafka;
+import com.gautam.mantra.oozie.ProbeOozie;
 import com.gautam.mantra.spark.ProbeSpark;
 import com.gautam.mantra.spark.extras.RunExtras;
 import com.gautam.mantra.spark.extras.ShopAnalysisPart1;
@@ -54,6 +55,9 @@ public class ProbeMain {
         // Hive tests
         probeHive(properties);
 
+        // Oozie tests
+        probeOozie(properties);
+
         //probeKafka
         probeKafka(properties);
 
@@ -66,6 +70,22 @@ public class ProbeMain {
 
         if(Boolean.parseBoolean(properties.get("execute.extras.flag"))){
             probeExtras(properties);
+        }
+    }
+
+    private static void probeOozie(Map<String, String> properties) {
+        ProbeOozie oozie = new ProbeOozie(properties);
+
+        if(oozie.isReachable()){
+            logger.info("Oozie is reachable, proceeding with tests");
+            if(oozie.invokeWorkflow()) {
+                logger.info("Oozie tests successful.. ");
+            } else {
+                logger.error("Oozie tests failed.. exiting");
+                System.exit(1);
+            }
+        } else {
+            logger.error("Oozie is not reachable");
         }
     }
 
