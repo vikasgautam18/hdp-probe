@@ -98,7 +98,7 @@ oozie.app.jobtracker: localhost:8050
 oozie.app.queue.name: default
 oozie.app.examples.root: examples
 
-execute.extras.flag: "true"
+execute.extras.flag: "false"
 bixi.dataset.path: /user/vikgautammbb/bixi-data/
 bixi.busiest.station: app_bixi_busiest_statition_2019
 bixi.station.file.name: Stations_2019.csv

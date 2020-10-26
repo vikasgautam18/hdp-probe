@@ -59,14 +59,14 @@ public class ProbeMain {
         probeOozie(properties);
 
         //probeKafka
-        probeKafka(properties);
+        //probeKafka(properties);
 
         //probeZeppelin
 
-        probeZeppelin(properties);
+        //probeZeppelin(properties);
 
         // probeSpark
-        probeSpark(properties);
+        //probeSpark(properties);
 
         if(Boolean.parseBoolean(properties.get("execute.extras.flag"))){
             probeExtras(properties);
