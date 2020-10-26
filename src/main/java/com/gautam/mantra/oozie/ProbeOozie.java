@@ -39,6 +39,7 @@ public class ProbeOozie implements ProbeService {
         conf.setProperty("nameNode", properties.get("oozie.app.namenode"));
         conf.setProperty("queueName", properties.get("oozie.app.queue.name"));
         conf.setProperty("examplesRoot", properties.get("oozie.app.examples.root"));
+        conf.setProperty("outputDir", properties.get("oozie.app.output.dir"));
 
         try {
             String jobId = wc.run(conf);
