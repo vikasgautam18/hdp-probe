@@ -92,6 +92,10 @@ zeppelin.login.username: admin
 zeppelin.notebook.id: 2FKXWR2QA
 
 oozie.url: http://localhost:11000/oozie
+oozie.app.path: hdfs://localhost:8020/user/vikgautammbb/examples/apps/map-reduce
+oozie.app.namenode: hdfs://localhost:8020
+oozie.app.jobtracker: localhost:8050
+oozie.app.queue.name: default
 
 execute.extras.flag: "true"
 bixi.dataset.path: /user/vikgautammbb/bixi-data/

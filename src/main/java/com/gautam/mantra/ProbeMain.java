@@ -77,9 +77,10 @@ public class ProbeMain {
         ProbeOozie oozie = new ProbeOozie(properties);
 
         if(oozie.isReachable()){
-            logger.info("Oozie tests successful");
+            logger.info("Oozie is reachable, proceeding with tests");
+            oozie.invokeWorkflow();
         } else {
-            logger.error("Oozie tests have failed");
+            logger.error("Oozie is not reachable");
         }
     }
 
