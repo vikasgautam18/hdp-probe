@@ -51,8 +51,8 @@ public class ProbeOozie implements ProbeService {
             }
 
             // print the final status of the workflow job
-            System.out.println("Workflow job completed ...");
-            System.out.println(wc.getJobInfo(jobId));
+            logger.info("Workflow job completed ...");
+            logger.info("Oozie job info :: " + wc.getJobInfo(jobId));
             return wc.getJobInfo(jobId).getStatus() == WorkflowJob.Status.SUCCEEDED;
         } catch (OozieClientException | InterruptedException e) {
             e.printStackTrace();
