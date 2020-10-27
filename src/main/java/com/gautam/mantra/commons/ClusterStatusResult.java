@@ -10,7 +10,7 @@ public class ClusterStatusResult {
     private boolean sparkStatus;
     private boolean zeppelinStatus;
     private boolean zookeeperStatus;
-
+    private boolean extrasStatus;
 
     public ClusterStatusResult(boolean hdfsStatus, boolean hbaseStatus,
                                boolean hiveStatus, boolean kafkaStatus,
@@ -94,6 +94,14 @@ public class ClusterStatusResult {
         this.zookeeperStatus = zookeeperStatus;
     }
 
+    public boolean isExtrasStatus() {
+        return extrasStatus;
+    }
+
+    public void setExtrasStatus(boolean extrasStatus) {
+        this.extrasStatus = extrasStatus;
+    }
+
     @Override
     public String toString() {
         return "**************** RESULT ****************" + System.lineSeparator() +
@@ -105,6 +113,7 @@ public class ClusterStatusResult {
                 "SPARK      ========     " + mapResult(sparkStatus) + System.lineSeparator() +
                 "ZEPPELIN   ========     " + mapResult(zeppelinStatus) + System.lineSeparator() +
                 "ZOOKEEPER  ========     " + mapResult(zookeeperStatus) + System.lineSeparator() +
+                "EXTRAS     ========     " + mapResult(extrasStatus) + System.lineSeparator() +
                 "***************************************" ;
     }
 

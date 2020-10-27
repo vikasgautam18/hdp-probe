@@ -96,6 +96,7 @@ public class ProbeMain {
     }
 
     private static void probeExtras(Map<String, String> properties) {
+        result.setExtrasStatus(true);
         RunExtras extras = new RunExtras(properties);
         if(extras.submitBixiBusiestStationJob()) {
             logger.info(String.format("Spark job '%s' successfully completed",
@@ -103,6 +104,7 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.busiest.station")));
+            result.setExtrasStatus(false);
         }
 
         if(extras.submitTop10LongestTripsJob()) {
@@ -111,6 +113,7 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.longest.trips")));
+            result.setExtrasStatus(false);
         }
 
         if(extras.submitMonthlyAverageJob()) {
@@ -119,6 +122,7 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.monthly.averages")));
+            result.setExtrasStatus(false);
         }
 
         if(extras.submitAverageTripsPerDayOfMonthJob()) {
@@ -127,6 +131,7 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("bixi.day0fmonth.averages")));
+            result.setExtrasStatus(false);
         }
 
         if(extras.submitGenericJob(properties.get("shop.data.analysis1.application"), ShopAnalysisPart1.class.getName())) {
@@ -135,8 +140,8 @@ public class ProbeMain {
         } else {
             logger.error(String.format("An issue occurred while executing spark job '%s' ",
                     properties.get("shop.data.analysis1.application")));
+            result.setExtrasStatus(false);
         }
-
     }
 
     private static void probeZeppelin(Map<String, String> properties) {
