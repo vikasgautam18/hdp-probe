@@ -104,7 +104,7 @@ public class ClusterStatusResult {
 
     @Override
     public String toString() {
-        return "**************** RESULT ****************" + System.lineSeparator() +
+        return System.lineSeparator() + "**************** RESULT ****************" + System.lineSeparator() +
                 "HDFS       ========     " + mapResult(hdfsStatus) + System.lineSeparator() +
                 "HBASE      ========     " + mapResult(hbaseStatus) + System.lineSeparator() +
                 "HIVE       ========     " + mapResult(hiveStatus) + System.lineSeparator() +
@@ -114,7 +114,7 @@ public class ClusterStatusResult {
                 "ZEPPELIN   ========     " + mapResult(zeppelinStatus) + System.lineSeparator() +
                 "ZOOKEEPER  ========     " + mapResult(zookeeperStatus) + System.lineSeparator() +
                 "EXTRAS     ========     " + mapResult(extrasStatus) + System.lineSeparator() +
-                "***************************************" ;
+                "****************************************" ;
     }
 
     public String mapResult(boolean result){
