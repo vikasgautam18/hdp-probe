@@ -94,8 +94,7 @@ public class ProbeZeppelin {
                     properties.get("zeppelin.notebook.id"))) {
                 logger.info("Zeppelin notebook successfully executed...");
             } else {
-                logger.info("Zeppelin notebook execution failed, exiting.. ");
-                System.exit(1);
+                logger.info("Zeppelin notebook execution failed ");
             }
 
             Thread.sleep(Duration.ofSeconds(10).toMillis());

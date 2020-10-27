@@ -10,7 +10,7 @@ public class ClusterStatusResult {
     private boolean sparkStatus;
     private boolean zeppelinStatus;
     private boolean zookeeperStatus;
-
+    private boolean extrasStatus;
 
     public ClusterStatusResult(boolean hdfsStatus, boolean hbaseStatus,
                                boolean hiveStatus, boolean kafkaStatus,
@@ -94,18 +94,27 @@ public class ClusterStatusResult {
         this.zookeeperStatus = zookeeperStatus;
     }
 
+    public boolean isExtrasStatus() {
+        return extrasStatus;
+    }
+
+    public void setExtrasStatus(boolean extrasStatus) {
+        this.extrasStatus = extrasStatus;
+    }
+
     @Override
     public String toString() {
-        return "ClusterStatusResult{" +
-                "hdfsStatus ======== " + mapResult(hdfsStatus) +
-                ", hbaseStatus ======== " + mapResult(hbaseStatus) +
-                ", hiveStatus ======== " + mapResult(hiveStatus) +
-                ", kafkaStatus ======== " + mapResult(kafkaStatus) +
-                ", oozieStatus ======== " + mapResult(oozieStatus) +
-                ", sparkStatus ======== " + mapResult(sparkStatus) +
-                ", zeppelinStatus ======== " + mapResult(zeppelinStatus) +
-                ", zookeeperStatus ======== " + mapResult(zookeeperStatus) +
-                '}';
+        return System.lineSeparator() + "**************** RESULT ****************" + System.lineSeparator() +
+                "HDFS       ========     " + mapResult(hdfsStatus) + System.lineSeparator() +
+                "HBASE      ========     " + mapResult(hbaseStatus) + System.lineSeparator() +
+                "HIVE       ========     " + mapResult(hiveStatus) + System.lineSeparator() +
+                "KAFKA      ========     " + mapResult(kafkaStatus) + System.lineSeparator() +
+                "OOZIE      ========     " + mapResult(oozieStatus) + System.lineSeparator() +
+                "SPARK      ========     " + mapResult(sparkStatus) + System.lineSeparator() +
+                "ZEPPELIN   ========     " + mapResult(zeppelinStatus) + System.lineSeparator() +
+                "ZOOKEEPER  ========     " + mapResult(zookeeperStatus) + System.lineSeparator() +
+                "EXTRAS     ========     " + mapResult(extrasStatus) + System.lineSeparator() +
+                "****************************************" ;
     }
 
     public String mapResult(boolean result){
